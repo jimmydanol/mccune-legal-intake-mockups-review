@@ -1,0 +1,7 @@
+.DS_Store
+Thumbs.db
+*.swp
+*~
+# loose non-source exports at root
+/McCune-Legal-Intake-Mockup.html
+/McCune-Legal-Intake-Mockup.zip
