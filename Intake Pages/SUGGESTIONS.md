@@ -32,6 +32,20 @@ document panel so uploads never feel like a separate chore.
 
 ---
 
+## Round 1 — "Statements for all debts" now required (2026-06-13)
+
+**Files:** assets.html, debts.html, expenses.html, financial-affairs.html,
+income.html, personal.html, confirmation.html
+
+**What changed:** Removed the "N/A" (not applicable) option from the
+"Statements for all debts" document box. It can no longer be skipped.
+
+**Rationale:** Debt statements are needed for every case — they drive the
+creditor schedules. Treat it as a required upload like ID and pay stubs, not an
+optional one.
+
+---
+
 <!-- Add new rounds below this line. Template:
 
 ## Round N — short title (date)
