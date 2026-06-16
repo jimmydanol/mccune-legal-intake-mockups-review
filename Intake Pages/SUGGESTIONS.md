@@ -95,6 +95,21 @@ before submitting, instead of having to scan the sidebar.
 
 ---
 
+## Round 5 — Step nav as a connected path (2026-06-15)
+
+**Files:** all section pages + documents.html (shared topnav CSS)
+
+**What changed:** Replaced the pill-style step nav with a stepper "path" — the 7
+steps are evenly spaced numbered bubbles joined by a connecting line. Completed
+steps fill green (line into them turns green), current step is teal, upcoming
+steps gray. Labels hide on narrow screens, leaving the numbered path.
+
+**Rationale:** A connected path communicates progress and sequence more clearly
+than separate pills, and spacing the bubbles evenly across the width reads as a
+guided journey.
+
+---
+
 <!-- Add new rounds below this line. Template:
 
 ## Round N — short title (date)
