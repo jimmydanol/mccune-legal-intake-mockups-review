@@ -308,13 +308,25 @@ table.exp td:last-child{width:140px;}
 
 <style>
 .check-mark svg{display:block!important;width:36px;height:36px;}
-.topnav{display:flex;gap:4px;flex-wrap:wrap;padding:10px 16px;border-bottom:1px solid var(--line);background:#fff;}
-.topnav a{font-size:12px;color:var(--muted);text-decoration:none;padding:7px 12px;border-radius:20px;display:flex;align-items:center;gap:7px;white-space:nowrap;}
-.topnav a .n{width:18px;height:18px;border-radius:50%;background:var(--line);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+.topnav{display:flex;align-items:flex-start;padding:18px 16px 14px;border-bottom:1px solid var(--line);background:#fff;}
+.topnav a{position:relative;flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;gap:7px;text-decoration:none;font-size:12px;color:var(--muted);text-align:center;padding:0 2px;}
+/* connector line between bubbles (sits behind the circle) */
+.topnav a::before,.topnav a::after{content:"";position:absolute;top:13px;height:2px;background:var(--line);z-index:0;}
+.topnav a::before{left:0;right:50%;}
+.topnav a::after{left:50%;right:0;}
+.topnav a:first-child::before{display:none;}
+.topnav a:last-child::after{display:none;}
+.topnav a .n{position:relative;z-index:1;width:28px;height:28px;border-radius:50%;background:#fff;border:2px solid var(--line);color:var(--muted);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+.topnav a .lbl{line-height:1.2;}
+/* completed steps: filled bubble + green line leading into them */
+.topnav a.done .n{background:var(--brand-step-done);border-color:var(--brand-step-done);color:#fff;}
 .topnav a.done{color:var(--brand-primary);}
-.topnav a.done .n{background:var(--brand-step-done);}
-.topnav a.active{background:var(--brand-soft);color:var(--brand-primary);font-weight:700;}
-.topnav a.active .n{background:var(--brand-primary);}
+.topnav a.done::before{background:var(--brand-step-done);}
+/* active step */
+.topnav a.active .n{background:var(--brand-primary);border-color:var(--brand-primary);color:#fff;}
+.topnav a.active{color:var(--brand-primary);font-weight:700;}
+.topnav a.active::before{background:var(--brand-step-done);}
+@media(max-width:680px){ .topnav a{font-size:0;} .topnav a .n{font-size:12px;} }
 .foot .fbtns{display:flex;gap:10px;}
 .btn.exit{border-color:var(--line);color:var(--brand-primary);}
 .btn{text-decoration:none;}
