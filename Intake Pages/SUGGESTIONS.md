@@ -46,6 +46,26 @@ optional one.
 
 ---
 
+## Round 2 — Welcome video + login layout (2026-06-15)
+
+**Files:** login.html
+
+**What changed:** Login page is now centered around the full McCune Legal logo
+lockup at the top, with two equal-size boxes below — sign-in on the left, a
+welcome video on the right (same height). Stacks vertically on mobile (≤820px).
+Video is a **Vimeo embed** with a clean player (no title/byline/portrait), so no
+media file lives in the repo. To swap the video, change the Vimeo ID in the
+`player.vimeo.com/video/ID` URL.
+
+**Rationale:** A short intro video reassures first-time debtors and explains how
+the intake works. Vimeo's minimal player keeps it distraction-free, and the
+embed keeps the repo lightweight (no large MP4).
+
+**Note:** the Vimeo video's privacy must allow embedding / "anyone with the link"
+for the player to load for outside viewers.
+
+---
+
 <!-- Add new rounds below this line. Template:
 
 ## Round N — short title (date)
