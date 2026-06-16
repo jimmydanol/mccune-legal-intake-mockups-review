@@ -66,6 +66,35 @@ for the player to load for outside viewers.
 
 ---
 
+## Round 3 — Larger form text on all six intake sections (2026-06-15)
+
+**Files:** personal.html, income.html, assets.html, debts.html, expenses.html,
+financial-affairs.html
+
+**What changed:** Increased font sizes across the intake form — field labels,
+inputs, section titles/descriptions, Yes/No toggles, and chips. Document sidebar
+text left unchanged (sized intentionally smaller).
+
+**Rationale:** The previous sizes read too small for a form debtors fill out
+carefully; larger text improves legibility and reduces entry errors.
+
+---
+
+## Round 4 — Document summary page (7th step) (2026-06-15)
+
+**Files:** documents.html (new); personal/income/assets/debts/expenses/
+financial-affairs.html (nav updated)
+
+**What changed:** Added a 7th step, "Documents," after Financial affairs. It
+recaps document status in three groups — Still needed, Uploaded, Marked N/A —
+with a count summary at top and Upload buttons on the needed items. Financial
+affairs now continues to this page; the final "Submit my intake" lives here.
+
+**Rationale:** Gives debtors a clear final checkpoint of what's outstanding
+before submitting, instead of having to scan the sidebar.
+
+---
+
 <!-- Add new rounds below this line. Template:
 
 ## Round N — short title (date)
