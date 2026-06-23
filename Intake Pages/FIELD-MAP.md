@@ -105,7 +105,7 @@ This gates everything else, so a nervous non-filing spouse is never asked for pe
 | Spouse SSN | ✓ | **Form 121** (2nd SSN) | Spouse SSA/W-2/1040 | Inferred | **Encrypt at rest** |
 | Has your spouse filed bankruptcy before? |  | Form 101 Debtor 2, Pt 3 Lines 9–10 | — | Manual | "Yes" reveals a free-text detail box (same as debtor's) |
 
-> **Cross-section dependency:** when joint = **No or Unsure**, the **Income** section must surface a **non-filing-spouse income upload** (pay stubs / proof of income) — the No/Unsure info-tips promise it. Wire this when building Income.
+> **Cross-section dependency (RESOLVED):** the **Income** section now shows a conditional **Spouse income** block whenever marital status = Married (any joint answer), which covers the non-filing-spouse income the No/Unsure info-tips promise. See SECTION 2 below.
 
 ### Personal Info — still to build
 - **Prior bankruptcy detail** is currently a single free-text field. If the dev wants structured form-fill, split into district / case number / filing date / chapter / disposition later.
@@ -124,6 +124,32 @@ These are *outputs* the system calculates from data collected elsewhere. They ex
 | **Exemption state** | Address history (SOFA Q2) | 730-day rule — if not in current state the full 2 years before filing, exemptions follow the prior domicile | Schedule C exemptions |
 
 > This is why **"How long in Colorado?" was removed** from Personal Info: SOFA Q2 already captures all addresses for the last 3 years, and exemption-state + venue are *computed from that*, not asked. Collect the address history once (SOFA Q2); derive the rest.
+
+---
+
+## SECTION 2 — Income (Schedule I / Form 106I)
+
+`income.html`. Built as a guided sequence of gated questions for an individual filer, plus a conditional spouse block.
+
+| Intake field | Shown when | → Form destination | ← Source doc(s) | Extraction | Notes |
+|---|---|---|---|---|---|
+| Are you employed? | always | Schedule I Pt 1 (employment status) | pay stub, W-2 | Inferred | "Yes" reveals job card(s) |
+| → Occupation | employed = Yes | Schedule I Pt 1 (occupation) | pay stub, W-2 | Inferred | |
+| → Employer name | employed = Yes | Schedule I Pt 1 (employer) | pay stub, W-2 | Inferred | |
+| → Employer address | employed = Yes | Schedule I Pt 1 (employer address) | pay stub | Inferred | |
+| → How long employed there | employed = Yes | Schedule I Pt 1 (how long) | — | Manual | |
+| → Approx. annual gross income (before taxes) | employed = Yes | Schedule I Pt 2 (gross wages) | pay stub, W-2 | Inferred | Repeatable per job (add/remove) |
+| Is there any other source of monthly income in your household? | always | Schedule I Line 8 (other income) | proof of income | Inferred | "Yes" reveals source rows |
+| → Source + Amount per month | other income = Yes | Schedule I Line 8 | proof of income | Inferred | Repeatable (add/remove) |
+
+**Spouse income block — shown when marital status = Married (any joint answer).** Reads marital status saved from Personal (sessionStorage `mcl_marital`; demo override `?married=1`). Covers the non-filing-spouse income required for the means test / Schedule I.
+
+| Intake field | → Form destination | Notes |
+|---|---|---|
+| Is your spouse employed? → spouse job card(s) | Schedule I Pt 1 (spouse column) | Mirrors debtor job fields; add/remove |
+| Is there any other source of monthly income from your spouse? → source rows | Schedule I Line 8 (spouse) | add/remove |
+
+**Income documents (sidebar, each "needed" + N/A):** Pay stubs — last 6 mo; Proof of other income — last 6 mo; Bank statements — last 6 mo. **If Married:** + Spouse's pay stubs, Spouse's proof of other income, Spouse's bank statements (tagged "only if not already provided"). The business question was **removed** from Income — it lives in Financial Affairs (SOFA Q24–26).
 
 ---
 
@@ -156,7 +182,7 @@ Each intake step has a sidebar listing the documents needed for that section. Th
 | Step | Page | Documents in sidebar | Required? |
 |---|---|---|---|
 | 1 — Personal Info | personal.html | Driver's license; SSA card / W-2 / 1099; Tax return (last yr); Tax return (2 yrs ago). **If joint = Yes:** + Spouse's driver's license, Spouse's SSN doc, Spouse's tax returns (only if filed separately) | License + SSN doc required; tax returns needed (N/A allowed). Spouse docs revealed in the sidebar only when joint filing = Yes; also listed on the page-7 summary tagged "if spouse is filing" |
-| 2 — Income | income.html | Pay stubs (6 mo), other income proof | Required |
+| 2 — Income | income.html | Pay stubs (6 mo); Proof of other income (6 mo); Bank statements (6 mo). **If Married:** + Spouse's pay stubs, Spouse's proof of other income, Spouse's bank statements (only if not already provided) | All "needed" with N/A; spouse docs revealed when Married |
 | 3 — Assets | assets.html | Titles, deeds, account statements | Per applicability |
 | 4 — Debts | debts.html | **Statements for all debts** | Required (no N/A — drives creditor schedules) |
 | 5 — Expenses | expenses.html | Utility / household bills | Per applicability |

@@ -552,7 +552,7 @@ table.exp td:last-child{width:140px;}
   /* Spouse block: reveal only when marital status = Married */
   var sel=document.getElementById("maritalSel"), block=document.getElementById("spouseBlock");
   if(sel&&block){
-    function sync(){ block.style.display = (sel.value==="Married") ? "" : "none"; }
+    function sync(){ block.style.display = (sel.value==="Married") ? "" : "none"; try{ sessionStorage.setItem('mcl_marital', sel.value||''); }catch(e){} }
     sel.addEventListener("change", sync); sync();
   }
   /* Generic Yes/No toggle that reveals a target block only on Yes */

@@ -233,6 +233,41 @@ joint return.
 
 ---
 
+## Round 11 — Income section rebuilt around gated questions (2026-06-22)
+
+**Files:** income.html, documents.html, FIELD-MAP.md
+
+**What changed:** Reworked Income into a guided, single-filer-first flow:
+- Title cased to "Income Information"; intro comma fixed.
+- "Your employment" heading removed. Lead question **"Are you employed?"** →
+  Yes reveals job card(s): occupation, employer name, employer address, how
+  long employed, approximate annual gross income (before taxes). Repeatable with
+  per-card **✕ Remove** (hidden when only one), plus an in-card dashed reminder
+  to upload that job's pay stubs.
+- **"Is there any other source of monthly income in your household?"** → Yes
+  reveals source + amount-per-month rows, also repeatable with remove + an
+  in-card proof-of-income reminder.
+- Removed the "own a business" question (belongs in Financial Affairs / SOFA).
+- Removed all placeholder examples (bare fields); kept the $ and the
+  descriptive "Social Security, child support…" line.
+- Upload sidebar split into three "needed + N/A" boxes: Pay stubs, Proof of
+  other income, Bank statements (was two required boxes). Page-7 summary
+  updated to match (count 3).
+- **Conditional spouse income:** when marital status = Married (read from
+  Personal via sessionStorage `mcl_marital`; demo override `?married=1`), a
+  Spouse income block appears — "Is your spouse employed?" and "…other monthly
+  income from your spouse?" mirroring the debtor, plus three spouse doc boxes
+  (pay stubs, proof of other income, bank statements "only if not already
+  provided"). Personal now saves marital status so Income can read it.
+
+**Rationale:** Gated questions keep the form short and intuitive. Mapping to
+Schedule I (employment Pt 1 + other income Line 8) means the data fills the form
+directly. The Married-triggered spouse block satisfies the non-filing-spouse
+income requirement promised by the Personal page's No/Unsure notices, without
+asking for spouse identity details that aren't needed unless filing jointly.
+
+---
+
 <!-- Add new rounds below this line. Template:
 
 ## Round N — short title (date)
