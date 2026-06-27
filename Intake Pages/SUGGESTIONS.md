@@ -381,6 +381,35 @@ enough — the attorney follows up if Yes.
 
 ---
 
+## Round 16 — Debts: Secured Debts with Assets carryover (2026-06-25)
+
+**Files:** assets.html, debts.html, FIELD-MAP.md
+
+**What changed:** Added a **Secured Debts** section at the top of Debts, built on
+the first real cross-section carryover:
+- assets.html now saves to sessionStorage (`mcl_secured`) every real estate
+  address and every vehicle marked financed/leased (year/make/model).
+- debts.html reads it and generates a bordered panel per asset. **Real estate ·
+  [address]** panels (assumed secured — no gate) contain repeatable Mortgages
+  (lender/balance/payment) and a gated, repeatable HOA sub-section (name/balance
+  if behind/monthly dues). **Vehicle · [year make model]** panels contain the
+  loan/lease (lender/balance/payment).
+- Catch-all at the end: "Are there any other debts where a creditor can take
+  back property if you don't pay?" → repeatable card (lender, collateral, amount
+  owed, monthly payment).
+- Upload sidebar: added Mortgage statements, HOA statements, Other secured debt
+  statements, Vehicle loan/lease statements (in that order); each card's reminder
+  names its box.
+- Fixed two bugs: double-add (shared wireAddRow also firing — renamed my add rows
+  to `.secadd`); HOA reveal not firing (scoped to `.prop-panel` not `.item`).
+
+**Rationale:** Most consumer secured debt is a mortgage or car loan already
+captured as an asset, so carrying the asset over and asking only for the loan
+terms avoids re-entry and matches Schedule D. Per-property panels keep multiple
+properties/mortgages/HOAs clearly separated.
+
+---
+
 <!-- Add new rounds below this line. Template:
 
 ## Round N — short title (date)

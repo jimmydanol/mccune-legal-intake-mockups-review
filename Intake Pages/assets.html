@@ -712,4 +712,29 @@ table.exp td:last-child{width:140px;}
     refreshRE();
   }
 })();</script>
+<script>(function(){
+  /* Save real estate + financed-vehicle summaries so Debts can carry them over */
+  function saveCarryover(){
+    var data={properties:[], vehicles:[]};
+    // properties: the first input in each reitem is the address
+    document.querySelectorAll('#realEstateBlock .reitem').forEach(function(card){
+      var addr=card.querySelector('input'); var v=addr?addr.value.trim():'';
+      if(v) data.properties.push(v);
+    });
+    // financed vehicles: year/make/model are the first three inputs; financed toggle = financedTg with Yes on
+    document.querySelectorAll('#vehBlock .vehitem').forEach(function(card){
+      var ins=card.querySelectorAll('.grid input');
+      var year=ins[0]?ins[0].value.trim():'', make=ins[1]?ins[1].value.trim():'', model=ins[2]?ins[2].value.trim():'';
+      var ftg=card.querySelector('.financedTg');
+      var financed=false;
+      if(ftg){ var on=ftg.querySelector('span.on'); financed = on && on.textContent.trim().toLowerCase()==='yes'; }
+      var label=[year,make,model].filter(Boolean).join(' ');
+      if(financed && label) data.vehicles.push(label);
+    });
+    try{ sessionStorage.setItem('mcl_secured', JSON.stringify(data)); }catch(e){}
+  }
+  document.addEventListener('input', saveCarryover);
+  document.addEventListener('click', function(){ setTimeout(saveCarryover,0); });
+  saveCarryover();
+})();</script>
 </body></html>

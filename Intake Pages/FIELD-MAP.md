@@ -216,6 +216,24 @@ These are *outputs* the system calculates from data collected elsewhere. They ex
 
 ---
 
+## SECTION 4 — Debts (Schedules D / E / F)
+
+`debts.html`. In progress — **Secured Debts (Schedule D) done**; unsecured/priority (E/F) still to rework.
+
+**Secured Debts (Schedule D)** — built on cross-section carryover from Assets. assets.html saves to sessionStorage `mcl_secured` every real estate **address** and every vehicle marked financed/leased (**year/make/model**). debts.html reads it and generates a panel per asset:
+
+| Carried-over asset | Generated block | Fields | Form |
+|---|---|---|---|
+| Each property (assumed to have a secured debt — no gating question) | **Real estate · [address]** panel | Mortgages (repeatable: lender, balance, monthly payment) + HOA (gated Yes/No → repeatable: name, balance if behind, monthly dues) | Schedule D |
+| Each financed/leased vehicle | **Vehicle · [year make model]** panel | Loan/lease: lender, balance, monthly payment | Schedule D |
+| Catch-all (always shown) | "Are there any other debts where a creditor can take back property if you don't pay?" → Yes | repeatable: lender, secured property/collateral, amount owed, monthly payment | Schedule D |
+
+> Real estate carries an **assumed** secured debt (no Yes/No), per the form reality that listed property almost always has a mortgage; vehicles only generate a block if marked financed/leased in Assets. This is the first true cross-section carryover ("ask once, derive the rest").
+
+**Secured debt documents (sidebar, order):** Mortgage statements; HOA statements; Other secured debt statements; Vehicle loan / lease statements — each names its box in the card's upload reminder.
+
+---
+
 ## SECTION 6 — Statement of Financial Affairs (Form 107)
 
 `financial-affairs.html` mirrors Form 107 exactly: all 26 numbered questions, in official order, grouped under the form's 11 parts. Each is a Yes/No that (when built out) reveals the detail fields for that question. Several overlap with data collected earlier and should be **carried through read-only**, not re-asked.
