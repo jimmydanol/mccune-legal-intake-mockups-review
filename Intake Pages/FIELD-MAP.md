@@ -245,7 +245,9 @@ Removed the old scattered "Back taxes?" block and "Do you owe child support…" 
 
 **Unsecured Debts (Schedule F)** — single "Estimated total unsecured debt" field + a prominent info-tip: credit reports will be pulled, but upload most recent statements; **medical bills no longer appear on credit reports** so every medical bill must be uploaded; also upload collection/attorney letters. Required upload box "Unsecured debt statements & collection / attorney notices." Followed by "Creditors without a statement" (repeatable: name, amount, mailing address) for creditors not on the credit report.
 
-**Co-signers (Schedule H codebtors)** — "Has anyone co-signed on any of your debts?" → info-tip (co-signer stays legally responsible after the debtor's bankruptcy) + repeatable card (co-signer name, which debt, mailing address). Plus two yes/no: business debt, and >50% business debt (Ch. 7 eligibility signal).
+**Co-signers (Schedule H codebtors)** — "Has anyone co-signed on any of your debts?" → info-tip (co-signer stays legally responsible after the debtor's bankruptcy) + repeatable card (co-signer name, which debt, mailing address).
+
+**Business / self-employment debt (consumer-vs-business-debt analysis)** — "Do you owe any debts related to a business you owned or self employment?" → Yes reveals: a personal-guarantee info-tip + a "Business debt statements" upload box, AND the follow-up "Is it possible that more than 50% of all of your debt is related to your business or self employment?" → Yes reveals a "special considerations" info-tip. (Non-consumer-debtor status affects means-test applicability.)
 
 > Removed the old generic "Statements for all debts" and "Attorney / collector letters" upload boxes — folded into the unsecured box.
 

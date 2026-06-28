@@ -457,6 +457,30 @@ Student loans and the medical-bill upload point are practice-critical nuances.
 
 ---
 
+## Round 19 — Business-debt branch + section UX (2026-06-27)
+
+**Files:** debts.html, personal/income/assets/expenses/financial-affairs.html
+
+**What changed:**
+- Debts business-debt question reworded ("…a business you owned or self
+  employment?"). Yes reveals a personal-guarantee info-tip + a "Business debt
+  statements" upload box, and gates the >50% follow-up ("Is it possible that
+  more than 50% of all of your debt is related to your business or self
+  employment?"), which on Yes reveals a "special considerations" info-tip.
+- Unsecured total field relabeled to a plain-language prompt.
+- Added a tailored end-of-section reassurance message (sage box + checkmark)
+  above the footer on all six section pages — calm/steady tone, varied per
+  section, not peppy.
+- Reordered every section footer so **Save & continue (primary) is on the left**
+  as the preferred forward action, with Save & exit on the right.
+
+**Rationale:** The business-debt branch surfaces the non-consumer-debtor and
+personal-guarantee issues that matter for eligibility. The end-of-section
+message reassures distressed users their progress is saved; left-aligning the
+primary button matches reading order and reduces accidental exits.
+
+---
+
 <!-- Add new rounds below this line. Template:
 
 ## Round N — short title (date)
