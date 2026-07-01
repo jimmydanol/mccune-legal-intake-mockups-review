@@ -568,6 +568,18 @@ clean mapping.
 
 ---
 
+## Round 24 — SOFA Part 3 reordered (insiders first) (2026-06-30)
+
+**Files:** financial-affairs.html
+
+**What changed:** Reordered Part 3 to match the SOFA: insider-payment and
+insider-transfer questions now come first, followed by the 90-day $600 creditor
+(preference) payment. Reveals moved with their questions. On-screen qn numbers
+left as-is (internal; field map is the crosswalk) — can renumber for display
+later if wanted.
+
+---
+
 <!-- Add new rounds below this line. Template:
 
 ## Round N — short title (date)
