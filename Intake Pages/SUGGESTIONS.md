@@ -620,6 +620,22 @@ for the means test.
 
 ---
 
+## Round 27 — SOFA numbering, insider definition, toggle fix (2026-07-02)
+
+**Files:** financial-affairs.html
+
+**What changed:**
+- Renumbered on-screen SOFA questions sequentially 1–28 (the Part 3 reorder had
+  left a gap). Field map remains the crosswalk to Form 107 lines.
+- Added a plain-language **insider** definition info-tip at the top of Part 3 (so
+  it's read before answering both insider questions); removed the statute cite
+  and the now-redundant parentheticals on the two insider questions.
+- Fixed the SOFA Yes/No toggle: it was stretching full-width (because `.sofa-q`
+  carries `.field` = flex column). Added `align-self:flex-start` so it hugs its
+  content, and matched the span styling (center + divider) to the other pages.
+
+---
+
 <!-- Add new rounds below this line. Template:
 
 ## Round N — short title (date)
