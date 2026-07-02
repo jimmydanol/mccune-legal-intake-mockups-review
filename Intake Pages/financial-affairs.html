@@ -541,8 +541,8 @@ table.exp td:last-child{width:140px;}
 <script>(function(){
   /* Q2: show spouse (Debtor 2) address column when filing jointly; wire "same as" checkbox */
   var isJoint=false;
-  try{ isJoint = (sessionStorage.getItem('mcl_marital')||'')==='Married'; }catch(e){}
-  if(/[?&]married=1/.test(location.search)) isJoint=true;
+  try{ isJoint = (sessionStorage.getItem('mcl_joint')||'').toLowerCase()==='yes'; }catch(e){}
+  if(/[?&](joint|married)=1/.test(location.search)) isJoint=true;
   function applySpouseCols(scope){
     (scope||document).querySelectorAll('.spouse-addr-col, .spouse-only').forEach(function(c){ c.style.display=isJoint?'':'none'; });
   }

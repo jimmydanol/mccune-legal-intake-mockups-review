@@ -577,6 +577,7 @@ table.exp td:last-child{width:140px;}
       sp.addEventListener("click",function(){
         jt.querySelectorAll("span").forEach(function(s){ s.classList.toggle("on", s===sp); });
         var v=sp.textContent.trim().toLowerCase();
+        try{ sessionStorage.setItem('mcl_joint', v); }catch(e){}
         if(jy) jy.style.display = (v==="yes") ? "" : "none";
         if(jn) jn.style.display = (v==="no") ? "" : "none";
         if(ju) ju.style.display = (v==="unsure") ? "" : "none";

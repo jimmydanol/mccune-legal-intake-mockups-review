@@ -602,6 +602,24 @@ matches the form's Debtor 1/Debtor 2 columns for joint cases.
 
 ---
 
+## Round 26 — Fix SOFA joint-filing trigger (2026-07-02)
+
+**Files:** personal.html, financial-affairs.html
+
+**What changed:** The SOFA Debtor 2 columns (Q2 address, Q4/Q5 income) were
+keyed off marital status = Married, and Personal never saved the joint-filing
+answer — so they didn't appear. Fixed: Personal now saves the "Will your spouse
+be filing jointly?" answer to sessionStorage (`mcl_joint`); Financial Affairs
+keys the Debtor 2 columns off `mcl_joint === 'yes'`. Demo override `?joint=1`.
+
+**Rationale:** SOFA Debtor 2 columns should appear only for an actual joint
+filing, not just because the debtor is married (a married person can file
+alone = Debtor 1 only). The Income section's spouse-income block intentionally
+still keys off marital status, since a non-filing spouse's income still matters
+for the means test.
+
+---
+
 <!-- Add new rounds below this line. Template:
 
 ## Round N — short title (date)
