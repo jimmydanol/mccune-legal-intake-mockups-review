@@ -278,8 +278,8 @@ Removed the old scattered "Back taxes?" block and "Do you owe child support…" 
 | SOFA Part | Questions | → Form 107 | Overlap / carry-through |
 |---|---|---|---|
 | Pt 1 — Marital status & residence | Q1 (marital status), Q2 (addresses, last 3 yrs) | 107 Pt 1 | Q1 **pre-populated (editable)** from Personal Info marital status with a "carried over — change if needed" note. **Q2 is the source of truth for address history → venue + exemption derivation** |
-| Pt 2 — Income | Q3 (income this/last 2 yrs), Q4 (other income) | 107 Pt 2 | Q4 **pre-populated (editable)** from Income section with a "carried over — change if needed" note |
-| Pt 3 — Creditor payments | Q5, Q6, Q7 (payments, insiders, advantage) | 107 Pt 3 | Insider payments cross-ref Debts |
+| Pt 2 — Income | Q4 (employment/business income, this yr + 2 prior), Q5 (other income) | 107 Pt 2 Q4, Q5 | **Our on-screen Q4 = Form 107 Q4** (employment/business): Yes/No + wages-vs-business type checkboxes + note that exact annual figures come from the uploaded pay stubs/tax returns. **Our Q5 = Form 107 Q5** (other income): Yes/No → repeatable source cards + same "already uploaded" note. Amounts derived from documents, not hand-entered |
+| Pt 3 — Payments before filing | Q6 (primarily consumer debts — **DERIVED**), Q7 (90-day $600 creditor/preference payment), Q8 (insider payment, 1 yr), Q9 (insider transfer, 1 yr) | 107 Pt 3 Q6–Q9 | **Q6 is derived from the Debts business-debt branch, NOT asked on the SOFA.** On-screen we lead with the insider questions (Q8/Q9) then the 90-day payment (Q7) to match the packet order; insider payments cross-ref Debts |
 | Pt 4 — Legal actions | Q8 (suits), Q9 (repossessions/garnishments), Q10 (setoffs) | 107 Pt 4 | Manual |
 | Pt 5 — Gifts & contributions | Q11 (gifts), Q12 (charitable) | 107 Pt 5 | Manual |
 | Pt 6 — Losses | Q13 (losses, theft, gambling) | 107 Pt 6 | Manual |

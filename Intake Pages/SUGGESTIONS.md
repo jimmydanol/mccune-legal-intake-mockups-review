@@ -580,6 +580,28 @@ later if wanted.
 
 ---
 
+## Round 25 — SOFA income Q4/Q5 polish + spouse handling (2026-07-01)
+
+**Files:** financial-affairs.html, FIELD-MAP.md
+
+**What changed:**
+- Q4/Q5 upload notes reference pay stubs + tax returns (Q4) and proof of other
+  income + tax returns (Q5), each reminding to upload in the Income section; Q5
+  note reworded to mirror Q4.
+- Q5 question wording matched to Q4 ("this year or in the two years before").
+- Added Debtor 2 (spouse) options gated on joint filing: Q4 gets a "Your spouse"
+  block with the same wages/business type checkboxes; Q5 source cards get a
+  "Whose income is this?" (You / Your spouse) selector. Reuses the Q2
+  joint-detection; generalized the gating JS with a `.spouse-only` class.
+- FIELD-MAP: corrected Part 2 mapping (our Q4=Form 107 Q4 employment, Q5=Q5
+  other income) and Part 3 (Q6 consumer-debts DERIVED from Debts; insider-first
+  on-screen order).
+
+**Rationale:** Keeps income honest to how data flows (documents + derivation) and
+matches the form's Debtor 1/Debtor 2 columns for joint cases.
+
+---
+
 <!-- Add new rounds below this line. Template:
 
 ## Round N — short title (date)
