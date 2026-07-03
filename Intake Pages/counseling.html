@@ -348,155 +348,58 @@ table.exp td:last-child{width:140px;}
 <style>.app.has-docs{display:flex;flex-direction:column;align-items:stretch;}.app.has-docs .app-row{display:flex;align-items:flex-start;}.app.has-docs .rail{flex:0 0 280px;width:280px;background:var(--page);border-right:1px solid var(--line);align-self:stretch;}.app.has-docs .appmain{flex:1;min-width:0;display:flex;flex-direction:column;}.app.has-docs>.hdr{border-bottom:1px solid var(--line);}.app.has-docs>.topnav{border-bottom:1px solid var(--line);}.app.has-docs .docbar{position:sticky;top:0;}@media(max-width:1000px){.app.has-docs .app-row{flex-direction:column;}.app.has-docs .rail{flex:none;width:100%;border-right:0;border-bottom:1px solid var(--line);}}</style>
 <style>.submit-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;margin:36px 0 12px;}.btn-submit-big{background:var(--brand-primary);color:#fff;border:0;border-radius:14px;font-size:20px;font-weight:700;padding:18px 56px;cursor:pointer;box-shadow:0 4px 14px rgba(90,124,96,.28);}.btn-submit-big:hover{background:var(--brand-primary-d);}.submit-note{font-size:13px;color:var(--muted);margin:14px 0 0;}</style>
 </head>
-<body>
-<style>
-/* ---- counseling step (step 7) ---- */
-.cs-facts{display:flex;gap:10px;flex-wrap:wrap;margin:4px 0 24px;}
+<body><style>
+/* counseling page extras (uniform tokens) */
+.cs-facts{display:flex;gap:10px;flex-wrap:wrap;margin:4px 0 6px;}
 .cs-fact{flex:1 1 150px;background:var(--page);border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px;}
-.cs-fact b{display:block;font-size:15px;}
-.cs-fact span{font-size:12px;color:var(--muted);}
-.cs-bigq{font-size:16px;font-weight:700;margin:0 0 12px;}
-.cs-paths{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px;}
-.cs-path{flex:1 1 240px;border:1.5px solid var(--line);border-radius:var(--radius);background:#fff;padding:18px;cursor:pointer;text-align:left;font-family:var(--font);}
-.cs-path:hover{border-color:var(--brand-accent);}
-.cs-path.on{border-color:var(--brand-primary);background:#f6fbf8;box-shadow:0 0 0 3px var(--brand-soft);}
-.cs-path .pt{font-size:15px;font-weight:700;display:flex;align-items:center;gap:9px;color:var(--ink);}
-.cs-path .pd{font-size:12.5px;color:var(--muted);margin-top:4px;display:block;}
-.cs-path .badge{width:26px;height:26px;border-radius:50%;background:var(--brand-soft);color:var(--brand-primary);display:inline-flex;align-items:center;justify-content:center;font-size:14px;flex:0 0 auto;}
-.cs-panel{display:none;border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-bottom:20px;background:#fcfdfd;}
-.cs-panel.on{display:block;}
-.cs-panel h4{margin:0 0 12px;font-size:15px;}
-.cs-drop{border:1.5px dashed #c4d0d3;border-radius:var(--radius);padding:24px;text-align:center;color:var(--muted);background:#fff;cursor:pointer;margin-bottom:16px;}
-.cs-drop .big{color:var(--brand-primary);font-weight:700;font-size:14px;margin-bottom:3px;}
-.cs-drop .sm{font-size:11.5px;color:var(--faint);}
-.cs-drop.done{border-style:solid;border-color:#cfe7d8;background:var(--ok-bg);}
-.cs-drop.done .big{color:var(--ok);}
-.cs-provider{display:flex;gap:14px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-bottom:14px;flex-wrap:wrap;}
-.cs-provider .pv{flex:1;min-width:200px;}
-.cs-provider .pv b{font-size:14.5px;display:block;}
-.cs-provider .pv span{font-size:12.5px;color:var(--muted);}
-.cs-go{background:var(--brand-primary);color:#fff;border:0;border-radius:20px;padding:11px 22px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:var(--font);}
-.cs-go:hover{background:var(--brand-primary-d);}
-.cs-steps{list-style:none;margin:0 0 14px;padding:0;counter-reset:s;}
+.cs-fact b{display:block;font-size:14px;}
+.cs-fact span{font-size:11.5px;color:var(--muted);}
+.cs-steps{list-style:none;margin:0 0 4px;padding:0;counter-reset:s;}
 .cs-steps li{font-size:13px;padding:8px 0;border-bottom:1px solid var(--line);display:flex;gap:11px;align-items:flex-start;counter-increment:s;}
 .cs-steps li:last-child{border-bottom:0;}
 .cs-steps li::before{content:counter(s);flex:0 0 auto;width:22px;height:22px;border-radius:50%;background:var(--brand-soft);color:var(--brand-primary);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;}
-.cs-reassure{display:flex;gap:11px;align-items:flex-start;background:var(--ok-bg);border:1px solid #bfe0cc;border-radius:var(--radius);padding:13px 15px;}
-.cs-reassure .i{flex:0 0 auto;color:var(--ok);font-size:15px;}
-.cs-reassure p{margin:0;font-size:12.5px;color:#1f5b3c;}
-.cs-validity{display:none;gap:11px;align-items:flex-start;background:var(--warn-bg);border-radius:var(--radius);padding:12px 15px;margin:0 0 22px;}
-.cs-validity.on{display:flex;}
-.cs-validity .i{color:var(--warn);}
-.cs-validity p{margin:0;font-size:12.5px;color:#7a521f;}
-.cs-wrap{max-width:720px;}
-</style>
-
-<div class="app">
-  <div class="hdr">
-    <div class="hdr-left">
-      <div class="logo-mark"><svg viewBox="0 0 24 24"></svg></div>
-      <div class="firm"><span class="nm">MCCUNE LEGAL</span><span class="tg">We help people struggling with debt</span></div>
-    </div>
-    <div class="hdr-title">Intake Form</div>
-    <div class="hdr-right"><span>Jordan Sample</span><span class="avatar">JS</span></div>
-  </div>
-
-  <div class="topnav">
-    <a class="done" href="personal.html"><span class="n">✓</span><span class="lbl">Personal Info</span></a>
-    <a class="done" href="income.html"><span class="n">✓</span><span class="lbl">Income</span></a>
-    <a class="done" href="assets.html"><span class="n">✓</span><span class="lbl">Assets</span></a>
-    <a class="done" href="debts.html"><span class="n">✓</span><span class="lbl">Debts</span></a>
-    <a class="done" href="expenses.html"><span class="n">✓</span><span class="lbl">Expenses</span></a>
-    <a class="done" href="financial-affairs.html"><span class="n">✓</span><span class="lbl">Financial affairs</span></a>
-    <a class="active" href="counseling.html"><span class="n">7</span><span class="lbl">Counseling class</span></a>
-    <a href="documents.html"><span class="n">8</span><span class="lbl">Documents</span></a>
-  </div>
-
-  <div class="content">
-    <div class="cs-wrap">
-      <h2 class="sec-title">The counseling class</h2>
-      <p class="sec-sub">Before a bankruptcy case can be filed, the court requires everyone to take a short class about money and credit. It&rsquo;s easy &mdash; here&rsquo;s what to know.</p>
-
-      <div class="cs-facts">
-        <div class="cs-fact"><b>About 1 hour</b><span>Online, at your own pace</span></div>
-        <div class="cs-fact"><b>Phone or computer</b><span>Whichever is easier for you</span></div>
-        <div class="cs-fact"><b>Around $10&ndash;$50</b><span>Fee help available if money is tight</span></div>
-        <div class="cs-fact"><b>You get a certificate</b><span>That&rsquo;s the paper we need</span></div>
-      </div>
-
-      <p class="cs-bigq">Have you taken the class yet?</p>
-      <div class="cs-paths">
-        <button class="cs-path" id="pathYes" type="button">
-          <span class="pt"><span class="badge">✓</span>Yes, I took it</span>
-          <span class="pd">Great &mdash; upload your certificate and you&rsquo;re done with this step.</span>
-        </button>
-        <button class="cs-path" id="pathNo" type="button">
-          <span class="pt"><span class="badge">→</span>Not yet</span>
-          <span class="pd">No problem. We&rsquo;ll show you where to take it &mdash; you can keep going in the meantime.</span>
-        </button>
-      </div>
-
-      <div class="cs-panel" id="panelYes">
-        <h4>Upload your certificate</h4>
-        <div class="cs-drop" id="certDrop">
-          <div class="big">Tap to upload your certificate</div>
-          <div class="sm">A photo from your phone works fine &mdash; PDF or picture</div>
-        </div>
-        <div class="grid g2">
-          <div class="field"><label>Company that gave the class</label><input class="inp" placeholder="It&rsquo;s printed on the certificate"/></div>
-          <div class="field"><label>Date you finished</label><input class="inp" placeholder="MM/DD/YYYY"/></div>
-        </div>
-        <p class="hint" style="margin-top:10px;">Both of these are printed on the certificate &mdash; if you upload it, we&rsquo;ll read them for you and just ask you to confirm.</p>
-      </div>
-
-      <div class="cs-panel" id="panelNo">
-        <h4>How to take the class</h4>
-        <div class="cs-provider">
-          <div class="pv"><b>DebtorCC (example provider)</b><span>Approved by the court &middot; English &amp; Spanish &middot; use firm code <b>MCCUNE</b> for the discounted rate</span></div>
-          <button class="cs-go" type="button">Start the class →</button>
-        </div>
-        <ol class="cs-steps">
-          <li>Sign up on their site &mdash; takes a couple of minutes.</li>
-          <li>Take the class. About an hour; you can stop and come back.</li>
-          <li>When you finish, they email you a certificate. Upload it here &mdash; or just forward the email to us.</li>
-        </ol>
-        <div class="cs-reassure">
-          <span class="i">✓</span>
-          <p><b>You don&rsquo;t have to stop.</b> Keep going and finish the rest of this form now. After you submit, we&rsquo;ll send you a friendly reminder with a link to add the certificate. Your case just can&rsquo;t be filed with the court until we have it.</p>
-        </div>
-      </div>
-
-      <div class="cs-validity" id="validityNote">
-        <span class="i">!</span>
-        <p>One thing to know: the certificate is only good for <b>180 days</b>. Taking the class soon keeps your case on schedule.</p>
-      </div>
-    </div>
-  </div>
-
-  <div class="foot">
-    <div class="fbtns"><a class="btn" href="financial-affairs.html">← Back</a></div>
-    <span class="saved">✓ Saved automatically</span>
-    <div class="fbtns"><a class="btn ghost" href="login.html">Save &amp; exit</a><a class="btn primary" href="documents.html">Continue →</a></div>
-  </div>
-</div>
-
-<script>
+.cs-provider{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-bottom:12px;}
+.cs-provider .pv{flex:1;min-width:200px;}
+.cs-provider .pv b{font-size:14px;display:block;}
+.cs-provider .pv span{font-size:12px;color:var(--muted);}
+.cs-go{background:var(--brand-primary);color:#fff;border:0;border-radius:20px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);}
+.cs-go:hover{background:var(--brand-primary-d);}
+.drop.done{border-style:solid;border-color:#cfe7d8;background:var(--ok-bg);}
+.drop.done .big{color:var(--ok);}
+.qrow{display:flex;align-items:center;gap:18px;margin-top:24px;}
+.qrow>label{font-size:14px;font-weight:600;color:var(--ink);flex:0 0 260px;}
+</style><div class="app has-docs"><div class="hdr"><div class="hdr-left"><div class="logo-mark"><svg viewBox="0 0 24 24"></svg></div><div class="firm"><span class="nm">MCCUNE LEGAL</span><span class="tg">We help people struggling with debt</span></div></div><div class="hdr-title">Intake Form</div><div class="hdr-right"><span>Jordan Sample</span><span class="avatar">JS</span></div></div><div class="topnav"><a class="done" href="personal.html"><span class="n">✓</span><span class="lbl">Personal Info</span></a><a class="done" href="income.html"><span class="n">✓</span><span class="lbl">Income</span></a><a class="done" href="assets.html"><span class="n">✓</span><span class="lbl">Assets</span></a><a class="done" href="debts.html"><span class="n">✓</span><span class="lbl">Debts</span></a><a class="done" href="expenses.html"><span class="n">✓</span><span class="lbl">Expenses</span></a><a class="done" href="financial-affairs.html"><span class="n">✓</span><span class="lbl">Financial affairs</span></a><a class="active" href="counseling.html"><span class="n">7</span><span class="lbl">Counseling class</span></a><a href="documents.html"><span class="n">8</span><span class="lbl">Documents</span></a></div><div class="app-row"><div class="rail"><div class="docbar"><div class="secure-badge"><span class="sb-ic"><svg viewBox="0 0 32 32" width="26" height="26" aria-hidden="true"><path d="M16 3 L27 7 V15 C27 22 22 27 16 29 C10 27 5 22 5 15 V7 Z" fill="#7A9C80"/><rect x="11.5" y="15" width="9" height="7.5" rx="1.4" fill="#fff"/><path d="M13 15 V12.6 a3 3 0 0 1 6 0 V15" fill="none" stroke="#fff" stroke-width="1.8"/><circle cx="16" cy="18.4" r="1.2" fill="#7A9C80"/><circle cx="24" cy="23" r="5" fill="#5A7C60"/><path d="M21.6 23 l1.7 1.7 l3-3.3" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="sb-tx"><b>Secure upload</b><span>Encrypted &amp; verified</span></span></div><div class="db-head"><h5>Upload documents</h5><span class="count">0 / 1</span></div><p class="db-intro">Upload the documents for this section here.</p><div class="bar"><i style="width:0%"></i></div><div class="doc-section-label">Needed for this section</div><button class="dbtn need"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></svg></span><span class="lab"><span class="nm2">Counseling class certificate</span><span class="stt">Needed — you get it when you finish the class</span></span></button><p class="db-hint">Haven&rsquo;t taken the class yet? That&rsquo;s okay — answer the question on this page and keep going.</p></div></div><div class="appmain"><div class="content"><h2 class="sec-title">The counseling class</h2><p class="sec-sub">Before a bankruptcy case can be filed, the court asks everyone to take a short class about money and credit. It&rsquo;s easy — here&rsquo;s what to know.</p><div class="section-video"><div class="sv-row"><div class="sv-intro"><h3>One short class</h3><p>The class takes about an hour, online, on your phone or computer, at your own pace. It usually costs $10&ndash;$50, and fee help is available if money is tight. When you finish, you get a certificate &mdash; that&rsquo;s the paper we need. Watch the short video to see how it works.</p></div><div class="sv-frame"><!-- VIDEO: paste your Vimeo embed URL in src below --><iframe src="" allow="fullscreen; picture-in-picture" allowfullscreen title="Section guide"></iframe></div></div></div><div class="cs-facts"><div class="cs-fact"><b>About 1 hour</b><span>Online, at your own pace</span></div><div class="cs-fact"><b>Phone or computer</b><span>Whichever is easier</span></div><div class="cs-fact"><b>Around $10&ndash;$50</b><span>Fee help available</span></div><div class="cs-fact"><b>You get a certificate</b><span>That&rsquo;s the paper we need</span></div></div><div class="qrow"><label>Have you taken the class yet?</label><div class="toggle" id="csTg"><span>Yes</span><span>Not yet</span></div></div><div id="csYes" style="display:none"><div class="item" style="margin-top:14px"><h4>Upload your certificate</h4><div class="drop" id="certDrop"><div class="big">Tap to upload your certificate</div><div class="sm">A photo from your phone works fine — PDF or picture</div></div><div class="grid g2" style="margin-top:14px;padding-bottom:12px"><div class="field"><label>Company that gave the class</label><input class="inp" placeholder="It&rsquo;s printed on the certificate"/></div><div class="field"><label>Date you finished</label><input class="inp" placeholder="MM/DD/YYYY"/></div></div><p class="hint" style="padding-bottom:12px">Both of these are printed on the certificate — if you upload it, we&rsquo;ll read them for you and just ask you to confirm.</p></div></div><div id="csNo" style="display:none"><div class="item" style="margin-top:14px"><h4>How to take the class</h4><div class="cs-provider"><div class="pv"><b>DebtorCC (example provider)</b><span>Approved by the court &middot; English &amp; Spanish &middot; use firm code <b>MCCUNE</b> for the discounted rate</span></div><button class="cs-go" type="button">Start the class →</button></div><ol class="cs-steps"><li>Sign up on their site — takes a couple of minutes.</li><li>Take the class. About an hour; you can stop and come back.</li><li>When you finish, they email you a certificate. Upload it here — or just forward the email to us.</li></ol></div><div class="callout"><span class="i">✓</span><p><b>You don&rsquo;t have to stop.</b> Keep going and finish the rest of this form now. After you submit, we&rsquo;ll send you a friendly reminder with a link to add the certificate. Your case just can&rsquo;t be filed with the court until we have it.</p></div><div class="callout warn"><span class="i">!</span><p>One thing to know: the certificate is only good for <b>180 days</b>. Taking the class soon keeps your case on schedule.</p></div></div></div><div class="foot"><div class="fbtns"><a class="btn primary" href="documents.html">Save &amp; continue →</a></div><span class="saved" id="savedFlag" style="visibility:hidden">✓ Saved automatically</span><a class="btn ghost" href="login.html">Save &amp; exit</a></div></div></div></div><script>
 (function(){
-  var yes=document.getElementById('pathYes'),no=document.getElementById('pathNo');
-  var pYes=document.getElementById('panelYes'),pNo=document.getElementById('panelNo');
-  var validity=document.getElementById('validityNote');
-  function pick(w){
-    yes.classList.toggle('on',w==='yes'); no.classList.toggle('on',w==='no');
-    pYes.classList.toggle('on',w==='yes'); pNo.classList.toggle('on',w==='no');
-    validity.classList.toggle('on',w==='no');
-  }
-  yes.addEventListener('click',function(){pick('yes');});
-  no.addEventListener('click',function(){pick('no');});
+  /* Yes / Not-yet toggle */
+  var tg=document.getElementById('csTg'), yes=document.getElementById('csYes'), no=document.getElementById('csNo');
+  var saved=document.getElementById('savedFlag');
+  tg.querySelectorAll('span').forEach(function(sp,i){
+    sp.addEventListener('click',function(){
+      tg.querySelectorAll('span').forEach(function(x){x.classList.remove('on');});
+      sp.classList.add('on');
+      yes.style.display=i===0?'block':'none';
+      no.style.display=i===1?'block':'none';
+      if(saved) saved.style.visibility='visible';
+    });
+  });
+  /* certificate drop (demo) */
+  var CK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-11"/></svg>';
   document.getElementById('certDrop').addEventListener('click',function(){
     this.classList.add('done');
     this.querySelector('.big').textContent='✓ certificate.pdf uploaded';
-    this.querySelector('.sm').textContent='We’ll read the provider and date off it and ask you to confirm.';
+    this.querySelector('.sm').textContent='We\u2019ll read the provider and date off it and ask you to confirm.';
+    var b=document.querySelector('.docbar .dbtn');
+    b.classList.remove('need'); b.classList.add('done');
+    b.querySelector('.ic').innerHTML=CK;
+    b.querySelector('.stt').textContent='Uploaded · certificate.pdf';
+    document.querySelector('.docbar .count').textContent='1 / 1';
+    document.querySelector('.docbar .bar i').style.width='100%';
+  });
+  /* docbar button also opens the Yes path */
+  document.querySelector('.docbar .dbtn').addEventListener('click',function(){
+    if(this.classList.contains('done'))return;
+    tg.querySelectorAll('span')[0].click();
+    document.getElementById('certDrop').scrollIntoView({behavior:'smooth',block:'center'});
   });
 })();
-</script>
-</body></html>
+</script></body></html>

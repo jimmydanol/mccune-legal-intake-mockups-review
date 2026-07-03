@@ -729,6 +729,25 @@ Continue is never blocked; the follow-up system chases the certificate.
 
 ---
 
+## Round 31 — counseling.html rebuilt on the uniform section layout (2026-07-03)
+**File(s):** counseling.html
+
+**What changed:** Rebuilt the page on the standard two-column shell used by
+steps 1–6: left docbar rail (secure badge, 0/1 count, progress bar, one
+"Counseling class certificate" upload button — no N/A pill), section-video row
+(sv-intro + Vimeo frame; **iframe src left empty** with a comment for Matt's
+video), facts row, and the standard `.qrow` Yes/"Not yet" toggle revealing
+either the certificate upload card (with provider/date confirm fields) or the
+how-to card (provider link + 3 steps + keep-going and 180-day callouts).
+Footer matches the other pages (Save & continue → documents.html, saved flag,
+Save & exit). Docbar upload button opens the Yes path and syncs with the drop
+zone.
+
+**Rationale:** Uniform look across all eight steps; video slot ready for the
+section-guide video.
+
+---
+
 <!-- Add new rounds below this line. Template:
 
 ## Round N — short title (date)
