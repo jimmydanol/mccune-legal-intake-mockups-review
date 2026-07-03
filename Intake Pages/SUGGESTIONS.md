@@ -636,6 +636,33 @@ for the means test.
 
 ---
 
+## Round 28 — SOFA Q6–Q28 form-alignment pass + FIELD-MAP rewrite (2026-07-02)
+**File(s):** financial-affairs.html, FIELD-MAP.md
+**What changed:**
+- Completed the question-by-question review of SOFA against Form 107 (Q6–Q28),
+  aligning every detail box to the official form:
+  - **Q6–Q8** (Part 3): 90-day $600 creditor payment first, then the two insider
+    questions; all three boxes identical (name, reason, total paid, still owed, dates).
+  - **Q16/Q17** simplified to Who paid / Date / Amount (dropped "what for"/"what
+    promised" — always money). Reworded Q16 to "seeking bankruptcy relief"; added
+    debt-program parenthetical to Q17.
+  - **Q18** added a plain-language "ordinary course" definition in the parenthetical.
+  - **Q21/Q22** added "Do you still have it?" (Y/N) to match the form.
+  - **Part 10 (Q24–Q26):** added a plain-language definitions info-tip (environmental
+    law / site / hazardous material) using the same lightbulb widget as the insider
+    tip; added "Name of site" to Q24/Q25 and put boxes on two lines; Q26 uses
+    "Nature of the case" (not case number) per the form.
+  - **Q27** expanded the business-connection parenthetical to the full Form 107 list,
+    removed "role/connection," put "Dates business existed" From/To on one line.
+  - **Q28** trimmed to Who received + Date (matches the form).
+- **FIELD-MAP.md Section 6 fully rewritten:** on-screen Q numbers now align **1:1**
+  with Form 107 line numbers (the old "internal sequence" caveat is retired). New
+  per-question table lists the exact detail box captured and every carry-through.
+**Rationale:** Every SOFA field now has a verified Form 107 destination, and the
+crosswalk is accurate for the Codex handoff. Reminder: share FIELD-MAP.md with Jimmy.
+
+---
+
 <!-- Add new rounds below this line. Template:
 
 ## Round N — short title (date)

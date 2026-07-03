@@ -273,29 +273,50 @@ Removed the old scattered "Back taxes?" block and "Do you owe child support…" 
 
 ## SECTION 6 — Statement of Financial Affairs (Form 107)
 
-`financial-affairs.html` mirrors Form 107 exactly: all 26 numbered questions, in official order, grouped under the form's 11 parts. Each is a Yes/No that (when built out) reveals the detail fields for that question. Several overlap with data collected earlier and should be **carried through read-only**, not re-asked.
+`financial-affairs.html` mirrors Form 107. **The on-screen question numbers now align 1:1 with the official Form 107 line numbers** — on-screen Q1 = Form 107 line 1, Q28 = line 28. Each question is a Yes/No that reveals Form 107–matched detail fields when answered Yes. Wording is debtor-friendly; every question after the first is scoped with "(or your spouse, if this is a joint case)". Several questions overlap data collected earlier and are **carried through / cross-referenced**, not re-asked.
 
-| SOFA Part | Questions | → Form 107 | Overlap / carry-through |
-|---|---|---|---|
-| Pt 1 — Marital status & residence | Q1 (marital status), Q2 (addresses, last 3 yrs) | 107 Pt 1 | Q1 **pre-populated (editable)** from Personal Info marital status with a "carried over — change if needed" note. **Q2 is the source of truth for address history → venue + exemption derivation** |
-| Pt 2 — Income | Q4 (employment/business income, this yr + 2 prior), Q5 (other income) | 107 Pt 2 Q4, Q5 | **Our on-screen Q4 = Form 107 Q4** (employment/business): Yes/No + wages-vs-business type checkboxes + note that exact annual figures come from the uploaded pay stubs/tax returns. **Our Q5 = Form 107 Q5** (other income): Yes/No → repeatable source cards + same "already uploaded" note. Amounts derived from documents, not hand-entered |
-| Pt 3 — Payments before filing | Q6 (primarily consumer debts — **DERIVED**), Q7 (90-day $600 creditor/preference payment), Q8 (insider payment, 1 yr), Q9 (insider transfer, 1 yr) | 107 Pt 3 Q6–Q9 | **Q6 is derived from the Debts business-debt branch, NOT asked on the SOFA.** On-screen we lead with the insider questions (Q8/Q9) then the 90-day payment (Q7) to match the packet order; insider payments cross-ref Debts |
-| Pt 4 — Legal actions | Q8 (suits), Q9 (repossessions/garnishments), Q10 (setoffs) | 107 Pt 4 | Manual |
-| Pt 5 — Gifts & contributions | Q11 (gifts), Q12 (charitable) | 107 Pt 5 | Manual |
-| Pt 6 — Losses | Q13 (losses, theft, gambling) | 107 Pt 6 | Manual |
-| Pt 7 — Payments re: bankruptcy | Q14 (attorney/advisor), Q15 (other parties) | 107 Pt 7 | Manual |
-| Pt 8 — Transfers | Q16, Q17 (transfers), Q18 (self-settled trusts) | 107 Pt 8 | Cross-ref Assets |
-| Pt 9 — Closed accounts | Q19 (financial accounts), Q20 (safe deposit), Q21 (storage) | 107 Pt 9 | Cross-ref bank statements |
-| Pt 10 — Property held for others | Q22 (property of others), Q23 (environmental) | 107 Pt 10 | Manual |
-| Pt 11 — Business | Q24, Q25 (businesses), Q26 (bookkeepers) | 107 Pt 11 | Manual |
+Each "did you…" question adds the spouse scope; the field map below gives the exact box captured per question.
 
-**On-screen numbering vs. Form 107:** the `<span class="qn">` numbers on our page are an **internal debtor-facing sequence**, not the official Form 107 line numbers. Order/labels are chosen for clarity; the crosswalk to the real form lines is this field map (dev maps behind the scenes).
+| # | On-screen question (short) | → Form 107 | Detail fields captured | Carry-through / notes |
+|---|---|---|---|---|
+| 1 | Current marital status | Pt 1, L1 | Married / Not married | **Pre-populated (editable)** from Personal Info marital status |
+| 2 | Other addresses, last 3 yrs | Pt 1, L2 | Debtor 1 address (number/street, city, State, ZIP, From/To) + conditional Debtor 2 column (joint) with "Same as prior address" checkbox | **Source of truth for address history → venue (180-day) + exemption (730-day) derivation** |
+| 3 | Community-property cohabitation, last 8 yrs | Pt 1, L3 | Yes/No (AZ, CA, ID, LA, NV, NM, PR, TX, WA, WI listed) | Manual |
+| 4 | Job/business income, this yr + 2 prior | Pt 2, L4 | Yes/No + type checkboxes (wages vs. self-employment/business); conditional Debtor 2 block | **Amounts derived from uploaded pay stubs/tax returns**, not hand-entered |
+| 5 | Other income, this yr + 2 prior | Pt 2, L5 | Repeatable source cards + "whose income" (You/spouse) | Amounts derived from documents; catches income not on returns |
+| 6 | 90-day payment of $600+ to one creditor | Pt 3, L6 | Repeatable: Creditor name, Reason for payment, Total paid, Amount still owed, Dates | **The "primarily consumer debts?" threshold determination on L6 is DERIVED from the Debts business-debt branch, not asked here** |
+| 7 | Insider payment, last 1 yr | Pt 3, L7 | Repeatable: Insider name, Reason for payment, Total paid, Amount still owed, Dates (box matches Q6) | Insider defined in a plain-language info-tip above Q7; cross-ref Debts |
+| 8 | Payment/transfer benefiting an insider, last 1 yr | Pt 3, L8 | Repeatable: Insider name, Reason, Total paid, Amount still owed, Dates (box matches Q6/Q7) | Cross-ref Debts/Assets |
+| 9 | Lawsuit / court / administrative action, last 1 yr | Pt 4, L9 | Repeatable: Case title, Court/agency, Nature of case, Status | Parenthetical lists suit types; jobtip → upload court paperwork box |
+| 10 | Property repossessed/foreclosed/garnished/seized, last 1 yr | Pt 4, L10 | Repeatable: Creditor name, Describe the property, Explain what happened, Date, Value of property | jobtip → upload court paperwork + HR contact (to stop garnishment) |
+| 11 | Creditor/bank setoff, last 90 days | Pt 4, L11 | Repeatable: Creditor/bank name, Describe the action the creditor took, Date of action, Amount | Manual |
+| 12 | Property with receiver/custodian/assignee, last 1 yr | Pt 4, L12 | Single "provide more details" textarea | Simplified (form is essentially Yes/No + explain) |
+| 13 | Gifts > $600 to any one person, last 2 yrs | Pt 5, L13 | Repeatable: Who received, Relationship to you, Describe the gift, Value, Date | Manual |
+| 14 | Gifts/contributions > $600 to a charity, last 2 yrs | Pt 5, L14 | Repeatable: Charity/organization, Describe what was contributed, Total given, Date(s) | Box mirrors Q13, reframed to charity |
+| 15 | Losses to theft/fire/disaster/gambling, last 1 yr | Pt 6, L15 | Repeatable: Describe the loss, Value of loss, Insurance/reimbursement received, Date | Manual |
+| 16 | Paid anyone consulted about seeking bankruptcy relief, last 1 yr | Pt 7, L16 | Repeatable: Who you paid, Date of payment, Amount of payment | Parenthetical (attorneys, petition preparers, credit counseling); "what for" field dropped (always money) |
+| 17 | Paid anyone who promised to help deal with/pay creditors, last 1 yr | Pt 7, L17 | Repeatable: Who you paid, Date of payment, Amount of payment (box matches Q16) | Parenthetical (debt consolidation, settlement, repayment, money-management program) |
+| 18 | Sold/traded/transferred property outside ordinary course, last 2 yrs | Pt 7, L18 | Repeatable: Describe property transferred, Who received it, Relationship to you, Value received, Date | "Ordinary course" defined in the parenthetical |
+| 19 | Transfer to self-settled trust / asset-protection device, last 10 yrs | Pt 7, L19 | Repeatable: Name of trust, Describe property transferred, Value, Date | Cross-ref Assets |
+| 20 | Financial accounts closed/sold/moved, last 1 yr | Pt 8, L20 | Repeatable: Institution name, Type of account, Last 4 of account #, Closing balance, Date closed/moved | Cross-ref bank statements |
+| 21 | Safe deposit box / depository, now or last 1 yr | Pt 8, L21 | Repeatable: Depository/institution, Who else had access, Describe the contents, Do you still have it? (Y/N) | Manual |
+| 22 | Storage unit / off-site storage, last 1 yr | Pt 8, L22 | Repeatable: Storage facility/location, Describe what is stored, Who else has access, Do you still have it? (Y/N) | Manual |
+| 23 | Property you hold/control for someone else | Pt 9, L23 | Repeatable: Owner of the property, Describe the property, Where it is located, Value | Parenthetical (borrowed, storing for, holding in trust) |
+| 24 | Government notice of environmental liability | Pt 10, L24 | Repeatable: Name of site, Government unit, Environmental law, Date of notice | Part 10 opens with a plain-language definitions info-tip (environmental law / site / hazardous material) |
+| 25 | You notified government of hazardous release | Pt 10, L25 | Repeatable: Name of site, Government unit, Environmental law, Date of notice (box matches Q24) | Manual |
+| 26 | Party to an environmental proceeding | Pt 10, L26 | Repeatable: Case title, Court or agency, Nature of the case, Status | Parenthetical (includes settlements and orders) |
+| 27 | Owned/connected to a business, last 4 yrs | Pt 11, L27 | Repeatable: Business name, Type of business, EIN (if any), Dates business existed (From/To on one line) | Parenthetical lists the 5 Form 107 connection types (sole proprietor/self-employed; LLC/LLP member; partner; officer/director/managing exec; 5%+ owner) |
+| 28 | Gave a financial statement about your business, last 2 yrs | Pt 11, L28 | Repeatable: Who received the statement, Date | Box trimmed to match Form 107 (name + date only) |
 
-**SOFA Q4/Q5 (income), simplified.** Rather than a hand-entered 3-year × Debtor 1/Debtor 2 income grid, Q4 is a Yes/No ("did you have job/business income in the last 3 years?") that reveals type checkboxes (wages vs. self-employment/business) + a note that **exact annual figures come from the uploaded tax returns** (attorney completes the grid from those). Q5 (other income — alimony, SS, unemployment, rental, lawsuit, gambling, etc.) stays a Yes/No → repeatable source card, since that income often isn't on the returns and shouldn't be missed. Debtor 2 column gates on joint filing.
+**On-screen numbering now matches Form 107 line numbers** (this replaces the earlier "internal sequence" caveat — the old page led with insiders before the 90-day payment; it now follows the form order exactly, so Q# = line #). The dev can map on-screen Q*n* directly to Form 107 line *n*.
 
-**SOFA Q6 (Form 107 Part 5 — "primarily consumer debts?") is DERIVED, not asked on the SOFA page.** It is computed from the **Debts business-debt branch**: if >50% of debt is business/self-employment (non-consumer), the filer is non-consumer. Don't double-ask; derive the Form 107 Q6 checkbox from the Debts answers.
+**SOFA Q4/Q5 (income), simplified.** Rather than a hand-entered 3-year × Debtor 1/Debtor 2 income grid, Q4 is a Yes/No that reveals type checkboxes (wages vs. self-employment/business) + a note that **exact annual figures come from the uploaded tax returns / pay stubs** (attorney completes the grid from those). Q5 (other income — alimony, SS, unemployment, rental, lawsuit, gambling, etc.) stays a Yes/No → repeatable source card, since that income often isn't on the returns. Debtor 2 column gates on joint filing.
 
-> SOFA detail fields are **built** (all 26 reveal Form 107–matched follow-ups; repeatable cards where applicable). Q2 address detail (Debtor 1 + conditional Debtor 2, structured street/city/state/ZIP + From/To) is the source of truth for venue/exemption derivation.
+**SOFA Q6 threshold ("primarily consumer debts?") is DERIVED, not asked.** The consumer-vs-non-consumer determination that sets the L6 payment threshold ($600 vs. $7,575) is computed from the **Debts business-debt branch**: if >50% of debt is business/self-employment, the filer is non-consumer. Don't double-ask; derive it from the Debts answers.
+
+**Joint-filing behavior.** Q2/Q4/Q5 render actual Debtor 2 columns/blocks when joint (keyed off sessionStorage `mcl_joint === 'yes'`; demo override `?joint=1`/`?married=1`). All other "did you…" questions instead carry the inline "(or your spouse, if this is a joint case)" phrasing rather than a separate spouse popup.
+
+> SOFA detail fields are **built** — all 28 reveal Form 107–matched follow-ups with repeatable cards where applicable. Q2 address detail (Debtor 1 + conditional Debtor 2, structured street/city/state/ZIP + From/To) is the source of truth for venue/exemption derivation.
 
 ---
 
