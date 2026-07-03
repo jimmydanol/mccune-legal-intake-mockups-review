@@ -748,6 +748,30 @@ section-guide video.
 
 ---
 
+## Round 32 — DOC-LOGIC.md: conditional document-request spec for devs (2026-07-03)
+**File(s):** DOC-LOGIC.md (new), DOC-REQUESTS.md (new, Round 31.5 snapshot), FIELD-MAP.md
+
+**What changed:**
+- **DOC-REQUESTS.md**: complete inventory of the 25 current document requests by
+  section, with tier / N/A availability / reveal conditions, plus 7 discrepancies.
+- **DOC-LOGIC.md**: the redesign spec — every possible doc_type with an IF → THEN
+  trigger over existing intake answers (e.g., no real estate → no Zillow, no
+  foreclosure docs, no mortgage or HOA statements). Includes: three tiers
+  (T1 required / T2 needed-with-reason / T3 optional), plain-language skip
+  reasons replacing "N/A", dedup rules (bank statements = one doc_type satisfying
+  Income + Assets), per-instance child items (one KBB per vehicle), trigger
+  retraction, a shared JSON state model, and Step 8 summary/submit-gate behavior.
+- **Decisions (Matt, 2026-07-03):** bank statements move to hard-required;
+  pay stubs conditional on employment (not everyone has them); no utility bill
+  requests in Expenses (FIELD-MAP Document → Section map updated accordingly);
+  counseling certificate stays soft-gated.
+
+**Rationale:** Generated checklists kill most "N/A" taps before they exist; the
+shared doc_type state fixes the rail-vs-summary sync gap; the spec is the
+developer handoff artifact alongside FIELD-MAP.md.
+
+---
+
 <!-- Add new rounds below this line. Template:
 
 ## Round N — short title (date)

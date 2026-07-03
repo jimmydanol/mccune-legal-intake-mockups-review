@@ -346,7 +346,7 @@ Each intake step has a sidebar listing the documents needed for that section. Th
 | 2 — Income | income.html | Pay stubs (6 mo); Proof of other income (6 mo); Bank statements (6 mo). **If Married:** + Spouse's pay stubs, Spouse's proof of other income, Spouse's bank statements (only if not already provided) | All "needed" with N/A; spouse docs revealed when Married |
 | 3 — Assets | assets.html | Titles, deeds, account statements | Per applicability |
 | 4 — Debts | debts.html | **Statements for all debts** | Required (no N/A — drives creditor schedules) |
-| 5 — Expenses | expenses.html | Utility / household bills | Per applicability |
+| 5 — Expenses | expenses.html | — none (decision 2026-07-03: typed Schedule J amounts + bank statements suffice; no utility bill uploads) | — |
 | 6 — Financial Affairs | financial-affairs.html | Supporting docs per question | Per applicability |
 | 7 — Counseling class | counseling.html (mockup: counseling-step7-mockup.html) | Counseling class certificate | Soft — not a submit gate; follow-up chases it; case cannot be filed without it |
 | 8 — Documents | documents.html (v2 mockup: documents-v2-mockup.html) | Recap of all of the above + "Other documents · Optional" catch-all — three-tier: Required to submit / Upload-or-tell-us-why-not / Optional | Tier 1 hard-blocks submit; tier 2 resolvable with a plain-language reason (no "N/A" wording); tier 3 never blocks |
