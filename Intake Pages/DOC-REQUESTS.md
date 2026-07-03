@@ -110,3 +110,26 @@ spouse/conditional), plus the optional catch-all.**
 7. **No shared state:** each rail tracks uploads per page; the summary doesn't
    reflect section uploads. Redesign needs one document state keyed by stable
    `doc_type` (see FIELD-MAP), rendered by rails and summary alike.
+
+
+---
+
+## Update — redesign applied to pages (2026-07-03 PM)
+
+Deltas from the snapshot above (see DOC-LOGIC.md for the full spec):
+
+- All six rails: "N/A" pill and note replaced with **"I don't have this"** plain
+  language ("Skipped — we'll follow up · Undo" on tap).
+- Every rail button carries a **`data-doc` attribute** with its DOC-LOGIC
+  doc_type ID (31 tags across 6 pages + counseling).
+- **Income:** Bank statements now "Required to upload" (T1, no skip). Pay stubs
+  and Proof of other income are hidden until their trigger toggles = Yes
+  (employed / other income) — first live demo of trigger gating.
+- **Assets:** "Bank or financial account statements" removed (duplicate of
+  Income's `bank_statements`); the Q17 tip now says Income's statements cover
+  those accounts.
+- **documents.html (Step 8) fully rebuilt** on the three-tier design:
+  Required-to-submit group first, upload-or-reason group with per-item reason
+  chips, optional collapsed; required-only progress; hard/soft submit modals;
+  interview-derived "not asking for" banner (demo scenario); AI catch-all drop
+  zone. Old flat 14-item summary retired.

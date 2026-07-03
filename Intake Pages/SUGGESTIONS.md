@@ -772,6 +772,25 @@ developer handoff artifact alongside FIELD-MAP.md.
 
 ---
 
+## Round 33 — DOC-LOGIC redesign applied to the live pages (2026-07-03)
+**File(s):** documents.html (rebuilt), personal.html, income.html, assets.html, debts.html, expenses.html, financial-affairs.html, counseling.html, DOC-REQUESTS.md
+
+**What changed:**
+- Plain-language sweep of all rails (no "N/A" anywhere); data-doc IDs on every
+  upload button; Income bank statements hard-required; Assets duplicate bank
+  request removed; Income rail demonstrates trigger gating (pay stubs appear
+  only when employed = Yes).
+- documents.html rebuilt as the three-tier summary per DOC-LOGIC §7 (tier-first
+  groups, required-only progress, section-origin chips, reason chips, hard/soft
+  submit gate, derived-skips banner, catch-all zone). Demo scenario: individual
+  renter, employed, financed vehicle.
+
+**Rationale:** Implements Rounds 29/32 on the live mockups so Matt can click
+the real flow end-to-end. Full cross-page shared doc state stays a dev-build
+item (specced in DOC-LOGIC §6); the mockups approximate it per page.
+
+---
+
 <!-- Add new rounds below this line. Template:
 
 ## Round N — short title (date)
