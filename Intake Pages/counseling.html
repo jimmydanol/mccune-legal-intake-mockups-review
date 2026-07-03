@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Expenses — McCune Legal Intake</title>
+<title>Counseling class — McCune Legal Intake</title>
 <style>
 /* ============================================================
    BRAND TOKENS — SWAP THESE TO RE-SKIN FOR ANOTHER FIRM
@@ -87,7 +87,7 @@ a{color:var(--brand-accent);}
 .docbar .db-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:2px;}
 .docbar .db-head h5{margin:0;font-size:15px;}
 .docbar .count{font-size:15px;font-weight:700;color:var(--brand-primary);background:var(--brand-soft);padding:3px 9px;border-radius:20px;}
-.docbar .db-intro{font-size:15px;color:var(--muted);margin:6px 0 12px;line-height:1.4;}.docbar .db-na-note{font-size:12.5px;color:var(--muted);background:var(--brand-soft);border-radius:8px;padding:8px 10px;margin:0 0 12px;line-height:1.45;}.section-end{display:flex;gap:12px;align-items:center;background:var(--brand-soft);border-radius:var(--radius);padding:14px 18px;margin:24px 30px 0;}.section-end .se-ic{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;color:var(--brand-primary);}.section-end .se-ic svg{width:16px;height:16px;}.section-end p{margin:0;font-size:14px;color:var(--brand-primary-d);line-height:1.45;}
+.docbar .db-intro{font-size:15px;color:var(--muted);margin:6px 0 12px;line-height:1.4;}
 .docbar .bar{height:7px;border-radius:5px;background:var(--line);overflow:hidden;margin-bottom:14px;}
 .docbar .bar i{display:block;height:100%;background:var(--brand-step-done);border-radius:5px;}
 /* upload button per category */
@@ -344,189 +344,159 @@ table.exp td:last-child{width:140px;}
 
 <style>.section-video{margin:4px 0 24px;}.sv-row{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:stretch;max-width:900px;margin:0 auto;}.sv-intro{background:linear-gradient(135deg,#EDF2EC 0%,#FBFAF7 100%);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;display:flex;flex-direction:column;justify-content:center;}.sv-intro h3{margin:0 0 8px;font-size:17px;color:var(--firm-brand);font-weight:800;}.sv-intro p{margin:0;font-size:13.5px;color:var(--muted);line-height:1.55;}.sv-frame{position:relative;min-height:300px;border-radius:var(--radius);border:1px solid var(--line);background:#1c2b30;overflow:hidden;}.sv-frame iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0;}@media(max-width:760px){.sv-row{grid-template-columns:1fr;}.sv-frame{min-height:0;aspect-ratio:16/9;}}</style>
 <style>.doc-section-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#5A7C60;margin:6px 2px 8px;}.doc-section-label.muted{color:#9aa4a9;margin-top:16px;}.docbar .dbtn{background:#7A9C80;border:1px solid #7A9C80;border-radius:8px;color:#fff;}.docbar .dbtn .nm2{color:#fff;}.docbar .dbtn .stt{color:rgba(255,255,255,.85);}.docbar .dbtn .ic{background:rgba(255,255,255,.18);color:#fff;}.docbar .dbtn .plus{display:none;}.docbar .dbtn.req{background:#7A9C80;border-color:#7A9C80;}.docbar .dbtn.done{background:#5A7C60;border-color:#5A7C60;}.docbar .dbtn.done .ic{background:rgba(255,255,255,.25);}.docbar .dbtn.locked{background:#7A9C80;border-color:#7A9C80;opacity:.6;cursor:default;}.docbar .dbtn.naoff{opacity:.55;}.na-inpill{flex:0 0 auto;font-size:10.5px;font-weight:700;color:#fff;border:1px solid rgba(255,255,255,.55);border-radius:14px;padding:2px 9px;line-height:1.4;}.na-inpill:hover{background:rgba(255,255,255,.18);}.na-inpill.on{background:#fff;color:#5A7C60;border-color:#fff;}.doc-undo{display:inline-block;margin-top:5px;text-decoration:none;cursor:pointer;color:#fff;font-weight:700;border:1px solid rgba(255,255,255,.55);border-radius:12px;padding:1px 10px;font-size:12px;}.doc-undo:hover{background:rgba(255,255,255,.18);}</style>
+<style>.sumgroup h3 .pill{background:#E7EAE5;color:#5A7C60;}</style>
 <style>.app.has-docs{display:flex;flex-direction:column;align-items:stretch;}.app.has-docs .app-row{display:flex;align-items:flex-start;}.app.has-docs .rail{flex:0 0 280px;width:280px;background:var(--page);border-right:1px solid var(--line);align-self:stretch;}.app.has-docs .appmain{flex:1;min-width:0;display:flex;flex-direction:column;}.app.has-docs>.hdr{border-bottom:1px solid var(--line);}.app.has-docs>.topnav{border-bottom:1px solid var(--line);}.app.has-docs .docbar{position:sticky;top:0;}@media(max-width:1000px){.app.has-docs .app-row{flex-direction:column;}.app.has-docs .rail{flex:none;width:100%;border-right:0;border-bottom:1px solid var(--line);}}</style>
+<style>.submit-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;margin:36px 0 12px;}.btn-submit-big{background:var(--brand-primary);color:#fff;border:0;border-radius:14px;font-size:20px;font-weight:700;padding:18px 56px;cursor:pointer;box-shadow:0 4px 14px rgba(90,124,96,.28);}.btn-submit-big:hover{background:var(--brand-primary-d);}.submit-note{font-size:13px;color:var(--muted);margin:14px 0 0;}</style>
 </head>
 <body>
-<div class="app has-docs"><div class="hdr"><div class="hdr-left"><div class="logo-mark"><svg viewBox="0 0 24 24"></svg></div><div class="firm"><span class="nm">MCCUNE LEGAL</span><span class="tg">We help people struggling with debt</span></div></div><div class="hdr-title">Intake Form</div><div class="hdr-right"><span>Jordan Sample</span><span class="avatar">JS</span></div></div><div class="topnav"><a class="done" href="personal.html"><span class="n">✓</span><span class="lbl">Personal Info</span></a><a class="done" href="income.html"><span class="n">✓</span><span class="lbl">Income</span></a><a class="done" href="assets.html"><span class="n">✓</span><span class="lbl">Assets</span></a><a class="done" href="debts.html"><span class="n">✓</span><span class="lbl">Debts</span></a><a class="active" href="expenses.html"><span class="n">5</span><span class="lbl">Expenses</span></a><a class="" href="financial-affairs.html"><span class="n">6</span><span class="lbl">Financial affairs</span></a><a href="counseling.html"><span class="n">7</span><span class="lbl">Counseling class</span></a><a href="documents.html"><span class="n">8</span><span class="lbl">Documents</span></a></div><div class="app-row"><div class="rail"><div class="docbar"><div class="secure-badge"><span class="sb-ic"><svg viewBox="0 0 32 32" width="26" height="26" aria-hidden="true"><path d="M16 3 L27 7 V15 C27 22 22 27 16 29 C10 27 5 22 5 15 V7 Z" fill="#7A9C80"/><rect x="11.5" y="15" width="9" height="7.5" rx="1.4" fill="#fff"/><path d="M13 15 V12.6 a3 3 0 0 1 6 0 V15" fill="none" stroke="#fff" stroke-width="1.8"/><circle cx="16" cy="18.4" r="1.2" fill="#7A9C80"/><circle cx="24" cy="23" r="5" fill="#5A7C60"/><path d="M21.6 23 l1.7 1.7 l3-3.3" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="sb-tx"><b>Secure upload</b><span>Encrypted &amp; verified</span></span></div><div class="db-head"><h5>Upload documents</h5><span class="count">0 / 0</span></div><p class="db-intro">Upload the documents for this section here.</p><p class="db-na-note">If you do not have a document, or it is not relevant to your situation, tap <b>N/A</b> to continue. Your attorney can follow up if needed.</p><div class="bar"><i style="width:0%"></i></div><div class="doc-section-label">No documents needed here</div></div></div><div class="appmain"><div class="content"><h2 class="sec-title">Monthly expenses</h2><p class="sec-sub"><b>Please take extra time on this section.</b> We need to know about all of your expense categories. The more complete and accurate your expenses are, the better your attorney can represent you in your case. Estimate what you typically spend each month.</p><div class="section-video"><div class="sv-row"><div class="sv-intro"><h3>Monthly expenses</h3><p>Take extra time on this section — we need to know about all of your expense categories. Listing every expense accurately helps your attorney represent you in your case. No documents are required here; just fill in the form below.</p></div><div class="sv-frame"><iframe src="https://player.vimeo.com/video/1202283376?title=0&byline=0&portrait=0&dnt=1" allow="fullscreen; picture-in-picture" allowfullscreen title="Section guide"></iframe></div></div></div><div class="group-h">Home</div><table class="exp"><tr><td>Rent or home/mortgage payment</td><td><div class="money"><input class="inp"></div></td></tr><tr><td>Additional mortgage / home equity payments <span class="opt">if any</span></td><td><div class="money"><input class="inp"></div></td></tr><tr><td>HOA / association dues</td><td><div class="money"><input class="inp"></div></td></tr><tr><td>Home maintenance, repairs &amp; upkeep</td><td><div class="money"><input class="inp"></div></td></tr></table><div class="group-h">Utilities</div><table class="exp"><tr><td>Electricity, heat, natural gas</td><td><div class="money"><input class="inp"></div></td></tr><tr><td>Water, sewer, garbage collection</td><td><div class="money"><input class="inp"></div></td></tr><tr><td>Phone, cell, internet, satellite &amp; cable</td><td><div class="money"><input class="inp"></div></td></tr><tr><td>Other utilities <span class="opt">specify</span></td><td><div class="money"><input class="inp"></div></td></tr></table><div class="group-h">Living &amp; family</div><table class="exp"><tr><td>Food &amp; housekeeping supplies</td><td><div class="money"><input class="inp"></div></td></tr><tr><td>Childcare &amp; children’s education</td><td><div class="money"><input class="inp"></div></td></tr><tr><td>Clothing, laundry &amp; dry cleaning</td><td><div class="money"><input class="inp"></div></td></tr><tr><td>Personal care products &amp; services</td><td><div class="money"><input class="inp"></div></td></tr><tr><td>Medical &amp; dental expenses <span class="opt">out of pocket</span></td><td><div class="money"><input class="inp"></div></td></tr><tr><td>Entertainment, recreation, clubs, books</td><td><div class="money"><input class="inp"></div></td></tr><tr><td>Charitable &amp; religious donations</td><td><div class="money"><input class="inp"></div></td></tr><tr><td>Pet food &amp; care</td><td><div class="money"><input class="inp"></div></td></tr></table><div class="group-h">Transportation &amp; insurance</div><table class="exp"><tr><td>Transportation <span class="opt">gas, maintenance, fares</span></td><td><div class="money"><input class="inp"></div></td></tr><tr><td>Vehicle payments</td><td><div class="money"><input class="inp"></div></td></tr><tr><td>Vehicle insurance</td><td><div class="money"><input class="inp"></div></td></tr><tr><td>Health insurance <span class="opt">not deducted from pay</span></td><td><div class="money"><input class="inp"></div></td></tr><tr><td>Life insurance</td><td><div class="money"><input class="inp"></div></td></tr><tr><td>Other insurance</td><td><div class="money"><input class="inp"></div></td></tr></table><div class="group-h">Other obligations</div><table class="exp"><tr><td>Taxes <span class="opt">not deducted from pay</span></td><td><div class="money"><input class="inp"></div></td></tr><tr><td>Other installment or lease payments</td><td><div class="money"><input class="inp"></div></td></tr><tr><td>Alimony, maintenance &amp; support you pay</td><td><div class="money"><input class="inp"></div></td></tr><tr><td>Support for others not living with you</td><td><div class="money"><input class="inp"></div></td></tr><tr><td>Other real property expenses</td><td><div class="money"><input class="inp"></div></td></tr><tr><td>Other expenses <span class="opt">specify</span></td><td><div class="money"><input class="inp"></div></td></tr></table><div class="addrow">＋ Add another expense</div><div class="exp-total"><span>Estimated total monthly expenses</span><b>$0</b></div></div><div class="section-end"><span class="se-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-11"/></svg></span><p>You're almost through. Save and continue to the next step. Or you can save and exit and come back later to finish.</p></div><div class="foot"><div class="fbtns"><a class="btn primary" href="financial-affairs.html">Save & continue →</a></div><span class="saved" id="savedFlag" style="visibility:hidden">✓ Saved automatically</span><a class="btn ghost" href="login.html">Save &amp; exit</a></div></div></div></div><script>
-/* McCune Legal intake — interactivity (mockup). Shared across all pages. */
-(function(){
-  var PAGE = (location.pathname.split('/').pop()||'index').replace('.html','');
-  var STORE_KEY = 'mcl_intake_v1';
-  function load(){ try{ return JSON.parse(sessionStorage.getItem(STORE_KEY)||'{}'); }catch(e){ return {}; } }
-  function save(s){ try{ sessionStorage.setItem(STORE_KEY, JSON.stringify(s)); }catch(e){} }
-  var state = load();
-  state[PAGE] = state[PAGE] || {};
+<style>
+/* ---- counseling step (step 7) ---- */
+.cs-facts{display:flex;gap:10px;flex-wrap:wrap;margin:4px 0 24px;}
+.cs-fact{flex:1 1 150px;background:var(--page);border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px;}
+.cs-fact b{display:block;font-size:15px;}
+.cs-fact span{font-size:12px;color:var(--muted);}
+.cs-bigq{font-size:16px;font-weight:700;margin:0 0 12px;}
+.cs-paths{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px;}
+.cs-path{flex:1 1 240px;border:1.5px solid var(--line);border-radius:var(--radius);background:#fff;padding:18px;cursor:pointer;text-align:left;font-family:var(--font);}
+.cs-path:hover{border-color:var(--brand-accent);}
+.cs-path.on{border-color:var(--brand-primary);background:#f6fbf8;box-shadow:0 0 0 3px var(--brand-soft);}
+.cs-path .pt{font-size:15px;font-weight:700;display:flex;align-items:center;gap:9px;color:var(--ink);}
+.cs-path .pd{font-size:12.5px;color:var(--muted);margin-top:4px;display:block;}
+.cs-path .badge{width:26px;height:26px;border-radius:50%;background:var(--brand-soft);color:var(--brand-primary);display:inline-flex;align-items:center;justify-content:center;font-size:14px;flex:0 0 auto;}
+.cs-panel{display:none;border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-bottom:20px;background:#fcfdfd;}
+.cs-panel.on{display:block;}
+.cs-panel h4{margin:0 0 12px;font-size:15px;}
+.cs-drop{border:1.5px dashed #c4d0d3;border-radius:var(--radius);padding:24px;text-align:center;color:var(--muted);background:#fff;cursor:pointer;margin-bottom:16px;}
+.cs-drop .big{color:var(--brand-primary);font-weight:700;font-size:14px;margin-bottom:3px;}
+.cs-drop .sm{font-size:11.5px;color:var(--faint);}
+.cs-drop.done{border-style:solid;border-color:#cfe7d8;background:var(--ok-bg);}
+.cs-drop.done .big{color:var(--ok);}
+.cs-provider{display:flex;gap:14px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-bottom:14px;flex-wrap:wrap;}
+.cs-provider .pv{flex:1;min-width:200px;}
+.cs-provider .pv b{font-size:14.5px;display:block;}
+.cs-provider .pv span{font-size:12.5px;color:var(--muted);}
+.cs-go{background:var(--brand-primary);color:#fff;border:0;border-radius:20px;padding:11px 22px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:var(--font);}
+.cs-go:hover{background:var(--brand-primary-d);}
+.cs-steps{list-style:none;margin:0 0 14px;padding:0;counter-reset:s;}
+.cs-steps li{font-size:13px;padding:8px 0;border-bottom:1px solid var(--line);display:flex;gap:11px;align-items:flex-start;counter-increment:s;}
+.cs-steps li:last-child{border-bottom:0;}
+.cs-steps li::before{content:counter(s);flex:0 0 auto;width:22px;height:22px;border-radius:50%;background:var(--brand-soft);color:var(--brand-primary);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+.cs-reassure{display:flex;gap:11px;align-items:flex-start;background:var(--ok-bg);border:1px solid #bfe0cc;border-radius:var(--radius);padding:13px 15px;}
+.cs-reassure .i{flex:0 0 auto;color:var(--ok);font-size:15px;}
+.cs-reassure p{margin:0;font-size:12.5px;color:#1f5b3c;}
+.cs-validity{display:none;gap:11px;align-items:flex-start;background:var(--warn-bg);border-radius:var(--radius);padding:12px 15px;margin:0 0 22px;}
+.cs-validity.on{display:flex;}
+.cs-validity .i{color:var(--warn);}
+.cs-validity p{margin:0;font-size:12.5px;color:#7a521f;}
+.cs-wrap{max-width:720px;}
+</style>
 
-  /* ---------- helpers ---------- */
-  function nextEl(el, sel){ var n=el.nextElementSibling; while(n){ if(n.matches(sel)) return n; n=n.nextElementSibling; } return null; }
-  function closest(el, sel){ return el.closest(sel); }
+<div class="app">
+  <div class="hdr">
+    <div class="hdr-left">
+      <div class="logo-mark"><svg viewBox="0 0 24 24"></svg></div>
+      <div class="firm"><span class="nm">MCCUNE LEGAL</span><span class="tg">We help people struggling with debt</span></div>
+    </div>
+    <div class="hdr-title">Intake Form</div>
+    <div class="hdr-right"><span>Jordan Sample</span><span class="avatar">JS</span></div>
+  </div>
 
-  /* ---------- 1. Yes/No toggles ---------- */
-  // Each .toggle has two spans (Yes / No). Clicking sets .on. If a conditional block
-  // (.uprompt, .reveal, .conditional) follows the toggle's .field, show it only on "Yes".
-  function wireToggle(tg, idx){
-    var spans = tg.querySelectorAll('span');
-    if(spans.length<2) return;
-    var field = closest(tg,'.field') || tg.parentElement;
-    // find a conditional element associated with this toggle: a sibling .uprompt/.reveal inside the field, or right after the field
-    var cond = (field && (field.querySelector('.uprompt, .reveal'))) || nextEl(field||tg, '.uprompt, .reveal, .conditional');
-    var key = 'tg_'+PAGE+'_'+idx;
-    function apply(val){
-      spans.forEach(function(sp){ sp.classList.toggle('on', sp.textContent.trim().toLowerCase()===val); });
-      if(cond){ cond.style.display = (val==='yes') ? '' : 'none'; }
-      state[PAGE][key]=val; save(state);
-    }
-    spans.forEach(function(sp){
-      sp.style.cursor='pointer';
-      sp.addEventListener('click', function(){ apply(sp.textContent.trim().toLowerCase()); });
-    });
-    // restore or init: default to whichever span already has .on, else 'no'
-    var saved = state[PAGE][key];
-    var initial = saved || (Array.prototype.find.call(spans,function(s){return s.classList.contains('on');})||{textContent:'No'}).textContent.trim().toLowerCase();
-    apply(initial);
-  }
+  <div class="topnav">
+    <a class="done" href="personal.html"><span class="n">✓</span><span class="lbl">Personal Info</span></a>
+    <a class="done" href="income.html"><span class="n">✓</span><span class="lbl">Income</span></a>
+    <a class="done" href="assets.html"><span class="n">✓</span><span class="lbl">Assets</span></a>
+    <a class="done" href="debts.html"><span class="n">✓</span><span class="lbl">Debts</span></a>
+    <a class="done" href="expenses.html"><span class="n">✓</span><span class="lbl">Expenses</span></a>
+    <a class="done" href="financial-affairs.html"><span class="n">✓</span><span class="lbl">Financial affairs</span></a>
+    <a class="active" href="counseling.html"><span class="n">7</span><span class="lbl">Counseling class</span></a>
+    <a href="documents.html"><span class="n">8</span><span class="lbl">Documents</span></a>
+  </div>
 
-  /* ---------- 2. Chips (multi-select tap) ---------- */
-  function wireChip(chip, idx){
-    chip.style.cursor='pointer';
-    var key='chip_'+PAGE+'_'+idx;
-    if(key in state[PAGE]) chip.classList.toggle('on', !!state[PAGE][key]);
-    chip.addEventListener('click', function(){
-      // single-select group? choice with chips inside .choice that are mutually exclusive (marital): detect by data
-      chip.classList.toggle('on');
-      state[PAGE][key]=chip.classList.contains('on'); save(state);
-    });
-  }
+  <div class="content">
+    <div class="cs-wrap">
+      <h2 class="sec-title">The counseling class</h2>
+      <p class="sec-sub">Before a bankruptcy case can be filed, the court requires everyone to take a short class about money and credit. It&rsquo;s easy &mdash; here&rsquo;s what to know.</p>
 
-  /* ---------- 3. Document buttons: upload / N/A / undo ---------- */
-  var docbar = document.querySelector('.docbar');
-  function recount(){
-    if(!docbar) return;
-    var btns = docbar.querySelectorAll('.dbtn');
-    var total=btns.length, done=0;
-    btns.forEach(function(b){ if(b.classList.contains('done')||b.classList.contains('na')) done++; });
-    var cnt=docbar.querySelector('.count'); if(cnt) cnt.textContent = done+' / '+total;
-    var bar=docbar.querySelector('.bar i'); if(bar) bar.style.width = Math.round(done/total*100)+'%';
-  }
-  function setUploaded(btn, name){
-    btn.classList.remove('need','na'); btn.classList.add('done');
-    var ic=btn.querySelector('.ic'); if(ic) ic.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-11"/></svg>';
-    var stt=btn.querySelector('.stt'); if(stt) stt.textContent='Uploaded'+(name?(' · '+name):'');
-    // drop the N/A link if present
-    var na=btn.querySelector('.na-link'); if(na) na.remove();
-  }
-  function setNeed(btn){
-    btn.classList.remove('done','na'); btn.classList.add('need');
-    var ic=btn.querySelector('.ic'); if(ic) ic.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></svg>';
-    var stt=btn.querySelector('.stt'); if(stt) stt.textContent='Need to upload';
-  }
-  function setNA(btn){
-    btn.classList.remove('done','need'); btn.classList.add('na');
-    var ic=btn.querySelector('.ic'); if(ic) ic.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/></svg>';
-    var stt=btn.querySelector('.stt'); if(stt) stt.innerHTML='Marked N/A · <span class="na-undo">Undo</span>';
-    var plus=btn.querySelector('.plus'); if(plus) plus.style.display='none';
-  }
-  function wireDoc(btn, idx){
-    var key='doc_'+idx;
-    var label=(btn.querySelector('.nm2')||{}).textContent||'';
-    var skippable = !!btn.querySelector('.na-link') || btn.classList.contains('na');
-    // restore saved
-    if(state[PAGE][key]==='uploaded') setUploaded(btn,'photo.jpg');
-    else if(state[PAGE][key]==='na') setNA(btn);
-    else if(state[PAGE][key]==='need') setNeed(btn);
+      <div class="cs-facts">
+        <div class="cs-fact"><b>About 1 hour</b><span>Online, at your own pace</span></div>
+        <div class="cs-fact"><b>Phone or computer</b><span>Whichever is easier for you</span></div>
+        <div class="cs-fact"><b>Around $10&ndash;$50</b><span>Fee help available if money is tight</span></div>
+        <div class="cs-fact"><b>You get a certificate</b><span>That&rsquo;s the paper we need</span></div>
+      </div>
 
-    btn.addEventListener('click', function(e){
-      var t=e.target;
-      if(t.closest('.na-link')){ // mark N/A
-        setNA(btn); state[PAGE][key]='na'; save(state); recount(); e.preventDefault(); return;
-      }
-      if(t.closest('.na-undo')){ // undo N/A -> back to need
-        setNeed(btn); state[PAGE][key]='need'; save(state); recount(); e.preventDefault(); return;
-      }
-      // otherwise = simulate upload (only if not already uploaded)
-      if(!btn.classList.contains('done')){
-        setUploaded(btn, 'photo.jpg'); state[PAGE][key]='uploaded'; save(state); recount();
-      }
-    });
-  }
+      <p class="cs-bigq">Have you taken the class yet?</p>
+      <div class="cs-paths">
+        <button class="cs-path" id="pathYes" type="button">
+          <span class="pt"><span class="badge">✓</span>Yes, I took it</span>
+          <span class="pd">Great &mdash; upload your certificate and you&rsquo;re done with this step.</span>
+        </button>
+        <button class="cs-path" id="pathNo" type="button">
+          <span class="pt"><span class="badge">→</span>Not yet</span>
+          <span class="pd">No problem. We&rsquo;ll show you where to take it &mdash; you can keep going in the meantime.</span>
+        </button>
+      </div>
 
-  /* ---------- 4. "Add another…" rows: clone the preceding .item ---------- */
-  function wireAddRow(row){
-    row.style.cursor='pointer';
-    row.addEventListener('click', function(){
-      // find the nearest preceding .item to clone
-      var prev=row.previousElementSibling;
-      while(prev && !prev.matches('.item')) prev=prev.previousElementSibling;
-      if(prev){
-        var clone=prev.cloneNode(true);
-        // clear inputs in clone
-        clone.querySelectorAll('input,textarea').forEach(function(i){ i.value=''; });
-        // bump the number tag if present
-        var tag=clone.querySelector('.tag'); if(tag){ var n=parseInt(tag.textContent)||1; tag.textContent=n+1; }
-        row.parentNode.insertBefore(clone, row);
-        wireAll(clone); // wire toggles/chips inside clone
-      }
-    });
-  }
+      <div class="cs-panel" id="panelYes">
+        <h4>Upload your certificate</h4>
+        <div class="cs-drop" id="certDrop">
+          <div class="big">Tap to upload your certificate</div>
+          <div class="sm">A photo from your phone works fine &mdash; PDF or picture</div>
+        </div>
+        <div class="grid g2">
+          <div class="field"><label>Company that gave the class</label><input class="inp" placeholder="It&rsquo;s printed on the certificate"/></div>
+          <div class="field"><label>Date you finished</label><input class="inp" placeholder="MM/DD/YYYY"/></div>
+        </div>
+        <p class="hint" style="margin-top:10px;">Both of these are printed on the certificate &mdash; if you upload it, we&rsquo;ll read them for you and just ask you to confirm.</p>
+      </div>
 
-  /* ---------- 5. Marital / single-select selects already native ---------- */
+      <div class="cs-panel" id="panelNo">
+        <h4>How to take the class</h4>
+        <div class="cs-provider">
+          <div class="pv"><b>DebtorCC (example provider)</b><span>Approved by the court &middot; English &amp; Spanish &middot; use firm code <b>MCCUNE</b> for the discounted rate</span></div>
+          <button class="cs-go" type="button">Start the class →</button>
+        </div>
+        <ol class="cs-steps">
+          <li>Sign up on their site &mdash; takes a couple of minutes.</li>
+          <li>Take the class. About an hour; you can stop and come back.</li>
+          <li>When you finish, they email you a certificate. Upload it here &mdash; or just forward the email to us.</li>
+        </ol>
+        <div class="cs-reassure">
+          <span class="i">✓</span>
+          <p><b>You don&rsquo;t have to stop.</b> Keep going and finish the rest of this form now. After you submit, we&rsquo;ll send you a friendly reminder with a link to add the certificate. Your case just can&rsquo;t be filed with the court until we have it.</p>
+        </div>
+      </div>
 
-  function wireAll(scope){
-    scope=scope||document;
-    scope.querySelectorAll('.toggle').forEach(function(tg,i){ if(!tg.__wired){ tg.__wired=1; wireToggle(tg, (tg.getAttribute('data-k')||('t'+i))); } });
-    scope.querySelectorAll('.chip').forEach(function(c,i){ if(!c.__wired){ c.__wired=1; wireChip(c,'c'+Math.random().toString(36).slice(2,7)); } });
-  }
+      <div class="cs-validity" id="validityNote">
+        <span class="i">!</span>
+        <p>One thing to know: the certificate is only good for <b>180 days</b>. Taking the class soon keeps your case on schedule.</p>
+      </div>
+    </div>
+  </div>
 
-  document.addEventListener('DOMContentLoaded', function(){
-    // toggles
-    document.querySelectorAll('.toggle').forEach(function(tg,i){ tg.__wired=1; wireToggle(tg,'t'+i); });
-    // chips
-    document.querySelectorAll('.chip').forEach(function(c,i){ c.__wired=1; wireChip(c,'c'+i); });
-    // documents
-    /* docbar handled by scoped script */
-    // add rows
-    document.querySelectorAll('.addrow').forEach(wireAddRow);
-    // make foot links feel like saving (tiny flash)
-    document.querySelectorAll('.foot a.btn.primary').forEach(function(a){
-      a.addEventListener('click', function(){ /* navigation already via href; state persists */ });
-    });
-  });
-})();
+  <div class="foot">
+    <div class="fbtns"><a class="btn" href="financial-affairs.html">← Back</a></div>
+    <span class="saved">✓ Saved automatically</span>
+    <div class="fbtns"><a class="btn ghost" href="login.html">Save &amp; exit</a><a class="btn primary" href="documents.html">Continue →</a></div>
+  </div>
+</div>
 
-</script>
 <script>
 (function(){
-  var bar=document.querySelector('.docbar'); if(!bar) return;
-  var CK='<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 12l5 5 9-11\"/></svg>';
-  var UP='<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 16V4M7 9l5-5 5 5M5 20h14\"/></svg>';
-  function up(b){ if(b.classList.contains('locked'))return;
-    b.dataset.p=b.dataset.p||b.querySelector('.stt').textContent;
-    b.classList.remove('req','need','naoff'); b.classList.add('done');
-    b.querySelector('.ic').innerHTML=CK;
-    b.querySelector('.stt').innerHTML='Uploaded \u00b7 photo.jpg<br><span class=\"doc-undo\" data-a=\"rm\">remove</span>';
-    var chip=b.querySelector('.na-inpill'); if(chip) chip.classList.remove('on');
+  var yes=document.getElementById('pathYes'),no=document.getElementById('pathNo');
+  var pYes=document.getElementById('panelYes'),pNo=document.getElementById('panelNo');
+  var validity=document.getElementById('validityNote');
+  function pick(w){
+    yes.classList.toggle('on',w==='yes'); no.classList.toggle('on',w==='no');
+    pYes.classList.toggle('on',w==='yes'); pNo.classList.toggle('on',w==='no');
+    validity.classList.toggle('on',w==='no');
   }
-  function need(b){ b.classList.remove('done','naoff');
-    var o=b.dataset.p||'Needed'; b.classList.add(o.indexOf('Required')>=0?'req':'need');
-    b.querySelector('.ic').innerHTML=UP; b.querySelector('.stt').textContent=o;
-  }
-  function na(b){ b.dataset.p=b.dataset.p||b.querySelector('.stt').textContent;
-    b.classList.remove('done'); b.classList.add('naoff');
-    b.querySelector('.ic').innerHTML=UP;
-    b.querySelector('.stt').innerHTML='Marked not available<br><span class=\"doc-undo\" data-a=\"un\">undo</span>';
-  }
-  bar.addEventListener('click', function(e){
-    var u=e.target.closest('.doc-undo');
-    if(u){ e.stopPropagation(); var b=u.closest('.dbtn'); need(b);
-      var chip=b.querySelector('.na-inpill'); if(chip) chip.classList.remove('on'); return; }
-    var chip=e.target.closest('.na-inpill');
-    if(chip){ e.stopPropagation(); var b=chip.closest('.dbtn');
-      if(chip.classList.contains('on')){ chip.classList.remove('on'); need(b); }
-      else { chip.classList.add('on'); na(b); } return; }
-    var b=e.target.closest('.dbtn');
-    if(b && !b.classList.contains('locked') && !b.classList.contains('done')) up(b);
+  yes.addEventListener('click',function(){pick('yes');});
+  no.addEventListener('click',function(){pick('no');});
+  document.getElementById('certDrop').addEventListener('click',function(){
+    this.classList.add('done');
+    this.querySelector('.big').textContent='✓ certificate.pdf uploaded';
+    this.querySelector('.sm').textContent='We’ll read the provider and date off it and ask you to confirm.';
   });
 })();
 </script>
-<script>(function(){var fl=document.getElementById("savedFlag");if(!fl)return;function show(){fl.style.visibility="visible";document.removeEventListener("input",show);}document.addEventListener("input",show);})();</script>
 </body></html>

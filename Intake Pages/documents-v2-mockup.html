@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Documents v2 mockup — McCune Legal Intake</title>
+<style>
+:root{
+  --brand-primary:#7A9C80; --brand-primary-d:#5A7C60; --brand-accent:#5A7C60;
+  --brand-soft:#E7EAE5; --brand-step-done:#5A7C60;
+  --ink:#434343; --muted:#667279; --faint:#9aa4a9; --line:#E7EAE5;
+  --page:#FBFAF7; --card:#fff;
+  --warn:#b9772a; --warn-bg:#fbf3e8;
+  --req:#c0533f;  --req-bg:#faeeec;
+  --ok:#2e7d5b;   --ok-bg:#e7f3ec;
+  --radius:12px; --radius-sm:8px;
+  --font:"Segoe UI",-apple-system,BlinkMacSystemFont,Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;background:var(--page);color:var(--ink);font-family:var(--font);line-height:1.5;-webkit-font-smoothing:antialiased;}
+
+.mock-note{max-width:900px;margin:22px auto 10px;padding:0 22px;color:var(--muted);font-size:13px;}
+.mock-note strong{color:var(--ink);}
+
+.app{max-width:900px;margin:0 auto 50px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:0 1px 3px rgba(31,42,46,.05);}
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;border-bottom:1px solid var(--line);}
+.firm .nm{font-weight:800;letter-spacing:.13em;color:#224e5f;font-size:16px;}
+.firm .tg{display:block;font-size:10px;letter-spacing:.05em;color:var(--muted);text-transform:uppercase;}
+.hdr-title{font-size:18px;font-weight:600;}
+.hdr-right{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:13.5px;}
+.avatar{width:28px;height:28px;border-radius:50%;background:var(--brand-soft);color:var(--brand-primary);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;}
+
+.content{padding:26px 34px 8px;}
+.sec-title{font-size:22px;font-weight:700;margin:0 0 4px;}
+.sec-sub{color:var(--muted);font-size:15px;margin:0 0 20px;max-width:64ch;}
+
+/* ---- required-only progress ---- */
+.progress-card{background:var(--page);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;margin:0 0 18px;}
+.progress-card .ptop{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;}
+.progress-card .ptop b{font-size:15px;}
+.progress-card .ptop span{font-size:13px;color:var(--muted);}
+.pbar{height:9px;border-radius:6px;background:var(--line);overflow:hidden;}
+.pbar i{display:block;height:100%;width:0%;background:var(--brand-step-done);border-radius:6px;transition:width .3s;}
+.psub{font-size:12.5px;color:var(--muted);margin-top:8px;}
+.psub b{color:var(--ok);}
+
+/* ---- interview-derived skip note ---- */
+.derived{display:flex;gap:11px;align-items:flex-start;background:var(--brand-soft);border-radius:var(--radius);padding:12px 15px;margin:0 0 18px;}
+.derived .i{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:#fff;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--brand-primary);font-size:14px;}
+.derived p{margin:0;font-size:12.5px;color:var(--brand-primary);}
+
+/* ---- catch-all drop zone ---- */
+.catchall{border:1.5px dashed var(--brand-accent);border-radius:var(--radius);background:#fcfdfd;padding:18px 20px;text-align:center;margin:0 0 26px;cursor:pointer;}
+.catchall .big{color:var(--brand-primary);font-weight:700;font-size:14.5px;}
+.catchall .sm{font-size:12px;color:var(--muted);margin-top:3px;}
+.catchall.sorting{border-style:solid;background:var(--brand-soft);}
+
+/* ---- tier groups ---- */
+.tier{margin:0 0 24px;}
+.tier-h{display:flex;align-items:center;gap:10px;margin:0 0 4px;}
+.tier-h h3{font-size:16px;font-weight:700;margin:0;}
+.tier-pill{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:.02em;}
+.tier1 .tier-pill{background:var(--req-bg);color:var(--req);}
+.tier2 .tier-pill{background:var(--warn-bg);color:var(--warn);}
+.tier3 .tier-pill{background:#eef1f2;color:var(--muted);}
+.tier-sub{font-size:12.5px;color:var(--muted);margin:0 0 12px;}
+
+/* ---- rows ---- */
+.row{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:8px;background:#fff;flex-wrap:wrap;}
+.row .ric{width:28px;height:28px;border-radius:7px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;}
+.row .ric svg{width:15px;height:15px;}
+.row.state-need.t1 .ric{background:var(--req-bg);color:var(--req);}
+.row.state-need.t2 .ric{background:var(--warn-bg);color:var(--warn);}
+.row.state-need.t3 .ric{background:#eef1f2;color:var(--muted);}
+.row.state-done .ric{background:var(--ok-bg);color:var(--ok);}
+.row.state-na .ric{background:#eef1f2;color:var(--muted);}
+.rlab{flex:1;min-width:180px;}
+.rlab .nm{font-size:14.5px;font-weight:600;display:block;}
+.rlab .why{font-size:11.5px;color:var(--faint);display:block;margin-top:1px;}
+.row.state-na .rlab .nm{color:var(--muted);text-decoration:line-through;}
+.rstatus{font-size:12px;font-weight:700;white-space:nowrap;}
+.rstatus.ok{color:var(--ok);} .rstatus.na{color:var(--muted);font-weight:600;}
+.rstatus .file{font-weight:600;color:var(--ink);}
+.undo{color:var(--brand-accent);text-decoration:underline;cursor:pointer;font-size:12px;font-weight:600;margin-left:6px;}
+.rbtns{display:flex;gap:8px;flex:0 0 auto;align-items:center;}
+.btn-up{border:1px solid var(--brand-primary);background:var(--brand-primary);color:#fff;border-radius:20px;padding:7px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);}
+.btn-up:hover{background:var(--brand-primary-d);}
+.btn-na{border:1px solid var(--line);background:#fff;color:var(--muted);border-radius:20px;padding:7px 14px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:var(--font);}
+.btn-na:hover{border-color:var(--brand-accent);color:var(--brand-primary);}
+
+/* ---- N/A reason picker (inline) ---- */
+.naReason{flex-basis:100%;display:none;gap:8px;flex-wrap:wrap;padding:10px 0 2px 40px;}
+.row.picking .naReason{display:flex;}
+.naReason .q{flex-basis:100%;font-size:12.5px;color:var(--muted);margin:0 0 2px;}
+.rchip{padding:7px 14px;border:1px solid var(--line);border-radius:20px;font-size:12.5px;cursor:pointer;background:#fff;color:var(--ink);}
+.rchip:hover{background:var(--brand-soft);border-color:var(--brand-accent);color:var(--brand-primary);}
+.rchip.cancel{border-style:dashed;color:var(--faint);}
+
+/* ---- optional collapse ---- */
+.tier3 .rows{display:none;}
+.tier3.open .rows{display:block;}
+.opt-toggle{display:inline-flex;align-items:center;gap:7px;color:var(--brand-accent);font-size:13px;font-weight:600;cursor:pointer;padding:2px 0 6px;}
+.opt-toggle .car{transition:transform .2s;display:inline-block;}
+.tier3.open .opt-toggle .car{transform:rotate(90deg);}
+
+/* ---- submit ---- */
+.submit-wrap{display:flex;flex-direction:column;align-items:center;text-align:center;margin:34px 0 14px;}
+.btn-submit-big{background:var(--brand-primary);color:#fff;border:0;border-radius:14px;font-size:19px;font-weight:700;padding:17px 54px;cursor:pointer;box-shadow:0 4px 14px rgba(90,124,96,.28);font-family:var(--font);}
+.btn-submit-big:hover{background:var(--brand-primary-d);}
+.btn-submit-big.blocked{background:#cfd8da;box-shadow:none;cursor:not-allowed;}
+.submit-note{font-size:13px;color:var(--muted);margin:12px 0 0;max-width:52ch;}
+.submit-note b{color:var(--req);}
+
+.foot{display:flex;align-items:center;justify-content:space-between;padding:16px 28px;border-top:1px solid var(--line);margin-top:22px;}
+.btn-ghost{border:0;background:none;color:var(--muted);font-size:13.5px;font-weight:700;cursor:pointer;font-family:var(--font);}
+.saved{font-size:12px;color:var(--muted);}
+
+/* ---- modal ---- */
+.overlay{position:fixed;inset:0;background:rgba(31,42,46,.4);display:none;align-items:center;justify-content:center;z-index:50;padding:20px;}
+.overlay.on{display:flex;}
+.modal{background:#fff;border-radius:var(--radius);max-width:480px;width:100%;padding:24px 26px;}
+.modal h3{margin:0 0 6px;font-size:17px;}
+.modal p{font-size:13.5px;color:var(--muted);margin:0 0 14px;}
+.modal ul{margin:0 0 18px;padding:0 0 0 6px;list-style:none;}
+.modal li{font-size:13px;padding:7px 0;border-bottom:1px solid var(--line);display:flex;gap:8px;align-items:center;}
+.modal li:last-child{border-bottom:0;}
+.modal li .dot{width:8px;height:8px;border-radius:50%;flex:0 0 auto;}
+.modal li .dot.req{background:var(--req);} .modal li .dot.warn{background:var(--warn);}
+.modal .mbtns{display:flex;gap:10px;justify-content:flex-end;}
+.mb{border-radius:var(--radius-sm);padding:10px 18px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:var(--font);}
+.mb.primary{background:var(--brand-primary);border:1px solid var(--brand-primary);color:#fff;}
+.mb.ghost{background:#fff;border:1px solid var(--line);color:var(--ink);}
+
+/* ---- toast ---- */
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:#2b3a40;color:#fff;font-size:13px;border-radius:30px;padding:11px 20px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:60;}
+.toast.on{opacity:1;}
+
+@media(max-width:680px){ .content{padding:20px 16px 8px;} .rbtns{flex-basis:100%;justify-content:flex-end;} }
+</style>
+</head>
+<body>
+
+<p class="mock-note"><strong>Mockup — Documents step v2.</strong> Three-tier checklist: Required (blocks submit) · Required unless the client tells us why they can&rsquo;t provide it · Optional (never blocks). Progress counts required items only. Interactive: click Upload, &ldquo;I don&rsquo;t have this,&rdquo; and Submit to see the gating behavior.</p>
+
+<div class="app">
+  <div class="hdr">
+    <div class="firm"><span class="nm">MCCUNE LEGAL</span><span class="tg">We help people struggling with debt</span></div>
+    <div class="hdr-title">Intake Form — Step 8 of 8</div>
+    <div class="hdr-right"><span>Jordan Sample</span><span class="avatar">JS</span></div>
+  </div>
+
+  <div class="content">
+    <h2 class="sec-title">Documents</h2>
+    <p class="sec-sub">Almost done. Upload what you have — anything marked <b>required</b> we need before you submit. Everything else can be added now or after you submit.</p>
+
+    <div class="progress-card">
+      <div class="ptop"><b>Required documents</b><span id="pcount">0 of 8 resolved</span></div>
+      <div class="pbar"><i id="pfill"></i></div>
+      <p class="psub" id="psub">Optional items don&rsquo;t count toward this bar — they never hold you up.</p>
+    </div>
+
+    <div class="derived">
+      <span class="i">✓</span>
+      <p><b>Based on your answers, we&rsquo;re not asking for:</b> vehicle title (no vehicle listed), spouse documents (filing individually), foreclosure paperwork (no real estate). Your checklist below only shows what applies to you.</p>
+    </div>
+
+    <div class="catchall" id="catchall">
+      <div class="big">Not sure where something goes? Drop it here.</div>
+      <div class="sm">We&rsquo;ll read it, file it under the right item, and ask you to confirm. PDFs and phone photos both work.</div>
+    </div>
+
+    <!-- TIER 1 -->
+    <div class="tier tier1">
+      <div class="tier-h"><h3>Required to submit</h3><span class="tier-pill">MUST UPLOAD</span></div>
+      <p class="tier-sub">We can&rsquo;t file your case without these.</p>
+      <div class="rows">
+        <div class="row state-need t1" data-tier="1" data-doc="drivers_license">
+          <span class="ric"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></svg></span>
+          <span class="rlab"><span class="nm">Driver&rsquo;s license or photo ID</span><span class="why">Identity verification</span></span>
+          <span class="rbtns"><button class="btn-up">Upload</button></span>
+        </div>
+        <div class="row state-need t1" data-tier="1" data-doc="ssn_proof">
+          <span class="ric"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></svg></span>
+          <span class="rlab"><span class="nm">Social Security card, W-2, or 1099</span><span class="why">Proof of Social Security number</span></span>
+          <span class="rbtns"><button class="btn-up">Upload</button></span>
+        </div>
+        <div class="row state-need t1" data-tier="1" data-doc="paystubs_6mo">
+          <span class="ric"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></svg></span>
+          <span class="rlab"><span class="nm">Pay stubs — last 6 months</span><span class="why">Means test &amp; income verification</span></span>
+          <span class="rbtns"><button class="btn-up">Upload</button></span>
+        </div>
+        <div class="row state-need t1" data-tier="1" data-doc="bank_statements_6mo">
+          <span class="ric"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></svg></span>
+          <span class="rlab"><span class="nm">Bank statements — last 6 months</span><span class="why">All accounts, all pages</span></span>
+          <span class="rbtns"><button class="btn-up">Upload</button></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TIER 2 -->
+    <div class="tier tier2">
+      <div class="tier-h"><h3>Upload these — or tell us why you can&rsquo;t</h3><span class="tier-pill">UPLOAD, OR TELL US WHY NOT</span></div>
+      <p class="tier-sub">Have it? Upload it. Don&rsquo;t have it? Just tell us why — that counts as an answer too.</p>
+      <div class="rows">
+        <div class="row state-need t2" data-tier="2" data-doc="counseling_certificate">
+          <span class="ric"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></svg></span>
+          <span class="rlab"><span class="nm">Counseling class certificate</span><span class="why">From Step 7 — the court needs this before your case can be filed</span></span>
+          <span class="rbtns"><button class="btn-up">Upload</button><button class="btn-na">I don&rsquo;t have this</button></span>
+          <span class="naReason"><span class="q">That&rsquo;s okay — which one fits?</span><span class="rchip" data-r="not_taken">I haven&rsquo;t taken the class yet</span><span class="rchip" data-r="later">I took it — I&rsquo;ll send it later</span><span class="rchip cancel">Cancel</span></span>
+        </div>
+        <div class="row state-need t2" data-tier="2" data-doc="tax_return_y1">
+          <span class="ric"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></svg></span>
+          <span class="rlab"><span class="nm">Tax return — last year</span><span class="why">Federal return, all schedules</span></span>
+          <span class="rbtns"><button class="btn-up">Upload</button><button class="btn-na">I don&rsquo;t have this</button></span>
+          <span class="naReason"><span class="q">That&rsquo;s okay — which one fits?</span><span class="rchip" data-r="didnt_file">I didn&rsquo;t file that year</span><span class="rchip" data-r="dont_have">I don&rsquo;t have a copy</span><span class="rchip" data-r="later">I&rsquo;ll provide it later</span><span class="rchip cancel">Cancel</span></span>
+        </div>
+        <div class="row state-need t2" data-tier="2" data-doc="tax_return_y2">
+          <span class="ric"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></svg></span>
+          <span class="rlab"><span class="nm">Tax return — two years ago</span><span class="why">Federal return, all schedules</span></span>
+          <span class="rbtns"><button class="btn-up">Upload</button><button class="btn-na">I don&rsquo;t have this</button></span>
+          <span class="naReason"><span class="q">That&rsquo;s okay — which one fits?</span><span class="rchip" data-r="didnt_file">I didn&rsquo;t file that year</span><span class="rchip" data-r="dont_have">I don&rsquo;t have a copy</span><span class="rchip" data-r="later">I&rsquo;ll provide it later</span><span class="rchip cancel">Cancel</span></span>
+        </div>
+        <div class="row state-need t2" data-tier="2" data-doc="debt_statements">
+          <span class="ric"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></svg></span>
+          <span class="rlab"><span class="nm">Statements for your debts</span><span class="why">Most recent statement for each debt you listed</span></span>
+          <span class="rbtns"><button class="btn-up">Upload</button><button class="btn-na">I don&rsquo;t have this</button></span>
+          <span class="naReason"><span class="q">That&rsquo;s okay — which one fits?</span><span class="rchip" data-r="no_statements">I don&rsquo;t receive statements</span><span class="rchip" data-r="dont_have">I don&rsquo;t have copies</span><span class="rchip" data-r="later">I&rsquo;ll provide them later</span><span class="rchip cancel">Cancel</span></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TIER 3 -->
+    <div class="tier tier3" id="tier3">
+      <div class="tier-h"><h3>Optional — helpful if you have them</h3><span class="tier-pill">NEVER BLOCKS SUBMIT</span></div>
+      <span class="opt-toggle" id="optToggle"><span class="car">▸</span><span id="optLabel">Show 3 optional items</span></span>
+      <div class="rows">
+        <div class="row state-need t3" data-tier="3" data-doc="retirement_statements">
+          <span class="ric"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></svg></span>
+          <span class="rlab"><span class="nm">Retirement or investment statements</span><span class="why">Speeds up your asset review</span></span>
+          <span class="rbtns"><button class="btn-up">Upload</button></span>
+        </div>
+        <div class="row state-need t3" data-tier="3" data-doc="collector_letters">
+          <span class="ric"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></svg></span>
+          <span class="rlab"><span class="nm">Attorney or collector letters</span><span class="why">Helps us spot lawsuits early</span></span>
+          <span class="rbtns"><button class="btn-up">Upload</button></span>
+        </div>
+        <div class="row state-need t3" data-tier="3" data-doc="other_docs">
+          <span class="ric"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></svg></span>
+          <span class="rlab"><span class="nm">Anything else you&rsquo;d like us to have</span><span class="why">When in doubt, send it</span></span>
+          <span class="rbtns"><button class="btn-up">Upload</button></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="submit-wrap">
+      <button class="btn-submit-big blocked" id="submitBtn">Submit my intake →</button>
+      <p class="submit-note" id="submitNote"><b>5 required items</b> still need to be uploaded before you can submit.</p>
+    </div>
+  </div>
+
+  <div class="foot">
+    <button class="btn-ghost">← Save &amp; exit</button>
+    <span class="saved">✓ Saved automatically</span>
+  </div>
+</div>
+
+<!-- soft-gate modal -->
+<div class="overlay" id="softModal">
+  <div class="modal">
+    <h3>A few items are still open</h3>
+    <p>You can submit now and add these later — we&rsquo;ll email you a secure link. Or keep going and finish them here.</p>
+    <ul id="softList"></ul>
+    <div class="mbtns">
+      <button class="mb ghost" id="keepGoing">Keep uploading</button>
+      <button class="mb primary" id="submitAnyway">Submit — I&rsquo;ll add these later</button>
+    </div>
+  </div>
+</div>
+
+<!-- hard-gate modal -->
+<div class="overlay" id="hardModal">
+  <div class="modal">
+    <h3>We can&rsquo;t submit yet</h3>
+    <p>These are required by the court or needed to verify your identity — there&rsquo;s no way around them:</p>
+    <ul id="hardList"></ul>
+    <div class="mbtns">
+      <button class="mb primary" id="hardOk">Got it — I&rsquo;ll upload them</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  var CK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-11"/></svg>';
+  var UP='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></svg>';
+  var DASH='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14"/></svg>';
+  var reasons={didnt_file:"Didn't file that year",dont_have:"Don't have a copy",later:"Will provide later",no_statements:"Doesn't receive statements",not_taken:"Class not taken yet — we'll follow up"};
+
+  function rows(sel){return Array.prototype.slice.call(document.querySelectorAll(sel));}
+  function toast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');clearTimeout(t._h);t._h=setTimeout(function(){t.classList.remove('on');},2600);}
+
+  function setDone(row,fname){
+    row.classList.remove('state-need','state-na','picking');row.classList.add('state-done');
+    row.querySelector('.ric').innerHTML=CK;
+    row.querySelector('.rbtns').innerHTML='<span class="rstatus ok">Uploaded · <span class="file">'+fname+'</span><span class="undo" data-a="reset">remove</span></span>';
+    refresh();
+  }
+  function setNA(row,rkey){
+    row.classList.remove('state-need','picking');row.classList.add('state-na');
+    row.querySelector('.ric').innerHTML=DASH;
+    row.querySelector('.rbtns').innerHTML='<span class="rstatus na">Answered: '+(reasons[rkey]||"Don't have it")+'<span class="undo" data-a="reset">change</span></span>';
+    row.dataset.naReason=rkey; refresh();
+  }
+  function setNeed(row){
+    row.classList.remove('state-done','state-na','picking');row.classList.add('state-need');
+    row.querySelector('.ric').innerHTML=UP;
+    var t=row.dataset.tier;
+    row.querySelector('.rbtns').innerHTML='<button class="btn-up">Upload</button>'+(t==='2'?'<button class="btn-na">I don&rsquo;t have this</button>':'');
+    delete row.dataset.naReason; refresh();
+  }
+
+  function stats(){
+    var t1=rows('.row[data-tier="1"]'),t2=rows('.row[data-tier="2"]');
+    var t1open=t1.filter(function(r){return r.classList.contains('state-need');});
+    var t2open=t2.filter(function(r){return r.classList.contains('state-need');});
+    var t2later=t2.filter(function(r){return r.dataset.naReason==='later'||r.dataset.naReason==='not_taken';});
+    var total=t1.length+t2.length;
+    var resolved=total-t1open.length-t2open.length;
+    return {t1open:t1open,t2open:t2open,t2later:t2later,total:total,resolved:resolved};
+  }
+
+  function refresh(){
+    var s=stats();
+    document.getElementById('pcount').textContent=s.resolved+' of '+s.total+' resolved';
+    document.getElementById('pfill').style.width=(s.total?Math.round(100*s.resolved/s.total):0)+'%';
+    var btn=document.getElementById('submitBtn'),note=document.getElementById('submitNote');
+    if(s.t1open.length>0){
+      btn.classList.add('blocked');
+      note.innerHTML='<b>'+s.t1open.length+' required item'+(s.t1open.length>1?'s':'')+'</b> still need'+(s.t1open.length>1?'':'s')+' to be uploaded before you can submit.';
+    } else {
+      btn.classList.remove('blocked');
+      note.innerHTML=s.t2open.length>0
+        ? 'Ready to submit. '+s.t2open.length+' open item'+(s.t2open.length>1?'s':'')+' can be added after you submit.'
+        : 'Everything&rsquo;s resolved — you&rsquo;re good to go.';
+    }
+  }
+
+  document.body.addEventListener('click',function(e){
+    var undo=e.target.closest('.undo');
+    if(undo){setNeed(undo.closest('.row'));return;}
+    var up=e.target.closest('.btn-up');
+    if(up){var r=up.closest('.row');setDone(r,'photo_'+(r.dataset.doc||'doc')+'.jpg');toast('Uploaded — we’ll start reviewing it right away.');return;}
+    var na=e.target.closest('.btn-na');
+    if(na){na.closest('.row').classList.add('picking');return;}
+    var chip=e.target.closest('.rchip');
+    if(chip){var r2=chip.closest('.row');
+      if(chip.classList.contains('cancel')){r2.classList.remove('picking');return;}
+      setNA(r2,chip.dataset.r);
+      toast(chip.dataset.r==='later'?'No problem — we’ll remind you after you submit.':'Noted — your attorney will see the reason.');
+      return;}
+  });
+
+  /* optional collapse */
+  var t3=document.getElementById('tier3');
+  document.getElementById('optToggle').addEventListener('click',function(){
+    t3.classList.toggle('open');
+    document.getElementById('optLabel').textContent=t3.classList.contains('open')?'Hide optional items':'Show 3 optional items';
+  });
+
+  /* catch-all demo */
+  document.getElementById('catchall').addEventListener('click',function(){
+    var c=this;if(c.classList.contains('sorting'))return;
+    c.classList.add('sorting');
+    c.querySelector('.big').textContent='Reading your file…';
+    c.querySelector('.sm').textContent='Figuring out which item it belongs to.';
+    setTimeout(function(){
+      var open=rows('.row.state-need').filter(function(r){return r.dataset.tier!=='3';});
+      var target=open[0];
+      c.classList.remove('sorting');
+      c.querySelector('.big').textContent='Not sure where something goes? Drop it here.';
+      c.querySelector('.sm').textContent='We’ll read it, file it under the right item, and ask you to confirm. PDFs and phone photos both work.';
+      if(target){setDone(target,'scan_0042.pdf');toast('We filed that under “'+target.querySelector('.nm').textContent+'” — tap remove if that’s wrong.');}
+      else{toast('Saved to “Other documents” for your attorney.');}
+    },1400);
+  });
+
+  /* submit gating */
+  var softModal=document.getElementById('softModal'),hardModal=document.getElementById('hardModal');
+  document.getElementById('submitBtn').addEventListener('click',function(){
+    var s=stats();
+    if(s.t1open.length>0){
+      document.getElementById('hardList').innerHTML=s.t1open.map(function(r){return '<li><span class="dot req"></span>'+r.querySelector('.nm').textContent+'</li>';}).join('');
+      hardModal.classList.add('on');return;
+    }
+    if(s.t2open.length>0||s.t2later.length>0){
+      var items=s.t2open.concat(s.t2later);
+      document.getElementById('softList').innerHTML=items.map(function(r){return '<li><span class="dot warn"></span>'+r.querySelector('.nm').textContent+(r.dataset.naReason?' <span style="color:var(--faint)">(we’ll follow up)</span>':'')+'</li>';}).join('');
+      softModal.classList.add('on');return;
+    }
+    toast('Submitted! (mock) — confirmation page would load here.');
+  });
+  document.getElementById('keepGoing').addEventListener('click',function(){softModal.classList.remove('on');});
+  document.getElementById('submitAnyway').addEventListener('click',function(){softModal.classList.remove('on');toast('Submitted! We’ll email you a secure link for the remaining items.');});
+  document.getElementById('hardOk').addEventListener('click',function(){hardModal.classList.remove('on');});
+
+  refresh();
+})();
+</script>
+</body></html>

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Counseling class (Step 7) — McCune Legal Intake</title>
+<style>
+:root{
+  --brand-primary:#7A9C80; --brand-primary-d:#5A7C60; --brand-accent:#5A7C60;
+  --brand-soft:#E7EAE5; --brand-step-done:#5A7C60;
+  --ink:#434343; --muted:#667279; --faint:#9aa4a9; --line:#E7EAE5;
+  --page:#FBFAF7; --card:#fff;
+  --warn:#b9772a; --warn-bg:#fbf3e8; --ok:#2e7d5b; --ok-bg:#e7f3ec;
+  --radius:12px; --radius-sm:8px;
+  --font:"Segoe UI",-apple-system,BlinkMacSystemFont,Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;background:var(--page);color:var(--ink);font-family:var(--font);line-height:1.5;-webkit-font-smoothing:antialiased;}
+
+.mock-note{max-width:900px;margin:22px auto 10px;padding:0 22px;color:var(--muted);font-size:13px;}
+.mock-note strong{color:var(--ink);}
+
+.app{max-width:900px;margin:0 auto 50px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:0 1px 3px rgba(31,42,46,.05);}
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;border-bottom:1px solid var(--line);}
+.firm .nm{font-weight:800;letter-spacing:.13em;color:#224e5f;font-size:16px;}
+.firm .tg{display:block;font-size:10px;letter-spacing:.05em;color:var(--muted);text-transform:uppercase;}
+.hdr-title{font-size:18px;font-weight:600;}
+.hdr-right{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:13.5px;}
+.avatar{width:28px;height:28px;border-radius:50%;background:var(--brand-soft);color:var(--brand-primary);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;}
+
+/* 8-step topnav */
+.topnav{display:flex;align-items:flex-start;padding:18px 16px 14px;border-bottom:1px solid var(--line);background:#fff;}
+.topnav a{position:relative;flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;gap:7px;text-decoration:none;font-size:11.5px;color:var(--muted);text-align:center;padding:0 2px;}
+.topnav a::before,.topnav a::after{content:"";position:absolute;top:13px;height:2px;background:var(--line);z-index:0;}
+.topnav a::before{left:0;right:50%;} .topnav a::after{left:50%;right:0;}
+.topnav a:first-child::before{display:none;} .topnav a:last-child::after{display:none;}
+.topnav a .n{position:relative;z-index:1;width:28px;height:28px;border-radius:50%;background:#fff;border:2px solid var(--line);color:var(--muted);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+.topnav a.done .n{background:var(--brand-step-done);border-color:var(--brand-step-done);color:#fff;}
+.topnav a.done{color:var(--brand-primary);}
+.topnav a.done::before,.topnav a.done::after{background:var(--brand-step-done);}
+.topnav a.active .n{background:var(--brand-primary);border-color:var(--brand-primary);color:#fff;}
+.topnav a.active{color:var(--brand-primary);font-weight:700;}
+.topnav a.active::before{background:var(--brand-step-done);}
+@media(max-width:680px){ .topnav a{font-size:0;} .topnav a .n{font-size:12px;} }
+
+.content{padding:26px 34px 8px;max-width:720px;}
+.sec-title{font-size:22px;font-weight:700;margin:0 0 4px;}
+.sec-sub{color:var(--muted);font-size:15px;margin:0 0 20px;max-width:62ch;}
+
+/* explainer card */
+.explain{display:flex;gap:14px;background:var(--brand-soft);border-radius:var(--radius);padding:16px 18px;margin:0 0 22px;}
+.explain .i{flex:0 0 auto;width:34px;height:34px;border-radius:50%;background:#fff;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:16px;}
+.explain div p{margin:0 0 6px;font-size:13.5px;color:var(--brand-primary-d);}
+.explain div p:last-child{margin:0;}
+.facts{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0 22px;}
+.fact{flex:1 1 150px;background:var(--page);border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px;}
+.fact b{display:block;font-size:15px;}
+.fact span{font-size:12px;color:var(--muted);}
+
+/* big choice */
+.bigq{font-size:16px;font-weight:700;margin:0 0 12px;}
+.paths{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px;}
+.path{flex:1 1 240px;border:1.5px solid var(--line);border-radius:var(--radius);background:#fff;padding:18px;cursor:pointer;text-align:left;font-family:var(--font);}
+.path:hover{border-color:var(--brand-accent);}
+.path.on{border-color:var(--brand-primary);background:#f6fbf8;box-shadow:0 0 0 3px var(--brand-soft);}
+.path .pt{font-size:15px;font-weight:700;display:flex;align-items:center;gap:9px;}
+.path .pd{font-size:12.5px;color:var(--muted);margin-top:4px;}
+.path .badge{width:26px;height:26px;border-radius:50%;background:var(--brand-soft);color:var(--brand-primary);display:inline-flex;align-items:center;justify-content:center;font-size:14px;flex:0 0 auto;}
+
+/* path panels */
+.panel{display:none;border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-bottom:20px;background:#fcfdfd;}
+.panel.on{display:block;}
+.panel h4{margin:0 0 12px;font-size:15px;}
+.drop{border:1.5px dashed #c4d0d3;border-radius:var(--radius);padding:24px;text-align:center;color:var(--muted);background:#fff;cursor:pointer;margin-bottom:16px;}
+.drop .big{color:var(--brand-primary);font-weight:700;font-size:14px;margin-bottom:3px;}
+.drop .sm{font-size:11.5px;color:var(--faint);}
+.drop.done{border-style:solid;border-color:#cfe7d8;background:var(--ok-bg);}
+.drop.done .big{color:var(--ok);}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.field{display:flex;flex-direction:column;gap:6px;}
+label{font-size:13.5px;font-weight:600;}
+label .opt{font-weight:400;color:var(--faint);}
+.inp{height:42px;border:1px solid var(--line);border-radius:var(--radius-sm);padding:0 12px;font-size:14px;font-family:var(--font);background:#fff;color:var(--ink);width:100%;}
+.inp:focus{outline:none;border-color:var(--brand-accent);box-shadow:0 0 0 3px var(--brand-soft);}
+.hint{font-size:12px;color:var(--muted);}
+
+/* provider card (path B) */
+.provider{display:flex;gap:14px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-bottom:14px;flex-wrap:wrap;}
+.provider .pv{flex:1;min-width:200px;}
+.provider .pv b{font-size:14.5px;display:block;}
+.provider .pv span{font-size:12.5px;color:var(--muted);}
+.btn-go{background:var(--brand-primary);color:#fff;border:0;border-radius:20px;padding:11px 22px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:var(--font);}
+.btn-go:hover{background:var(--brand-primary-d);}
+.steps{list-style:none;margin:0 0 14px;padding:0;counter-reset:s;}
+.steps li{font-size:13px;padding:8px 0;border-bottom:1px solid var(--line);display:flex;gap:11px;align-items:flex-start;counter-increment:s;}
+.steps li:last-child{border-bottom:0;}
+.steps li::before{content:counter(s);flex:0 0 auto;width:22px;height:22px;border-radius:50%;background:var(--brand-soft);color:var(--brand-primary);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+.reassure{display:flex;gap:11px;align-items:flex-start;background:var(--ok-bg);border:1px solid #bfe0cc;border-radius:var(--radius);padding:13px 15px;}
+.reassure .i{flex:0 0 auto;color:var(--ok);font-size:15px;}
+.reassure p{margin:0;font-size:12.5px;color:#1f5b3c;}
+
+.validity{display:flex;gap:11px;align-items:flex-start;background:var(--warn-bg);border-radius:var(--radius);padding:12px 15px;margin:0 0 22px;}
+.validity .i{color:var(--warn);}
+.validity p{margin:0;font-size:12.5px;color:#7a521f;}
+
+.foot{display:flex;align-items:center;justify-content:space-between;padding:16px 28px;border-top:1px solid var(--line);margin-top:26px;}
+.btn{height:42px;padding:0 20px;border-radius:var(--radius-sm);font-size:13.5px;font-weight:700;border:1px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;gap:8px;font-family:var(--font);text-decoration:none;}
+.btn.primary{background:var(--brand-primary);border-color:var(--brand-primary);color:#fff;}
+.saved{font-size:12px;color:var(--muted);}
+@media(max-width:680px){ .content{padding:20px 16px 8px;} .grid2{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+
+<p class="mock-note"><strong>Mockup — new Step 7: Counseling class.</strong> Sits between Financial Affairs and Documents. Not a submit gate — the debtor can continue either way; the follow-up system chases the certificate. Click the two path cards to see each flow.</p>
+
+<div class="app">
+  <div class="hdr">
+    <div class="firm"><span class="nm">MCCUNE LEGAL</span><span class="tg">We help people struggling with debt</span></div>
+    <div class="hdr-title">Intake Form</div>
+    <div class="hdr-right"><span>Jordan Sample</span><span class="avatar">JS</span></div>
+  </div>
+
+  <div class="topnav">
+    <a class="done" href="#"><span class="n">✓</span><span class="lbl">Personal Info</span></a>
+    <a class="done" href="#"><span class="n">✓</span><span class="lbl">Income</span></a>
+    <a class="done" href="#"><span class="n">✓</span><span class="lbl">Assets</span></a>
+    <a class="done" href="#"><span class="n">✓</span><span class="lbl">Debts</span></a>
+    <a class="done" href="#"><span class="n">✓</span><span class="lbl">Expenses</span></a>
+    <a class="done" href="#"><span class="n">✓</span><span class="lbl">Financial affairs</span></a>
+    <a class="active" href="#"><span class="n">7</span><span class="lbl">Counseling class</span></a>
+    <a href="documents-v2-mockup.html"><span class="n">8</span><span class="lbl">Documents</span></a>
+  </div>
+
+  <div class="content">
+    <h2 class="sec-title">The counseling class</h2>
+    <p class="sec-sub">Before a bankruptcy case can be filed, the court requires everyone to take a short class about money and credit. It&rsquo;s easy — here&rsquo;s what to know.</p>
+
+    <div class="facts">
+      <div class="fact"><b>About 1 hour</b><span>Online, at your own pace</span></div>
+      <div class="fact"><b>Phone or computer</b><span>Whichever is easier for you</span></div>
+      <div class="fact"><b>Around $10–$50</b><span>Fee help available if money is tight</span></div>
+      <div class="fact"><b>You get a certificate</b><span>That&rsquo;s the paper we need</span></div>
+    </div>
+
+    <p class="bigq">Have you taken the class yet?</p>
+    <div class="paths">
+      <button class="path" id="pathYes">
+        <span class="pt"><span class="badge">✓</span>Yes, I took it</span>
+        <span class="pd">Great — upload your certificate and you&rsquo;re done with this step.</span>
+      </button>
+      <button class="path" id="pathNo">
+        <span class="pt"><span class="badge">→</span>Not yet</span>
+        <span class="pd">No problem. We&rsquo;ll show you where to take it — you can keep going in the meantime.</span>
+      </button>
+    </div>
+
+    <!-- PATH A: already took it -->
+    <div class="panel" id="panelYes">
+      <h4>Upload your certificate</h4>
+      <div class="drop" id="certDrop">
+        <div class="big">Tap to upload your certificate</div>
+        <div class="sm">A photo from your phone works fine — PDF or picture</div>
+      </div>
+      <div class="grid2">
+        <div class="field"><label>Company that gave the class</label><input class="inp" placeholder="It's printed on the certificate"/></div>
+        <div class="field"><label>Date you finished</label><input class="inp" placeholder="MM/DD/YYYY"/></div>
+      </div>
+      <p class="hint" style="margin-top:10px;">Both of these are printed on the certificate — if you upload it, we&rsquo;ll read them for you and just ask you to confirm.</p>
+    </div>
+
+    <!-- PATH B: not yet -->
+    <div class="panel" id="panelNo">
+      <h4>How to take the class</h4>
+      <div class="provider">
+        <div class="pv"><b>DebtorCC (example provider)</b><span>Approved by the court &middot; English &amp; Spanish &middot; use firm code <b>MCCUNE</b> for the discounted rate</span></div>
+        <button class="btn-go">Start the class →</button>
+      </div>
+      <ol class="steps">
+        <li>Sign up on their site — takes a couple of minutes.</li>
+        <li>Take the class. About an hour; you can stop and come back.</li>
+        <li>When you finish, they email you a certificate. Upload it here — or just forward the email to us.</li>
+      </ol>
+      <div class="reassure">
+        <span class="i">✓</span>
+        <p><b>You don&rsquo;t have to stop.</b> Keep going and finish the rest of this form now. After you submit, we&rsquo;ll send you a friendly reminder with a link to add the certificate. Your case just can&rsquo;t be filed with the court until we have it.</p>
+      </div>
+    </div>
+
+    <div class="validity" style="display:none" id="validityNote">
+      <span class="i">!</span>
+      <p>One thing to know: the certificate is only good for <b>180 days</b>. Taking the class soon keeps your case on schedule.</p>
+    </div>
+  </div>
+
+  <div class="foot">
+    <a class="btn" href="#">← Back</a>
+    <span class="saved">✓ Saved automatically</span>
+    <a class="btn primary" href="documents-v2-mockup.html">Continue →</a>
+  </div>
+</div>
+
+<script>
+(function(){
+  var yes=document.getElementById('pathYes'),no=document.getElementById('pathNo');
+  var pYes=document.getElementById('panelYes'),pNo=document.getElementById('panelNo');
+  var validity=document.getElementById('validityNote');
+  function pick(which){
+    yes.classList.toggle('on',which==='yes'); no.classList.toggle('on',which==='no');
+    pYes.classList.toggle('on',which==='yes'); pNo.classList.toggle('on',which==='no');
+    validity.style.display=which==='no'?'flex':'none';
+  }
+  yes.addEventListener('click',function(){pick('yes');});
+  no.addEventListener('click',function(){pick('no');});
+  document.getElementById('certDrop').addEventListener('click',function(){
+    this.classList.add('done');
+    this.querySelector('.big').textContent='✓ certificate.pdf uploaded';
+    this.querySelector('.sm').textContent='We’ll read the provider and date off it and ask you to confirm.';
+  });
+})();
+</script>
+</body></html>

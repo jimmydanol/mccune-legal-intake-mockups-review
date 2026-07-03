@@ -320,6 +320,22 @@ Each "did you…" question adds the spouse scope; the field map below gives the 
 
 ---
 
+## SECTION 7 — Counseling class (new step, mockup stage)
+
+New dedicated page between Financial Affairs and Documents (mockup:
+counseling-step7-mockup.html). Documents moves to Step 8. **Not a submit gate** —
+the intake can be submitted without the certificate; the follow-up system chases
+it. The case cannot be *filed* until the certificate is on file (180-day validity).
+
+| Intake field | Asked as | Destination | Source / extraction |
+|---|---|---|---|
+| `mcl_counseling_status` | "Have you taken the class yet?" (taken / not yet) | Form 101 Part 5 (credit counseling checkboxes, line 15) | Manual |
+| `mcl_counseling_provider` | "Company that gave the class" | Certificate filed with petition; Form 101 Part 5 | **Inferred** from certificate upload — confirm |
+| `mcl_counseling_date` | "Date you finished" | 180-day validity check; Form 101 Part 5 | **Inferred** from certificate upload — confirm |
+| `mcl_counseling_certificate` | Certificate upload | Filed with the petition | — |
+
+---
+
 ## Document → Section map
 
 Each intake step has a sidebar listing the documents needed for that section. The same uploads also feed extraction (see source map above).
@@ -332,7 +348,8 @@ Each intake step has a sidebar listing the documents needed for that section. Th
 | 4 — Debts | debts.html | **Statements for all debts** | Required (no N/A — drives creditor schedules) |
 | 5 — Expenses | expenses.html | Utility / household bills | Per applicability |
 | 6 — Financial Affairs | financial-affairs.html | Supporting docs per question | Per applicability |
-| 7 — Documents | documents.html | Recap of all of the above + "Other documents · Optional" catch-all | — |
+| 7 — Counseling class | counseling.html (mockup: counseling-step7-mockup.html) | Counseling class certificate | Soft — not a submit gate; follow-up chases it; case cannot be filed without it |
+| 8 — Documents | documents.html (v2 mockup: documents-v2-mockup.html) | Recap of all of the above + "Other documents · Optional" catch-all — three-tier: Required to submit / Upload-or-tell-us-why-not / Optional | Tier 1 hard-blocks submit; tier 2 resolvable with a plain-language reason (no "N/A" wording); tier 3 never blocks |
 
 ---
 

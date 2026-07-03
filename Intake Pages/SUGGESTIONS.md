@@ -663,6 +663,72 @@ crosswalk is accurate for the Codex handoff. Reminder: share FIELD-MAP.md with J
 
 ---
 
+## Round 29 — Documents summary v2 + new Step 7 counseling page (mockups) (2026-07-03)
+**File(s):** documents-v2-mockup.html (new), counseling-step7-mockup.html (new), FIELD-MAP.md
+
+**What changed:**
+- **Documents step redesigned as a three-tier checklist** (mockup, does not replace
+  documents.html yet):
+  - Tier 1 "Required to submit" — hard-blocks submission (ID, SSN proof, pay stubs,
+    bank statements).
+  - Tier 2 "Upload these — or tell us why you can't" — upload OR a plain-language
+    "I don't have this" answer with a one-tap reason (didn't file / don't have a
+    copy / will send later). Either resolves the item; reason is stored per item.
+  - Tier 3 "Optional" — collapsed by default, never blocks, never counts in progress.
+- Progress bar counts **required items only** (tier 1 + tier 2); optional items can
+  never keep it from 100%.
+- Submit gating: hard modal if tier-1 items open; soft "submit now, add later" modal
+  if only tier-2 items are open or marked "later."
+- Interview-derived skips surfaced in a banner ("we're not asking for vehicle title —
+  no vehicle listed") — checklist is generated from earlier sections, N/A is the
+  fallback, not the default.
+- Catch-all drop zone ("not sure where it goes? drop it here") — AI classifies the
+  upload into the right checklist item, debtor confirms.
+- **Language rule applied: no "N/A" anywhere.** All copy rewritten to ~5th-grade
+  reading level ("I don't have this," "That's okay — which one fits?").
+- **New Step 7 — Counseling class** (counseling-step7-mockup.html), between
+  Financial Affairs and Documents; Documents becomes Step 8 (8-step topnav):
+  - Explainer facts (≈1 hour, phone or computer, $10–50, fee help available).
+  - Two paths: "Yes, I took it" → certificate upload + provider/date (both
+    extractable from the certificate, confirm-style); "Not yet" → firm-preferred
+    provider card with firm code, 3-step how-to, and reassurance that they can keep
+    going.
+  - **Decision: NOT a submit gate.** Debtor can submit the intake without the
+    certificate; the follow-up email system chases it. Case can't be *filed* without
+    it — that constraint lives with the attorney, not the form. 180-day validity
+    note shown on the "not yet" path.
+
+**Rationale:** The counseling class is a *task*, not a *fetch* — burying it as a
+checklist row undersold the one item debtors must go do. A dedicated step explains
+it and routes them to the class, while soft-gating keeps completed intake data
+flowing into the database for instant case analysis instead of stalling at the
+last step. Three-tier checklist fixes the old page treating a hard court
+requirement and "foreclosure docs · if any" as visually identical, and stops
+optional items from inflating "still needed" counts.
+
+---
+
+## Round 30 — counseling.html added to the live flow; 8-step topnav wired (2026-07-03)
+**File(s):** counseling.html (new), personal.html, income.html, assets.html, debts.html, expenses.html, financial-affairs.html, documents.html, README.md
+
+**What changed:**
+- Built production `counseling.html` from the shared page shell (same head/CSS as
+  the other pages) implementing the Step 7 mockup: facts row, "Have you taken the
+  class yet?" two-path choice, certificate upload with provider/date confirm
+  fields, provider card + 3-step how-to, keep-going reassurance, 180-day note.
+- All seven flow pages' topnavs updated to **8 steps**: "Counseling class" inserted
+  as step 7, Documents renumbered to 8 (shown as done ✓ on documents.html).
+- financial-affairs.html Continue button now goes to counseling.html (was
+  documents.html).
+- README page table updated (counseling + documents rows added).
+- documents.html content itself is **unchanged** — the three-tier redesign is
+  still mockup-only (documents-v2-mockup.html) pending approval.
+
+**Rationale:** Step 7 approved from the mockup (Round 29). Soft gate stands:
+Continue is never blocked; the follow-up system chases the certificate.
+
+---
+
 <!-- Add new rounds below this line. Template:
 
 ## Round N — short title (date)

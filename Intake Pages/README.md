@@ -15,6 +15,8 @@ pages so each renders on its own with no build step and no external dependencies
 | `debts.html` | Stage 4 — debts |
 | `expenses.html` | Stage 5 — monthly expenses |
 | `financial-affairs.html` | Stage 6 — financial affairs (SOFA questions) |
+| `counseling.html` | Stage 7 — credit counseling class (explainer + certificate upload; soft gate) |
+| `documents.html` | Stage 8 — document summary & submit |
 | `confirmation.html` | Post-submit thank-you |
 
 Open `login.html` and click through. Navigation, toggles, document upload/N/A,
