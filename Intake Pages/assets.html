@@ -790,6 +790,12 @@ table.exp td:last-child{width:140px;}
     /* investments box: any of the five source questions = Yes */
     show('investment_statements',
       faYes('bonds, mutual funds')||faYes('retirement or pension')||faYes('annuities')||faYes('education account')||faYes('cash value'));
+    /* persist raw answers for cross-page gating (debts reads these) */
+    try{ sessionStorage.setItem('mcl_doc_triggers', JSON.stringify({
+      real_estate: re?'yes':'no',
+      vehicle: veh?'yes':'no',
+      vehicle_financed: (veh&&scanToggles('financed',0))?'yes':'no'
+    })); }catch(e){}
     setTimeout(recountVisible,0);
   }
   document.addEventListener('click',function(e){

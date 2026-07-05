@@ -719,9 +719,13 @@ table.exp td:last-child{width:140px;}
     var c=bar.querySelector('.count');if(c)c.textContent=done+' / '+btns.length;
     var i=bar.querySelector('.bar i');if(i)i.style.width=(btns.length?Math.round(100*done/btns.length):0)+'%';
   }
+  function trig(){var t={};
+    try{t=JSON.parse(sessionStorage.getItem('mcl_doc_triggers')||'{}');}catch(e){}
+    return t;}
   function apply(){
-    var d=secured();
-    var hasProp=d.properties.length>0, hasFin=d.vehicles.length>0;
+    var d=secured(), t=trig();
+    var hasProp=d.properties.length>0||t.real_estate==='yes';
+    var hasFin=d.vehicles.length>0||t.vehicle_financed==='yes';
     show('mortgage_statements',hasProp);
     show('hoa_statements',hasProp&&hoaYes());
     show('vehicle_loan_statements',hasFin);
