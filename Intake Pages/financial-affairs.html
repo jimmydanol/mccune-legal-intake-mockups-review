@@ -585,4 +585,33 @@ table.exp td:last-child{width:140px;}
     }
   });
 })();</script>
-</body></html>
+<script>
+/* DOC-LOGIC trigger gating (mockup): court_paperwork <- SOFA Q9 (lawsuit) = Yes OR Q10 (repossessed/foreclosed/garnished/seized) = Yes */
+(function(){
+  function qYes(n){
+    var qs=document.querySelectorAll('.sofa-q');
+    for(var i=0;i<qs.length;i++){
+      var qn=qs[i].querySelector('.qn'); if(!qn||qn.textContent.trim()!==String(n))continue;
+      var sp=qs[i].querySelectorAll('.toggle span');
+      return sp[0]&&sp[0].classList.contains('on');
+    }
+    return false;
+  }
+  function recountVisible(){
+    var bar=document.querySelector('.docbar');if(!bar)return;
+    var btns=[].filter.call(bar.querySelectorAll('.dbtn'),function(b){return getComputedStyle(b).display!=='none';});
+    var done=btns.filter(function(b){return b.classList.contains('done')||b.classList.contains('na');}).length;
+    var c=bar.querySelector('.count');if(c)c.textContent=done+' / '+btns.length;
+    var i=bar.querySelector('.bar i');if(i)i.style.width=(btns.length?Math.round(100*done/btns.length):0)+'%';
+  }
+  function apply(){
+    var b=document.querySelector('.dbtn[data-doc="court_paperwork"]');
+    if(b)b.style.display=(qYes(9)||qYes(10))?'':'none';
+    setTimeout(recountVisible,0);
+  }
+  document.addEventListener('click',function(e){
+    if(e.target.closest('.toggle')||e.target.closest('.dbtn'))setTimeout(apply,0);
+  });
+  setTimeout(apply,0); setTimeout(apply,150);
+})();
+</script></body></html>
