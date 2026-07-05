@@ -1,0 +1,236 @@
+/* Document-request gating test harness — McCune intake mockups.
+   Run: npm install jsdom && node gating-test.js  (from the Intake Pages folder; set DIR below to ".")
+   Simulates debtor answers on every page and asserts which upload buttons appear,
+   per DOC-LOGIC.md. 74 assertions. Last full pass: 2026-07-05. */
+const { JSDOM } = require('jsdom');
+const fs = require('fs');
+const DIR = './';
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+let pass = 0, fail = 0, failures = [];
+
+function assert(name, cond, detail='') {
+  if (cond) { pass++; } else { fail++; failures.push(name + (detail?` — ${detail}`:'')); }
+}
+
+function load(file, url, seed) {
+  const html = fs.readFileSync(DIR + file, 'utf8');
+  const dom = new JSDOM(html, {
+    url: url || 'https://mock.test/' + file,
+    runScripts: 'dangerously',
+    pretendToBeVisual: true,
+    beforeParse(window) {
+      // emulate offsetParent (jsdom has no layout): non-null unless an ancestor is display:none
+      Object.defineProperty(window.HTMLElement.prototype, 'offsetParent', {
+        get() {
+          let el = this;
+          while (el && el !== window.document.body) {
+            if (el.style && el.style.display === 'none') return null;
+            el = el.parentElement;
+          }
+          return window.document.body;
+        }
+      });
+      if (seed) for (const [k,v] of Object.entries(seed)) window.sessionStorage.setItem(k, v);
+      window.HTMLMediaElement && (window.HTMLMediaElement.prototype.play = ()=>Promise.resolve());
+    }
+  });
+  return dom;
+}
+
+function visible(win, doc, docType) {
+  const b = doc.querySelector(`.dbtn[data-doc="${docType}"]`);
+  if (!b) return null;
+  let el = b;
+  while (el && el.tagName !== 'BODY') {
+    const d = el.style ? el.style.display : '';
+    if (d === 'none') return false;
+    el = el.parentElement;
+  }
+  return true;
+}
+
+function clickYes(win, doc, toggleId, which=0) {
+  const t = doc.getElementById(toggleId);
+  const sp = t.querySelectorAll('span')[which];
+  sp.dispatchEvent(new win.window.MouseEvent('click', { bubbles: true }));
+}
+
+function clickToggleByLabel(win, doc, sub, which=0) {
+  const rows = doc.querySelectorAll('.qrow, .fa-q');
+  for (const r of rows) {
+    const lab = r.querySelector('label');
+    if (!lab || lab.textContent.toLowerCase().indexOf(sub.toLowerCase()) < 0) continue;
+    const sp = r.querySelectorAll('.toggle span')[which];
+    if (sp) { sp.dispatchEvent(new win.window.MouseEvent('click', { bubbles: true })); return true; }
+  }
+  return false;
+}
+
+function railCount(doc){ const c=doc.querySelector('.docbar .count'); return c?c.textContent.trim():'?'; }
+
+(async () => {
+
+  /* ================= INCOME ================= */
+  {
+    const dom = load('income.html'); const doc = dom.window.document;
+    await sleep(300);
+    assert('income: pay_stubs hidden by default', visible(dom, doc, 'pay_stubs') === false);
+    assert('income: other_income_proof hidden by default', visible(dom, doc, 'other_income_proof') === false);
+    assert('income: bank_statements visible always', visible(dom, doc, 'bank_statements') === true);
+    assert('income: sp_pay_stubs hidden (not married)', visible(dom, doc, 'sp_pay_stubs') === false);
+    assert('income: sp_bank_statements hidden (not married)', visible(dom, doc, 'sp_bank_statements') === false);
+    clickYes(dom, doc, 'employedTg', 0); await sleep(250);
+    assert('income: pay_stubs appears on employed=Yes', visible(dom, doc, 'pay_stubs') === true);
+    clickYes(dom, doc, 'employedTg', 1); await sleep(250);
+    assert('income: pay_stubs hides on employed=No', visible(dom, doc, 'pay_stubs') === false);
+    clickYes(dom, doc, 'otherIncTg', 0); await sleep(250);
+    assert('income: other_income_proof appears on otherIncome=Yes', visible(dom, doc, 'other_income_proof') === true);
+    assert('income rail count reflects visible only', railCount(doc).endsWith('/ 2'), railCount(doc));
+  }
+
+  /* ---- income, married ---- */
+  {
+    const dom = load('income.html', 'https://mock.test/income.html?married=1'); const doc = dom.window.document;
+    await sleep(400);
+    assert('income(married): sp_bank_statements visible', visible(dom, doc, 'sp_bank_statements') === true);
+    assert('income(married): sp_pay_stubs hidden until spouse employed', visible(dom, doc, 'sp_pay_stubs') === false);
+    assert('income(married): sp_other_income_proof hidden until Yes', visible(dom, doc, 'sp_other_income_proof') === false);
+    clickYes(dom, doc, 'spEmployedTg', 0); await sleep(250);
+    assert('income(married): sp_pay_stubs appears on spouseEmployed=Yes', visible(dom, doc, 'sp_pay_stubs') === true);
+    clickYes(dom, doc, 'spOtherIncTg', 0); await sleep(250);
+    assert('income(married): sp_other_income_proof appears on Yes', visible(dom, doc, 'sp_other_income_proof') === true);
+    clickYes(dom, doc, 'spEmployedTg', 1); await sleep(250);
+    assert('income(married): sp_pay_stubs hides on spouseEmployed=No', visible(dom, doc, 'sp_pay_stubs') === false);
+  }
+
+  /* ================= ASSETS ================= */
+  {
+    const dom = load('assets.html'); const doc = dom.window.document; const win = dom;
+    await sleep(400);
+    for (const d of ['zillow_valuation','foreclosure_docs','kbb_valuation','vehicle_title','repo_docs','investment_statements'])
+      assert(`assets: ${d} hidden by default`, visible(dom, doc, d) === false, String(visible(dom,doc,d)));
+    clickYes(dom, doc, 'realEstateTg', 0); await sleep(250);
+    assert('assets: zillow appears on realEstate=Yes', visible(dom, doc, 'zillow_valuation') === true);
+    assert('assets: foreclosure still hidden (not behind)', visible(dom, doc, 'foreclosure_docs') === false);
+    assert('assets: behind-on-mortgage toggle found+clicked', clickToggleByLabel(dom, doc, 'behind on mortgage', 0)); await sleep(250);
+    assert('assets: foreclosure appears on behind=Yes', visible(dom, doc, 'foreclosure_docs') === true);
+    clickYes(dom, doc, 'vehTg', 0); await sleep(250);
+    assert('assets: kbb appears on vehicles=Yes', visible(dom, doc, 'kbb_valuation') === true);
+    assert('assets: title hidden until financed answered No', visible(dom, doc, 'vehicle_title') === false);
+    assert('assets: financed toggle found+clicked No', clickToggleByLabel(dom, doc, 'financed', 1)); await sleep(250);
+    assert('assets: title appears on financed=No', visible(dom, doc, 'vehicle_title') === true);
+    clickToggleByLabel(dom, doc, 'financed', 0); await sleep(250);
+    assert('assets: title hides on financed=Yes', visible(dom, doc, 'vehicle_title') === false);
+    const gotBehindVeh = clickToggleByLabel(dom, doc, 'behind on payments', 0); await sleep(250);
+    assert('assets: behind-on-payments toggle found', gotBehindVeh);
+    assert('assets: repo docs appear on behindPayments=Yes', visible(dom, doc, 'repo_docs') === true);
+    clickToggleByLabel(dom, doc, 'retirement or pension', 0); await sleep(250);
+    assert('assets: investments appear on retirement=Yes', visible(dom, doc, 'investment_statements') === true);
+    clickToggleByLabel(dom, doc, 'retirement or pension', 1); await sleep(250);
+    assert('assets: investments hide when the only Yes flips to No', visible(dom, doc, 'investment_statements') === false);
+    clickToggleByLabel(dom, doc, 'annuities', 0); await sleep(250);
+    assert('assets: investments reappear via annuities=Yes (OR gate)', visible(dom, doc, 'investment_statements') === true);
+    // cross-page persistence
+    const trg = JSON.parse(dom.window.sessionStorage.getItem('mcl_doc_triggers') || '{}');
+    assert('assets: persists real_estate=yes', trg.real_estate === 'yes', JSON.stringify(trg));
+    assert('assets: persists vehicle_financed=yes', trg.vehicle_financed === 'yes', JSON.stringify(trg));
+  }
+
+  /* ================= DEBTS: no assets answered ================= */
+  {
+    const dom = load('debts.html'); const doc = dom.window.document;
+    await sleep(400);
+    assert('debts(clean): unsecured visible (T1 always)', visible(dom, doc, 'unsecured_statements') === true);
+    for (const d of ['mortgage_statements','hoa_statements','other_secured_statements','vehicle_loan_statements','dso_docs','tax_notices','student_loan_statements','business_debt_statements'])
+      assert(`debts(clean): ${d} hidden`, visible(dom, doc, d) === false, String(visible(dom,doc,d)));
+    clickYes(dom, doc, 'dsoTg', 0); await sleep(250);
+    assert('debts: dso_docs appears on support=Yes', visible(dom, doc, 'dso_docs') === true);
+    clickYes(dom, doc, 'taxTg', 0); await sleep(250);
+    assert('debts: tax_notices appears on backTaxes=Yes', visible(dom, doc, 'tax_notices') === true);
+    clickYes(dom, doc, 'slTg', 0); await sleep(250);
+    assert('debts: student_loan_statements appears on Yes', visible(dom, doc, 'student_loan_statements') === true);
+    clickYes(dom, doc, 'bizDebtTg', 0); await sleep(250);
+    assert('debts: business_debt_statements appears on Yes', visible(dom, doc, 'business_debt_statements') === true);
+    clickYes(dom, doc, 'otherSecTg', 0); await sleep(250);
+    assert('debts: other_secured_statements appears on Yes', visible(dom, doc, 'other_secured_statements') === true);
+  }
+
+  /* ================= DEBTS: carryover from assets ================= */
+  {
+    const dom = load('debts.html', null, {
+      mcl_secured: JSON.stringify({properties:['123 Main St','456 Oak Ave'], vehicles:['2019 Honda Civic']}),
+      mcl_doc_triggers: JSON.stringify({real_estate:'yes', vehicle:'yes', vehicle_financed:'yes'})
+    });
+    const doc = dom.window.document;
+    await sleep(400);
+    const heads = [...doc.querySelectorAll('.pp-head')].map(h=>h.textContent.trim());
+    assert('debts(carry): two property panels with addresses', heads.filter(h=>h.startsWith('Your property ·')).length===2, JSON.stringify(heads));
+    assert('debts(carry): vehicle panel labeled', heads.some(h=>h==='Your vehicle · 2019 Honda Civic'), JSON.stringify(heads));
+    assert('debts(carry): mortgage_statements visible', visible(dom, doc, 'mortgage_statements') === true);
+    assert('debts(carry): vehicle_loan_statements visible', visible(dom, doc, 'vehicle_loan_statements') === true);
+    assert('debts(carry): hoa hidden until HOA=Yes', visible(dom, doc, 'hoa_statements') === false);
+    assert('debts(carry): HOA toggle found+clicked', clickToggleByLabel(dom, doc, 'HOA', 0)); await sleep(250);
+    assert('debts(carry): hoa_statements appears on HOA=Yes', visible(dom, doc, 'hoa_statements') === true);
+  }
+
+  /* ---- debts: answer-only fallback ---- */
+  {
+    const dom = load('debts.html', null, { mcl_doc_triggers: JSON.stringify({real_estate:'yes', vehicle_financed:'yes'}) });
+    const doc = dom.window.document;
+    await sleep(400);
+    const heads = [...doc.querySelectorAll('.pp-head')].map(h=>h.textContent.trim());
+    assert('debts(fallback): generic property panel appears', heads.some(h=>h.includes('add your address')), JSON.stringify(heads));
+    assert('debts(fallback): generic vehicle panel appears', heads.some(h=>h.includes('add your vehicle details')), JSON.stringify(heads));
+    assert('debts(fallback): mortgage_statements visible from answer alone', visible(dom, doc, 'mortgage_statements') === true);
+  }
+
+  /* ================= FINANCIAL AFFAIRS ================= */
+  {
+    const dom = load('financial-affairs.html'); const doc = dom.window.document;
+    await sleep(400);
+    assert('sofa: court_paperwork hidden by default', visible(dom, doc, 'court_paperwork') === false);
+    // Q9 yes
+    const q9 = [...doc.querySelectorAll('.sofa-q')].find(q => q.querySelector('.qn') && q.querySelector('.qn').textContent.trim()==='9');
+    q9.querySelectorAll('.toggle span')[0].dispatchEvent(new dom.window.MouseEvent('click',{bubbles:true})); await sleep(250);
+    assert('sofa: court_paperwork appears on Q9=Yes', visible(dom, doc, 'court_paperwork') === true);
+    q9.querySelectorAll('.toggle span')[1].dispatchEvent(new dom.window.MouseEvent('click',{bubbles:true})); await sleep(250);
+    assert('sofa: court_paperwork hides on Q9=No', visible(dom, doc, 'court_paperwork') === false);
+    const q10 = [...doc.querySelectorAll('.sofa-q')].find(q => q.querySelector('.qn') && q.querySelector('.qn').textContent.trim()==='10');
+    q10.querySelectorAll('.toggle span')[0].dispatchEvent(new dom.window.MouseEvent('click',{bubbles:true})); await sleep(250);
+    assert('sofa: court_paperwork appears on Q10=Yes (OR gate)', visible(dom, doc, 'court_paperwork') === true);
+  }
+
+  /* ================= PERSONAL: spouse docs ================= */
+  {
+    const dom = load('personal.html'); const doc = dom.window.document;
+    await sleep(400);
+    const spBtns = [...doc.querySelectorAll('.dbtn.spouse-doc')];
+    assert('personal: 4 spouse doc buttons exist', spBtns.length===4, String(spBtns.length));
+    assert('personal: spouse docs hidden by default', spBtns.every(b=>b.style.display==='none'));
+    assert('personal: base docs visible', visible(dom, doc, 'id_license')===true && visible(dom, doc, 'tax_return_y1')===true);
+  }
+
+  /* ================= DOCUMENTS (step 8) ================= */
+  {
+    const dom = load('documents.html'); const doc = dom.window.document; const win = dom.window;
+    await sleep(400);
+    assert('docs: 4 tier-1 rows', doc.querySelectorAll('.row[data-tier="1"]').length===4);
+    assert('docs: 6 tier-2 rows', doc.querySelectorAll('.row[data-tier="2"]').length===6);
+    assert('docs: submit note shows 4 required', doc.getElementById('submitNote').textContent.includes('4 required'), doc.getElementById('submitNote').textContent);
+    // upload all tier-1
+    for (const r of doc.querySelectorAll('.row[data-tier="1"]')) {
+      r.querySelector('.btn-up').dispatchEvent(new win.MouseEvent('click',{bubbles:true}));
+    }
+    await sleep(100);
+    assert('docs: progress 4 of 10 after t1 uploads', doc.getElementById('pcount').textContent.trim()==='4 of 10 resolved', doc.getElementById('pcount').textContent);
+    assert('docs: submit unblocked, soft message', doc.getElementById('submitNote').textContent.includes('Ready to submit'), doc.getElementById('submitNote').textContent);
+    // submit -> soft modal
+    doc.getElementById('submitBtn').dispatchEvent(new win.MouseEvent('click',{bubbles:true}));
+    await sleep(50);
+    assert('docs: soft modal opens with 6 open items', doc.getElementById('softModal').classList.contains('on') && doc.getElementById('softList').children.length===6, String(doc.getElementById('softList').children.length));
+  }
+
+  console.log(`\n=== DYNAMIC SIMULATION: ${pass} passed, ${fail} failed ===`);
+  failures.forEach(f=>console.log('FAIL: '+f));
+  process.exit(fail?1:0);
+})().catch(e=>{ console.error('HARNESS ERROR:', e.message); process.exit(2); });

@@ -803,6 +803,29 @@ and means-test household size.
 
 ---
 
+## Round 35 — Full gating audit: 107 static checks + 74 dynamic assertions, all pass (2026-07-05)
+**File(s):** gating-test.js (new — jsdom harness, rerunnable)
+
+**What was verified:**
+- Static (107 checks): every overlay-referenced doc_type button, element id, and
+  label-match string exists on its page; all DOC-LOGIC conditional doc_types are
+  gated; cross-page keys written by Assets are read by Debts; no visible "N/A"
+  text anywhere.
+- Dynamic (74 assertions, real page scripts in a headless DOM): income default/
+  employed/other-income flows incl. hide-on-No; married spouse gating both
+  directions; assets all six items incl. the investments OR-gate flipping on/off
+  via different source questions; mcl_doc_triggers persistence; debts clean
+  (only unsecured visible), all five question gates, two-property + vehicle
+  carryover with labeled panels, HOA reveal, answer-only fallback panels; SOFA
+  court paperwork Q9/Q10 OR-gate both directions; personal spouse docs hidden by
+  default; Step 8 tier counts, required-only progress, and soft-modal contents.
+
+**Result: 181/181 pass.** Known mockup-only limits (specced for dev in
+DOC-LOGIC): per-tab sessionStorage; hidden-after-upload items keep their upload
+(dev build marks `orphaned` per §5.4).
+
+---
+
 <!-- Add new rounds below this line. Template:
 
 ## Round N — short title (date)
