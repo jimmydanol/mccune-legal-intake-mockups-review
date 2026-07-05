@@ -566,8 +566,8 @@ table.exp td:last-child{width:140px;}
   data.properties=data.properties||[]; data.vehicles=data.vehicles||[];
   /* Fallback: the Assets ANSWERS alone generate panels even if no details were typed */
   var trg={}; try{ trg=JSON.parse(sessionStorage.getItem('mcl_doc_triggers')||'{}'); }catch(e){}
-  if(data.properties.length===0 && trg.real_estate==='yes') data.properties.push('your property');
-  if(data.vehicles.length===0 && trg.vehicle_financed==='yes') data.vehicles.push('your vehicle');
+  if(data.properties.length===0 && trg.real_estate==='yes') data.properties.push('add your address in the Assets section');
+  if(data.vehicles.length===0 && trg.vehicle_financed==='yes') data.vehicles.push('add your vehicle details in the Assets section');
 
   function card(kind, label, box){
     return '<div class="item" style="margin-top:8px">'+
@@ -611,10 +611,10 @@ table.exp td:last-child{width:140px;}
   function esc(t){ return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
   var html='';
   data.properties.forEach(function(addr){
-    html+='<div class="prop-panel"><div class="pp-head">Real estate · '+esc(addr)+'</div>'+mortgageGroup()+hoaBlock()+'</div>';
+    html+='<div class="prop-panel"><div class="pp-head">Your property · '+esc(addr)+'</div>'+mortgageGroup()+hoaBlock()+'</div>';
   });
   data.vehicles.forEach(function(v){
-    html+='<div class="veh-panel"><div class="pp-head">Vehicle · '+esc(v)+'</div>'+card('Loan / lease on', v, 'Vehicle loan / lease statements')+'</div>';
+    html+='<div class="veh-panel"><div class="pp-head">Your vehicle · '+esc(v)+'</div>'+card('Loan / lease on', v, 'Vehicle loan / lease statements')+'</div>';
   });
   if(html){ wrap.innerHTML=html; if(empty) empty.style.display='none'; }
   else { if(empty) empty.style.display=''; }
