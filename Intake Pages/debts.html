@@ -564,6 +564,10 @@ table.exp td:last-child{width:140px;}
   var data={properties:[],vehicles:[]};
   try{ data=JSON.parse(sessionStorage.getItem('mcl_secured')||'{}'); }catch(e){}
   data.properties=data.properties||[]; data.vehicles=data.vehicles||[];
+  /* Fallback: the Assets ANSWERS alone generate panels even if no details were typed */
+  var trg={}; try{ trg=JSON.parse(sessionStorage.getItem('mcl_doc_triggers')||'{}'); }catch(e){}
+  if(data.properties.length===0 && trg.real_estate==='yes') data.properties.push('your property');
+  if(data.vehicles.length===0 && trg.vehicle_financed==='yes') data.vehicles.push('your vehicle');
 
   function card(kind, label, box){
     return '<div class="item" style="margin-top:8px">'+
