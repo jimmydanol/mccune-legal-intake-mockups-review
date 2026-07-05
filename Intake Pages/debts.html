@@ -726,6 +726,8 @@ table.exp td:last-child{width:140px;}
   function trig(){var t={};
     try{t=JSON.parse(sessionStorage.getItem('mcl_doc_triggers')||'{}');}catch(e){}
     return t;}
+  function idYes(id){var t=document.getElementById(id);if(!t)return false;
+    var sp=t.querySelectorAll('span');return sp[0]&&sp[0].classList.contains('on');}
   function apply(){
     var d=secured(), t=trig();
     var hasProp=d.properties.length>0||t.real_estate==='yes';
@@ -733,6 +735,7 @@ table.exp td:last-child{width:140px;}
     show('mortgage_statements',hasProp);
     show('hoa_statements',hasProp&&hoaYes());
     show('vehicle_loan_statements',hasFin);
+    show('other_secured_statements',idYes('otherSecTg'));
     setTimeout(recountVisible,0);
   }
   document.addEventListener('click',function(e){
