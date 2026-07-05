@@ -889,13 +889,13 @@ gate submit.
 
 ---
 
-## Round 39 — Step 8 completeness check: 28/28 doc_types now renderable (2026-07-05)
+## Round 39 — Step 8 completeness check: all doc_types now renderable (2026-07-05)
 **File(s):** documents.html, gating-test.js
 
 **What changed:** Systematic sweep of DOC-LOGIC §3 vs the Step 8 renderer found
 two missing rows: `vehicle_title` (vehicle AND not financed) and `repo_docs`
 (financed AND behind on payments). Both added; harness covers the mutually
-exclusive financed states. Coverage now 28/28 doc_types; **97 dynamic + 107
+exclusive financed states. Coverage now 32/32 doc_types (correction: an audit regex missed the 4 tax-return doc_types containing digits; they were already renderable — true total is 32); **97 dynamic + 107
 static checks pass.**
 
 ---
