@@ -826,6 +826,27 @@ DOC-LOGIC): per-tab sessionStorage; hidden-after-upload items keep their upload
 
 ---
 
+## Round 36 — Full-intake UX runthrough vs mortgage/tax industry + confirmation rebuild (2026-07-05)
+**File(s):** confirmation.html (rebuilt), DOC-LOGIC.md (§8 roadmap added)
+
+**What changed:**
+- **confirmation.html rebuilt** — it still carried the pre-redesign doc rail
+  (retired items, "N/A"/"Marked N/A" language). Now a post-submit status page:
+  success hero, 3-step what-happens-next (review → follow-up → strategy
+  session), "Book my strategy session" CTA, and a sample "Still on the list"
+  open-items block (live build renders from shared doc state). No rail.
+- **DOC-LOGIC §8** logs the approved roadmap: bank linking as alternate
+  satisfier for bank_statements; reviewing/needs_attention verification states;
+  magic-link resume + SMS; Spanish; extraction prefill priority; time
+  estimates.
+
+**Assessment summary (vs Rocket/Blend/TurboTax-class onboarding):** at or ahead
+on conditional logic, plain language, contextual collection, soft gating, and
+AI catch-all sorting; gaps closed by the §8 roadmap (bank linking, verification
+loop, post-submit experience, passwordless resume, localization).
+
+---
+
 <!-- Add new rounds below this line. Template:
 
 ## Round N — short title (date)

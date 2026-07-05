@@ -165,6 +165,28 @@ document state.
 - Catch-all drop zone: uploads classified by the backend into a `doc_type`,
   debtor confirms; unmatched files land in `other_docs`.
 
+## 8. Approved roadmap (Matt, 2026-07-05) — dev-build items
+
+1. **Bank linking as an alternate satisfier for `bank_statements`.** Offer
+   "connect your bank securely" (Plaid-class aggregation) alongside upload.
+   Either path resolves the item; linked data feeds the same 6-month lookback
+   the statements would. This is the highest-impact friction removal in the
+   flow — bank statements are the only hard-required multi-document item.
+2. **Verification states.** Extend `status` (§6) with `reviewing` and
+   `needs_attention` (e.g., blurry photo, wrong document). `needs_attention`
+   reopens the item with a plain-language reason and re-request.
+3. **Post-submit tracker.** confirmation.html is now a status page (received →
+   review → strategy session, with booking CTA + live open-items list). Live
+   build renders the open-items list from the shared doc state.
+4. **Magic-link resume + SMS nudges.** Follow-up emails/texts deep-link back
+   into the intake without password re-entry.
+5. **Spanish toggle.** Full ES localization; Cricket Debt already offers the
+   class in Spanish.
+6. **Extraction prefill** (FIELD-MAP deterministic/inferred model) — snap a
+   W-2/license, we read it, debtor confirms. Already specced; build priority.
+7. Smaller: per-section time estimates ("about 10 minutes"); momentum
+   microcopy on progress.
+
 ---
 *Maintain with FIELD-MAP.md and SUGGESTIONS.md per the standing rule: any
 change to triggers, tiers, labels, or doc_types updates this file in the same
