@@ -738,4 +738,50 @@ table.exp td:last-child{width:140px;}
   saveCarryover();
 })();</script>
 <script>(function(){var fl=document.getElementById("savedFlag");if(!fl)return;function show(){fl.style.visibility="visible";document.removeEventListener("input",show);}document.addEventListener("input",show);})();</script>
-</body></html>
+<script>
+/* DOC-LOGIC trigger gating (mockup):
+   zillow_valuation <- real estate = Yes
+   foreclosure_docs <- real estate = Yes AND behind on mortgage = Yes (any property)
+   kbb_valuation    <- vehicles = Yes
+   vehicle_title    <- vehicles = Yes AND any vehicle NOT financed/leased
+   repo_docs        <- vehicles = Yes AND behind on payments = Yes (any financed vehicle)
+   Rail count/progress count only visible items. */
+(function(){
+  function btn(d){return document.querySelector('.dbtn[data-doc="'+d+'"]');}
+  function idYes(id){var t=document.getElementById(id);if(!t)return false;
+    var sp=t.querySelectorAll('span');return sp[0]&&sp[0].classList.contains('on');}
+  function scanToggles(labelSub,which){ /* any visible card toggle whose label mentions labelSub answered [which: 0=Yes,1=No] */
+    var rows=document.querySelectorAll('.qrow');
+    for(var i=0;i<rows.length;i++){
+      var lab=rows[i].querySelector('label'); if(!lab)continue;
+      if(lab.textContent.toLowerCase().indexOf(labelSub)<0)continue;
+      if(rows[i].offsetParent===null)continue; /* hidden card */
+      var tg=rows[i].querySelector('.toggle'); if(!tg)continue;
+      var sp=tg.querySelectorAll('span');
+      if(sp[which]&&sp[which].classList.contains('on'))return true;
+    }
+    return false;
+  }
+  function show(d,on){var b=btn(d);if(b)b.style.display=on?'':'none';}
+  function recountVisible(){
+    var bar=document.querySelector('.docbar');if(!bar)return;
+    var btns=[].filter.call(bar.querySelectorAll('.dbtn'),function(b){return getComputedStyle(b).display!=='none';});
+    var done=btns.filter(function(b){return b.classList.contains('done')||b.classList.contains('na');}).length;
+    var c=bar.querySelector('.count');if(c)c.textContent=done+' / '+btns.length;
+    var i=bar.querySelector('.bar i');if(i)i.style.width=(btns.length?Math.round(100*done/btns.length):0)+'%';
+  }
+  function apply(){
+    var re=idYes('realEstateTg'), veh=idYes('vehTg');
+    show('zillow_valuation',re);
+    show('foreclosure_docs',re&&scanToggles('behind on mortgage',0));
+    show('kbb_valuation',veh);
+    show('vehicle_title',veh&&scanToggles('financed',1));
+    show('repo_docs',veh&&scanToggles('behind on payments',0));
+    setTimeout(recountVisible,0);
+  }
+  document.addEventListener('click',function(e){
+    if(e.target.closest('.toggle')||e.target.closest('.dbtn'))setTimeout(apply,0);
+  });
+  setTimeout(apply,0); setTimeout(apply,150);
+})();
+</script></body></html>
