@@ -68,9 +68,9 @@ Reflects the live fields on `personal.html`. Form destination = Form 101 (Volunt
 | Mailing address (if different) |  | Form 101, Pt 1, Line 5 (Mailing address) | — | Manual | Revealed by checkbox; accepts P.O. Box |
 | Date of birth | ✓ | *(used for identity / dependents logic)* | License (barcode), 1040 | Deterministic | Typed MM/DD/YYYY |
 | Social Security number | ✓ | **Form 121** (Statement About SSN) — not printed on 101 | SSA card, W-2, 1099, 1040 | Deterministic | **Encrypt at rest.** Form 101 shows last 4 only; full SSN goes to Form 121 |
-| Have you filed bankruptcy before? |  | Form 101, Pt 3, Lines 9–10 (Prior cases) | — | Manual | "Yes" reveals a free-text field: case number, chapter, approximate filing date (best-effort) |
+| Have you filed bankruptcy before? | ✓ | Form 101, Pt 3, Lines 9–10 (Prior cases) | — | Manual | "Yes" reveals a free-text field: case number, chapter, approximate filing date (best-effort) |
 | → Prior bankruptcy detail (text) | shown on Yes | Form 101, Pt 3, Lines 9–10 | — | Manual | One textarea; attorney parses/verifies. Structured fields *to build* later if needed |
-| Has dependents? |  | **Schedule J, Line 2** (Dependents) | 1040 (dependents) | Inferred | "Yes" reveals per-dependent rows; "No" reveals nothing |
+| Has dependents? | ✓ | **Schedule J, Line 2** (Dependents) | 1040 (dependents) | Inferred | "Yes" reveals per-dependent rows; "No" reveals nothing |
 | → Dependent rows: Relationship, Age, Lives with you? (Yes / No / Part-time) | shown on Yes | **Schedule J, Line 2** | 1040 | Inferred | **Matches Form 106J. NO name field** — the form says "Do not state the dependents' names." Form 106J only has Yes/No for "lives with you" — **"Part-time" maps to Yes** with the nuance noted for the attorney. "Add another dependent" clones a row |
 | Marital status | ✓ | Drives spouse block + Schedule I/J + **SOFA Q1** | 1040 (filing status) | Inferred | **Placed LAST in the section.** 1040 status ≈ marital status; confirm. "Married" reveals the Spouse block below |
 | Note to attorney |  | *(internal — not a form line)* | — | Manual | Firm intake note |

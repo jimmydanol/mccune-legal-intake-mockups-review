@@ -791,6 +791,18 @@ item (specced in DOC-LOGIC §6); the mockups approximate it per page.
 
 ---
 
+## Round 34 — Personal Info: prior bankruptcy + dependents now mandatory (2026-07-04)
+**File(s):** personal.html, FIELD-MAP.md
+
+**What changed:** "Have you filed for bankruptcy before?" and "Do you have
+dependents?" now carry the required marker; FIELD-MAP Req column updated for
+both. Dev build: these two toggles must have an answer (Yes or No) before the
+section validates — a blank is not a No. Prior-case history gates refiling
+eligibility/automatic-stay analysis (Form 101 Pt 3); dependents drive Schedule J
+and means-test household size.
+
+---
+
 <!-- Add new rounds below this line. Template:
 
 ## Round N — short title (date)
