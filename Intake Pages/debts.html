@@ -736,6 +736,10 @@ table.exp td:last-child{width:140px;}
     show('hoa_statements',hasProp&&hoaYes());
     show('vehicle_loan_statements',hasFin);
     show('other_secured_statements',idYes('otherSecTg'));
+    show('dso_docs',idYes('dsoTg'));
+    show('tax_notices',idYes('taxTg'));
+    show('student_loan_statements',idYes('slTg'));
+    show('business_debt_statements',idYes('bizDebtTg'));
     setTimeout(recountVisible,0);
   }
   document.addEventListener('click',function(e){
