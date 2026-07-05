@@ -599,13 +599,16 @@ table.exp td:last-child{width:140px;}
 (function(){
   function apply(){
     var t=document.getElementById('jointTg'); if(!t)return;
+    var sel=document.getElementById('maritalSel');
+    var married=sel&&sel.value==='Married';
     var sp=t.querySelectorAll('span');
-    var joint=sp[0]&&sp[0].classList.contains('on');
+    var joint=married&&sp[0]&&sp[0].classList.contains('on');
     try{ var _t=JSON.parse(sessionStorage.getItem('mcl_doc_triggers')||'{}');
       _t.joint=joint?'yes':'no';
       sessionStorage.setItem('mcl_doc_triggers', JSON.stringify(_t)); }catch(e){}
   }
   document.addEventListener('click',function(e){ if(e.target.closest('.toggle'))setTimeout(apply,0); });
+  var _sel=document.getElementById('maritalSel'); if(_sel)_sel.addEventListener('change',function(){setTimeout(apply,0);});
   setTimeout(apply,150);
 })();
 </script></body></html>

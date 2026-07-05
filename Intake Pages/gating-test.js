@@ -289,6 +289,30 @@ function railCount(doc){ const c=doc.querySelector('.docbar .count'); return c?c
     assert('docs(behind on car): no title (financed)', !t2.includes('vehicle_title'));
   }
 
+  /* ---- documents: stale joint flag without Married must NOT show spouse docs ---- */
+  {
+    const dom = load('documents.html', null, { mcl_doc_triggers: JSON.stringify({joint:'yes'}) }); /* no mcl_marital */
+    const doc = dom.window.document; await sleep(400);
+    const t1 = [...doc.querySelectorAll('.row[data-tier="1"]')].map(r=>r.dataset.doc);
+    assert('docs(stale joint, not married): no spouse T1 docs', !t1.includes('sp_id_license') && t1.length===4, JSON.stringify(t1));
+    const t2 = [...doc.querySelectorAll('.row[data-tier="2"]')].map(r=>r.dataset.doc);
+    assert('docs(stale joint, not married): no spouse tax returns', !t2.includes('sp_tax_return_y1'));
+  }
+
+  /* ---- personal: switching away from Married clears joint ---- */
+  {
+    const dom = load('personal.html'); const doc = dom.window.document;
+    await sleep(300);
+    const sel = doc.getElementById('maritalSel');
+    sel.value='Married'; sel.dispatchEvent(new dom.window.Event('change',{bubbles:true})); await sleep(200);
+    doc.getElementById('jointTg').querySelectorAll('span')[0].dispatchEvent(new dom.window.MouseEvent('click',{bubbles:true})); await sleep(250);
+    let trg = JSON.parse(dom.window.sessionStorage.getItem('mcl_doc_triggers')||'{}');
+    assert('personal: joint=yes while Married', trg.joint==='yes');
+    sel.value='Single'; sel.dispatchEvent(new dom.window.Event('change',{bubbles:true})); await sleep(250);
+    trg = JSON.parse(dom.window.sessionStorage.getItem('mcl_doc_triggers')||'{}');
+    assert('personal: joint cleared when no longer Married', trg.joint==='no', JSON.stringify(trg));
+  }
+
   /* ---- personal: joint answer persists ---- */
   {
     const dom = load('personal.html'); const doc = dom.window.document;

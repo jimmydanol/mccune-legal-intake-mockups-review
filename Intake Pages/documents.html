@@ -439,8 +439,8 @@ table.exp td:last-child{width:140px;}
     ['sp_pay_stubs','Spouse\u2019s pay stubs \u2014 last 6 months','Your spouse is employed','Income',STD,MARRIED&&on('sp_employed')],
     ['sp_other_income_proof','Spouse\u2019s proof of other income \u2014 last 6 months','Your spouse has other income','Income',STD,MARRIED&&on('sp_other_income')],
     ['sp_bank_statements','Spouse\u2019s bank statements \u2014 last 6 months','Married, filing individually \u2014 spouse income still counts','Income',STD,MARRIED&&!on('joint')],
-    ['sp_tax_return_y1','Spouse\u2019s tax return \u2014 last year','Only needed if filed separately','Personal',[['filed_together',"We filed together"]].concat(STD),on('joint')],
-    ['sp_tax_return_y2','Spouse\u2019s tax return \u2014 two years ago','Only needed if filed separately','Personal',[['filed_together',"We filed together"]].concat(STD),on('joint')],
+    ['sp_tax_return_y1','Spouse\u2019s tax return \u2014 last year','Only needed if filed separately','Personal',[['filed_together',"We filed together"]].concat(STD),MARRIED&&on('joint')],
+    ['sp_tax_return_y2','Spouse\u2019s tax return \u2014 two years ago','Only needed if filed separately','Personal',[['filed_together',"We filed together"]].concat(STD),MARRIED&&on('joint')],
     ['zillow_valuation','Zillow value report \u2014 your home','You listed real estate','Assets',STD,on('real_estate')],
     ['foreclosure_docs','Foreclosure paperwork','You\u2019re behind on mortgage payments','Assets',STD,on('real_estate')&&on('behind_mortgage')],
     ['kbb_valuation','KBB value report \u2014 your vehicle','You listed a vehicle','Assets',STD,on('vehicle')],
@@ -472,7 +472,7 @@ table.exp td:last-child{width:140px;}
   }
   document.getElementById('t2rows').innerHTML=T2DEFS.filter(function(d){return d[5];}).map(t2row).join('');
   /* spouse T1 rows for joint filings */
-  if(on('joint')){
+  if(MARRIED&&on('joint')){
     var t1extra='';
     [['sp_id_license',"Spouse\u2019s driver\u2019s license or photo ID","Filing jointly \u2014 identity verification"],
      ['sp_ssn_proof',"Spouse\u2019s Social Security card, W-2, or 1099","Filing jointly \u2014 proof of Social Security number"]].forEach(function(d){

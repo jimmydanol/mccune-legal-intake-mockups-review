@@ -900,6 +900,20 @@ static checks pass.**
 
 ---
 
+## Round 40 — Fix stale spouse-doc trigger: joint requires Married everywhere (2026-07-05)
+**File(s):** personal.html, documents.html, gating-test.js
+
+**What changed:** Matt saw spouse ID/SSN in "Required to submit" without a
+married-joint answer. Cause: the joint flag could go stale — answering Married +
+jointly Yes, then changing marital status back, left `joint=yes` in storage
+(the hidden toggle never re-fires). Fixes: personal.html computes joint as
+*Married AND toggle Yes* and re-applies on marital-status change; documents.html
+requires MARRIED && joint for spouse T1 rows and spouse tax returns. Two new
+harness scenarios (stale-joint, marital-switch); **101 dynamic + 107 static
+pass.**
+
+---
+
 <!-- Add new rounds below this line. Template:
 
 ## Round N — short title (date)
