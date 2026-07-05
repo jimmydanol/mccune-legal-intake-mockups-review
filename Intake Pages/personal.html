@@ -594,4 +594,18 @@ table.exp td:last-child{width:140px;}
   if(ssa&&sab){ function s1(){ sab.style.display = ssa.checked ? "none" : ""; } ssa.addEventListener("change",s1); s1(); }
 })();</script>
 <script>(function(){var fl=document.getElementById("savedFlag");if(!fl)return;function show(){fl.style.visibility="visible";document.removeEventListener("input",show);}document.addEventListener("input",show);})();</script>
-</body></html>
+<script>
+/* DOC-LOGIC: persist joint-filing answer for Step 8 (spouse T1 docs) */
+(function(){
+  function apply(){
+    var t=document.getElementById('jointTg'); if(!t)return;
+    var sp=t.querySelectorAll('span');
+    var joint=sp[0]&&sp[0].classList.contains('on');
+    try{ var _t=JSON.parse(sessionStorage.getItem('mcl_doc_triggers')||'{}');
+      _t.joint=joint?'yes':'no';
+      sessionStorage.setItem('mcl_doc_triggers', JSON.stringify(_t)); }catch(e){}
+  }
+  document.addEventListener('click',function(e){ if(e.target.closest('.toggle'))setTimeout(apply,0); });
+  setTimeout(apply,150);
+})();
+</script></body></html>

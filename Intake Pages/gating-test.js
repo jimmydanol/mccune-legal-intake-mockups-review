@@ -243,6 +243,50 @@ function railCount(doc){ const c=doc.querySelector('.docbar .count'); return c?c
     assert('docs(seeded): derived list does NOT claim filing individually', !derived.includes('individually'), derived);
   }
 
+  /* ---- documents: joint filing pushes spouse docs ---- */
+  {
+    const dom = load('documents.html', null, {
+      mcl_doc_triggers: JSON.stringify({joint:'yes'}),
+      mcl_marital: 'Married'
+    });
+    const doc = dom.window.document;
+    await sleep(400);
+    const t1 = [...doc.querySelectorAll('.row[data-tier="1"]')].map(r=>r.dataset.doc);
+    assert('docs(joint): spouse ID in tier 1', t1.includes('sp_id_license'), JSON.stringify(t1));
+    assert('docs(joint): spouse SSN proof in tier 1', t1.includes('sp_ssn_proof'));
+    assert('docs(joint): 6 tier-1 rows total', t1.length===6, String(t1.length));
+    const t2 = [...doc.querySelectorAll('.row[data-tier="2"]')].map(r=>r.dataset.doc);
+    assert('docs(joint): spouse tax returns in tier 2', t2.includes('sp_tax_return_y1')&&t2.includes('sp_tax_return_y2'), JSON.stringify(t2));
+    assert('docs(joint): NO spouse bank stmts (joint accounts covered)', !t2.includes('sp_bank_statements'));
+  }
+  {
+    const dom = load('documents.html', null, {
+      mcl_doc_triggers: JSON.stringify({joint:'no'}),
+      mcl_marital: 'Married'
+    });
+    const doc = dom.window.document;
+    await sleep(400);
+    const t1 = [...doc.querySelectorAll('.row[data-tier="1"]')].map(r=>r.dataset.doc);
+    const t2 = [...doc.querySelectorAll('.row[data-tier="2"]')].map(r=>r.dataset.doc);
+    assert('docs(married,not joint): no spouse T1 docs', !t1.includes('sp_id_license'));
+    assert('docs(married,not joint): spouse bank stmts requested', t2.includes('sp_bank_statements'), JSON.stringify(t2));
+    assert('docs(married,not joint): no spouse tax returns', !t2.includes('sp_tax_return_y1'));
+  }
+
+  /* ---- personal: joint answer persists ---- */
+  {
+    const dom = load('personal.html'); const doc = dom.window.document;
+    await sleep(300);
+    const sel = doc.getElementById('maritalSel');
+    sel.value='Married'; sel.dispatchEvent(new dom.window.Event('change',{bubbles:true}));
+    await sleep(200);
+    const jt = doc.getElementById('jointTg');
+    jt.querySelectorAll('span')[0].dispatchEvent(new dom.window.MouseEvent('click',{bubbles:true}));
+    await sleep(250);
+    const trg = JSON.parse(dom.window.sessionStorage.getItem('mcl_doc_triggers')||'{}');
+    assert('personal: joint=yes persisted', trg.joint==='yes', JSON.stringify(trg));
+  }
+
   console.log(`\n=== DYNAMIC SIMULATION: ${pass} passed, ${fail} failed ===`);
   failures.forEach(f=>console.log('FAIL: '+f));
   process.exit(fail?1:0);

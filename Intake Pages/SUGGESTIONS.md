@@ -869,6 +869,26 @@ redesign — check narration still matches.
 
 ---
 
+## Round 38 — Spouse documents now flow to the Step 8 summary (2026-07-05)
+**File(s):** personal.html, documents.html, gating-test.js
+
+**What changed:**
+- personal.html persists the joint-filing answer into `mcl_doc_triggers.joint`.
+- documents.html Step 8 now renders the full spouse set per DOC-LOGIC:
+  joint = Yes → spouse ID + spouse SSN proof appear in **Required to submit**
+  (tier 1) and spouse tax returns in tier 2 with a "We filed together" reason;
+  married but not joint → spouse bank statements requested instead (joint
+  accounts otherwise covered); spouse pay stubs / other-income proof follow
+  their Income toggles as before.
+- Harness: 3 new scenarios (joint, married-not-joint, personal persistence) —
+  **93 dynamic + 107 static, all pass.**
+
+**Rationale:** Previously only spouse pay stubs reached the summary; a joint
+filing's required spouse identity docs were invisible on Step 8 and couldn't
+gate submit.
+
+---
+
 <!-- Add new rounds below this line. Template:
 
 ## Round N — short title (date)
