@@ -690,4 +690,46 @@ table.exp td:last-child{width:140px;}
   gateReveal('biz50Tg','biz50Block');
 })();</script>
 <script>(function(){var fl=document.getElementById("savedFlag");if(!fl)return;function show(){fl.style.visibility="visible";document.removeEventListener("input",show);}document.addEventListener("input",show);})();</script>
-</body></html>
+<script>
+/* DOC-LOGIC trigger gating (mockup):
+   mortgage_statements     <- real estate carried over from Assets (mcl_secured.properties)
+   hoa_statements          <- property exists AND "HOA or association?" = Yes (any property)
+   vehicle_loan_statements <- financed/leased vehicle carried over (mcl_secured.vehicles)
+   Rail count/progress count only visible items. */
+(function(){
+  function btn(d){return document.querySelector('.dbtn[data-doc="'+d+'"]');}
+  function show(d,on){var b=btn(d);if(b)b.style.display=on?'':'none';}
+  function secured(){var d={properties:[],vehicles:[]};
+    try{d=JSON.parse(sessionStorage.getItem('mcl_secured')||'{}');}catch(e){}
+    d.properties=d.properties||[];d.vehicles=d.vehicles||[];return d;}
+  function hoaYes(){
+    var rows=document.querySelectorAll('.qrow,.fa-q');
+    for(var i=0;i<rows.length;i++){
+      var lab=rows[i].querySelector('label'); if(!lab)continue;
+      if(lab.textContent.indexOf('HOA')<0)continue;
+      var sp=rows[i].querySelectorAll('.toggle span');
+      if(sp[0]&&sp[0].classList.contains('on'))return true;
+    }
+    return false;
+  }
+  function recountVisible(){
+    var bar=document.querySelector('.docbar');if(!bar)return;
+    var btns=[].filter.call(bar.querySelectorAll('.dbtn'),function(b){return getComputedStyle(b).display!=='none';});
+    var done=btns.filter(function(b){return b.classList.contains('done')||b.classList.contains('na');}).length;
+    var c=bar.querySelector('.count');if(c)c.textContent=done+' / '+btns.length;
+    var i=bar.querySelector('.bar i');if(i)i.style.width=(btns.length?Math.round(100*done/btns.length):0)+'%';
+  }
+  function apply(){
+    var d=secured();
+    var hasProp=d.properties.length>0, hasFin=d.vehicles.length>0;
+    show('mortgage_statements',hasProp);
+    show('hoa_statements',hasProp&&hoaYes());
+    show('vehicle_loan_statements',hasFin);
+    setTimeout(recountVisible,0);
+  }
+  document.addEventListener('click',function(e){
+    if(e.target.closest('.toggle')||e.target.closest('.dbtn'))setTimeout(apply,0);
+  });
+  setTimeout(apply,0); setTimeout(apply,150);
+})();
+</script></body></html>
