@@ -210,24 +210,37 @@ function railCount(doc){ const c=doc.querySelector('.docbar .count'); return c?c
     assert('personal: base docs visible', visible(dom, doc, 'id_license')===true && visible(dom, doc, 'tax_return_y1')===true);
   }
 
-  /* ================= DOCUMENTS (step 8) ================= */
+  /* ================= DOCUMENTS (step 8): clean session ================= */
   {
     const dom = load('documents.html'); const doc = dom.window.document; const win = dom.window;
     await sleep(400);
-    assert('docs: 4 tier-1 rows', doc.querySelectorAll('.row[data-tier="1"]').length===4);
-    assert('docs: 6 tier-2 rows', doc.querySelectorAll('.row[data-tier="2"]').length===6);
-    assert('docs: submit note shows 4 required', doc.getElementById('submitNote').textContent.includes('4 required'), doc.getElementById('submitNote').textContent);
-    // upload all tier-1
-    for (const r of doc.querySelectorAll('.row[data-tier="1"]')) {
-      r.querySelector('.btn-up').dispatchEvent(new win.MouseEvent('click',{bubbles:true}));
-    }
+    assert('docs(clean): 4 tier-1 rows', doc.querySelectorAll('.row[data-tier="1"]').length===4);
+    const t2 = [...doc.querySelectorAll('.row[data-tier="2"]')].map(r=>r.dataset.doc);
+    assert('docs(clean): tier-2 = taxes + counseling only', JSON.stringify(t2)===JSON.stringify(['tax_return_y1','tax_return_y2','counseling_certificate']), JSON.stringify(t2));
+    assert('docs(clean): derived list mentions no-real-estate skip', doc.getElementById('derivedList').textContent.includes('no real estate'));
+    for (const r of doc.querySelectorAll('.row[data-tier="1"]')) r.querySelector('.btn-up').dispatchEvent(new win.MouseEvent('click',{bubbles:true}));
     await sleep(100);
-    assert('docs: progress 4 of 10 after t1 uploads', doc.getElementById('pcount').textContent.trim()==='4 of 10 resolved', doc.getElementById('pcount').textContent);
-    assert('docs: submit unblocked, soft message', doc.getElementById('submitNote').textContent.includes('Ready to submit'), doc.getElementById('submitNote').textContent);
-    // submit -> soft modal
+    assert('docs(clean): progress 4 of 7 after t1 uploads', doc.getElementById('pcount').textContent.trim()==='4 of 7 resolved', doc.getElementById('pcount').textContent);
     doc.getElementById('submitBtn').dispatchEvent(new win.MouseEvent('click',{bubbles:true}));
     await sleep(50);
-    assert('docs: soft modal opens with 6 open items', doc.getElementById('softModal').classList.contains('on') && doc.getElementById('softList').children.length===6, String(doc.getElementById('softList').children.length));
+    assert('docs(clean): soft modal lists 3 open items', doc.getElementById('softList').children.length===3, String(doc.getElementById('softList').children.length));
+  }
+
+  /* ---- documents: summary reacts to persisted answers ---- */
+  {
+    const dom = load('documents.html', null, {
+      mcl_doc_triggers: JSON.stringify({real_estate:'yes',behind_mortgage:'no',vehicle:'yes',vehicle_financed:'yes',employed:'yes',lawsuit:'yes',sp_employed:'yes',hoa:'yes'}),
+      mcl_marital: 'Married'
+    });
+    const doc = dom.window.document;
+    await sleep(400);
+    const t2 = [...doc.querySelectorAll('.row[data-tier="2"]')].map(r=>r.dataset.doc);
+    for (const want of ['pay_stubs','sp_pay_stubs','zillow_valuation','kbb_valuation','mortgage_statements','hoa_statements','vehicle_loan_statements','court_paperwork'])
+      assert(`docs(seeded): row rendered for ${want}`, t2.includes(want), JSON.stringify(t2));
+    assert('docs(seeded): no foreclosure row (not behind)', !t2.includes('foreclosure_docs'));
+    const derived = doc.getElementById('derivedList').textContent;
+    assert('docs(seeded): derived list does NOT claim no-real-estate', !derived.includes('no real estate'), derived);
+    assert('docs(seeded): derived list does NOT claim filing individually', !derived.includes('individually'), derived);
   }
 
   console.log(`\n=== DYNAMIC SIMULATION: ${pass} passed, ${fail} failed ===`);

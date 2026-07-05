@@ -619,6 +619,12 @@ table.exp td:last-child{width:140px;}
     show('sp_pay_stubs',m&&tgYes('spEmployedTg'));
     show('sp_other_income_proof',m&&tgYes('spOtherIncTg'));
     /* sp_bank_statements: married-only, left to the base script */
+    try{ var _t=JSON.parse(sessionStorage.getItem('mcl_doc_triggers')||'{}');
+      _t.employed=tgYes('employedTg')?'yes':'no';
+      _t.other_income=tgYes('otherIncTg')?'yes':'no';
+      _t.sp_employed=tgYes('spEmployedTg')?'yes':'no';
+      _t.sp_other_income=tgYes('spOtherIncTg')?'yes':'no';
+      sessionStorage.setItem('mcl_doc_triggers', JSON.stringify(_t)); }catch(e){}
     setTimeout(recountVisible,0);
   }
   ['employedTg','otherIncTg','spEmployedTg','spOtherIncTg'].forEach(function(id){

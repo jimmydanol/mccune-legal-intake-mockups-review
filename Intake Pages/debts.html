@@ -740,6 +740,14 @@ table.exp td:last-child{width:140px;}
     show('tax_notices',idYes('taxTg'));
     show('student_loan_statements',idYes('slTg'));
     show('business_debt_statements',idYes('bizDebtTg'));
+    try{ var _t2=JSON.parse(sessionStorage.getItem('mcl_doc_triggers')||'{}');
+      _t2.other_secured=idYes('otherSecTg')?'yes':'no';
+      _t2.dso=idYes('dsoTg')?'yes':'no';
+      _t2.back_taxes=idYes('taxTg')?'yes':'no';
+      _t2.student_loans=idYes('slTg')?'yes':'no';
+      _t2.business_debt=idYes('bizDebtTg')?'yes':'no';
+      _t2.hoa=(hasProp&&hoaYes())?'yes':'no';
+      sessionStorage.setItem('mcl_doc_triggers', JSON.stringify(_t2)); }catch(e){}
     setTimeout(recountVisible,0);
   }
   document.addEventListener('click',function(e){

@@ -606,7 +606,11 @@ table.exp td:last-child{width:140px;}
   }
   function apply(){
     var b=document.querySelector('.dbtn[data-doc="court_paperwork"]');
-    if(b)b.style.display=(qYes(9)||qYes(10))?'':'none';
+    var law=(qYes(9)||qYes(10));
+    if(b)b.style.display=law?'':'none';
+    try{ var _t=JSON.parse(sessionStorage.getItem('mcl_doc_triggers')||'{}');
+      _t.lawsuit=law?'yes':'no';
+      sessionStorage.setItem('mcl_doc_triggers', JSON.stringify(_t)); }catch(e){}
     setTimeout(recountVisible,0);
   }
   document.addEventListener('click',function(e){

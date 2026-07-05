@@ -790,12 +790,15 @@ table.exp td:last-child{width:140px;}
     /* investments box: any of the five source questions = Yes */
     show('investment_statements',
       faYes('bonds, mutual funds')||faYes('retirement or pension')||faYes('annuities')||faYes('education account')||faYes('cash value'));
-    /* persist raw answers for cross-page gating (debts reads these) */
-    try{ sessionStorage.setItem('mcl_doc_triggers', JSON.stringify({
-      real_estate: re?'yes':'no',
-      vehicle: veh?'yes':'no',
-      vehicle_financed: (veh&&scanToggles('financed',0))?'yes':'no'
-    })); }catch(e){}
+    /* persist raw answers for cross-page gating (debts + summary read these) */
+    try{ var _t=JSON.parse(sessionStorage.getItem('mcl_doc_triggers')||'{}');
+      _t.real_estate=re?'yes':'no';
+      _t.vehicle=veh?'yes':'no';
+      _t.vehicle_financed=(veh&&scanToggles('financed',0))?'yes':'no';
+      _t.behind_mortgage=(re&&scanToggles('behind on mortgage',0))?'yes':'no';
+      _t.behind_vehicle=(veh&&scanToggles('behind on payments',0))?'yes':'no';
+      _t.investments=(document.querySelector('.dbtn[data-doc="investment_statements"]')&&getComputedStyle(document.querySelector('.dbtn[data-doc="investment_statements"]')).display!=='none')?'yes':'no';
+      sessionStorage.setItem('mcl_doc_triggers', JSON.stringify(_t)); }catch(e){}
     setTimeout(recountVisible,0);
   }
   document.addEventListener('click',function(e){

@@ -847,6 +847,28 @@ loop, post-submit experience, passwordless resume, localization).
 
 ---
 
+## Round 37 — Step 8 summary goes dynamic; answer persistence across all sections (2026-07-05)
+**File(s):** documents.html, income.html, assets.html, debts.html, financial-affairs.html, gating-test.js
+
+**What changed:**
+- All section overlays now **merge** their raw answers into one sessionStorage
+  object (`mcl_doc_triggers`): employed/other-income/spouse (Income);
+  real-estate/vehicle/financed/behind-mortgage/behind-payments/investments
+  (Assets); other-secured/DSO/back-taxes/student-loans/business-debt/HOA
+  (Debts); lawsuit (SOFA Q9/Q10).
+- **documents.html tier-2 list and the "not asking for" banner are now
+  generated from those answers** — the summary finally reflects what the debtor
+  actually said instead of a hardcoded demo scenario (mockup approximation of
+  DOC-LOGIC §6 shared state). Clean session shows taxes + counseling only.
+- "Other documents" origin chip: "Anything" → "Extra".
+- Harness updated: clean-session and seeded-session summary scenarios;
+  **84/84 dynamic + 107 static checks pass.**
+
+**Open item flagged to Matt:** the Step 8 section video predates the three-tier
+redesign — check narration still matches.
+
+---
+
 <!-- Add new rounds below this line. Template:
 
 ## Round N — short title (date)
