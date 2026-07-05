@@ -444,6 +444,8 @@ table.exp td:last-child{width:140px;}
     ['zillow_valuation','Zillow value report \u2014 your home','You listed real estate','Assets',STD,on('real_estate')],
     ['foreclosure_docs','Foreclosure paperwork','You\u2019re behind on mortgage payments','Assets',STD,on('real_estate')&&on('behind_mortgage')],
     ['kbb_valuation','KBB value report \u2014 your vehicle','You listed a vehicle','Assets',STD,on('vehicle')],
+    ['vehicle_title','Vehicle title','Your vehicle is paid off','Assets',STD,on('vehicle')&&!on('vehicle_financed')],
+    ['repo_docs','Vehicle repossession paperwork','You\u2019re behind on vehicle payments','Assets',STD,on('vehicle_financed')&&on('behind_vehicle')],
     ['investment_statements','Investment / retirement statements','From your Assets answers','Assets',STD,on('investments')],
     ['mortgage_statements','Mortgage statements','You listed real estate','Debts',STD,on('real_estate')],
     ['hoa_statements','HOA statements','Your property has an HOA','Debts',STD,on('hoa')],

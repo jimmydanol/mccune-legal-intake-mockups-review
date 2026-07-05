@@ -273,6 +273,22 @@ function railCount(doc){ const c=doc.querySelector('.docbar .count'); return c?c
     assert('docs(married,not joint): no spouse tax returns', !t2.includes('sp_tax_return_y1'));
   }
 
+  /* ---- documents: title vs repo (mutually exclusive financed states) ---- */
+  {
+    const dom = load('documents.html', null, { mcl_doc_triggers: JSON.stringify({vehicle:'yes',vehicle_financed:'no'}) });
+    const doc = dom.window.document; await sleep(400);
+    const t2 = [...doc.querySelectorAll('.row[data-tier="2"]')].map(r=>r.dataset.doc);
+    assert('docs(paid-off vehicle): title requested', t2.includes('vehicle_title'), JSON.stringify(t2));
+    assert('docs(paid-off vehicle): no repo docs', !t2.includes('repo_docs'));
+  }
+  {
+    const dom = load('documents.html', null, { mcl_doc_triggers: JSON.stringify({vehicle:'yes',vehicle_financed:'yes',behind_vehicle:'yes'}) });
+    const doc = dom.window.document; await sleep(400);
+    const t2 = [...doc.querySelectorAll('.row[data-tier="2"]')].map(r=>r.dataset.doc);
+    assert('docs(behind on car): repo docs requested', t2.includes('repo_docs'), JSON.stringify(t2));
+    assert('docs(behind on car): no title (financed)', !t2.includes('vehicle_title'));
+  }
+
   /* ---- personal: joint answer persists ---- */
   {
     const dom = load('personal.html'); const doc = dom.window.document;
