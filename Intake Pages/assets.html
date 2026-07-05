@@ -770,6 +770,16 @@ table.exp td:last-child{width:140px;}
     var c=bar.querySelector('.count');if(c)c.textContent=done+' / '+btns.length;
     var i=bar.querySelector('.bar i');if(i)i.style.width=(btns.length?Math.round(100*done/btns.length):0)+'%';
   }
+  function faYes(labelSub){ /* financial-asset question answered Yes */
+    var rows=document.querySelectorAll('.fa-q');
+    for(var i=0;i<rows.length;i++){
+      var lab=rows[i].querySelector('label'); if(!lab)continue;
+      if(lab.textContent.toLowerCase().indexOf(labelSub)<0)continue;
+      var sp=rows[i].querySelectorAll('.toggle span');
+      if(sp[0]&&sp[0].classList.contains('on'))return true;
+    }
+    return false;
+  }
   function apply(){
     var re=idYes('realEstateTg'), veh=idYes('vehTg');
     show('zillow_valuation',re);
@@ -777,6 +787,9 @@ table.exp td:last-child{width:140px;}
     show('kbb_valuation',veh);
     show('vehicle_title',veh&&scanToggles('financed',1));
     show('repo_docs',veh&&scanToggles('behind on payments',0));
+    /* investments box: any of the five source questions = Yes */
+    show('investment_statements',
+      faYes('bonds, mutual funds')||faYes('retirement or pension')||faYes('annuities')||faYes('education account')||faYes('cash value'));
     setTimeout(recountVisible,0);
   }
   document.addEventListener('click',function(e){
