@@ -928,6 +928,20 @@ mechanics unchanged (street is still the card's first input). Repeatable
 
 ---
 
+## Round 42 — SOFA: marital-status question removed; renumbered 1–27 (2026-07-06)
+**File(s):** financial-affairs.html, FIELD-MAP.md, DOC-LOGIC.md, gating-test.js
+
+**What changed:** Old Q1 (marital status) removed — it duplicated Personal Info
+(it was already pre-populated from there). Form 107 Pt 1 L1 is now derived,
+never asked. Remaining questions renumbered sequentially 1–27, so **on-screen
+QN = Form 107 line N+1**; FIELD-MAP §6 documents the offset and remains the
+authoritative crosswalk (this supersedes Round 28's 1:1 alignment — ask-once
+beats number-matching). Court-paperwork gate updated to on-screen Q8/Q9
+(lines 9/10); DOC-LOGIC trigger table updated; harness renumbered — 103
+dynamic + 107 static pass.
+
+---
+
 <!-- Add new rounds below this line. Template:
 
 ## Round N — short title (date)

@@ -51,7 +51,7 @@ destinations). No new questions are introduced for document logic.
 | `back_taxes` | Owe back taxes? = Yes | Debts |
 | `student_loans` | Have student loans? = Yes | Debts |
 | `business_debt` | Business/self-employment debt? = Yes | Debts |
-| `lawsuit` | SOFA Q9 (lawsuit/court action) = Yes OR SOFA Q10 (repossessed/foreclosed/garnished/seized) = Yes | Financial Affairs |
+| `lawsuit` | SOFA on-screen Q8 (lawsuit/court action, Form 107 L9) = Yes OR on-screen Q9 (repossessed/foreclosed/garnished/seized, L10) = Yes | Financial Affairs |
 
 ## 3. Master document map — IF this, THEN ask for that
 

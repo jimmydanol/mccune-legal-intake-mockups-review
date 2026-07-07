@@ -273,40 +273,39 @@ Removed the old scattered "Back taxes?" block and "Do you owe child support…" 
 
 ## SECTION 6 — Statement of Financial Affairs (Form 107)
 
-`financial-affairs.html` mirrors Form 107. **The on-screen question numbers now align 1:1 with the official Form 107 line numbers** — on-screen Q1 = Form 107 line 1, Q28 = line 28. Each question is a Yes/No that reveals Form 107–matched detail fields when answered Yes. Wording is debtor-friendly; every question after the first is scoped with "(or your spouse, if this is a joint case)". Several questions overlap data collected earlier and are **carried through / cross-referenced**, not re-asked.
+`financial-affairs.html` mirrors Form 107. **Numbering (updated 2026-07-06):** the old on-screen Q1 (marital status, Form 107 Pt 1 L1) was removed — it duplicates Personal Info; L1 is **derived** from the marital-status answer there, never re-asked. Remaining questions renumbered sequentially, so **on-screen QN = Form 107 line N+1** (on-screen Q1 = line 2 … Q27 = line 28). The → Form 107 column below is the authoritative line reference for the dev build. Each question is a Yes/No that reveals Form 107–matched detail fields when answered Yes. Wording is debtor-friendly; every question after the first is scoped with "(or your spouse, if this is a joint case)". Several questions overlap data collected earlier and are **carried through / cross-referenced**, not re-asked.
 
 Each "did you…" question adds the spouse scope; the field map below gives the exact box captured per question.
 
 | # | On-screen question (short) | → Form 107 | Detail fields captured | Carry-through / notes |
 |---|---|---|---|---|
-| 1 | Current marital status | Pt 1, L1 | Married / Not married | **Pre-populated (editable)** from Personal Info marital status |
-| 2 | Other addresses, last 3 yrs | Pt 1, L2 | Debtor 1 address (number/street, city, State, ZIP, From/To) + conditional Debtor 2 column (joint) with "Same as prior address" checkbox | **Source of truth for address history → venue (180-day) + exemption (730-day) derivation** |
-| 3 | Community-property cohabitation, last 8 yrs | Pt 1, L3 | Yes/No (AZ, CA, ID, LA, NV, NM, PR, TX, WA, WI listed) | Manual |
-| 4 | Job/business income, this yr + 2 prior | Pt 2, L4 | Yes/No + type checkboxes (wages vs. self-employment/business); conditional Debtor 2 block | **Amounts derived from uploaded pay stubs/tax returns**, not hand-entered |
-| 5 | Other income, this yr + 2 prior | Pt 2, L5 | Repeatable source cards + "whose income" (You/spouse) | Amounts derived from documents; catches income not on returns |
-| 6 | 90-day payment of $600+ to one creditor | Pt 3, L6 | Repeatable: Creditor name, Reason for payment, Total paid, Amount still owed, Dates | **The "primarily consumer debts?" threshold determination on L6 is DERIVED from the Debts business-debt branch, not asked here** |
-| 7 | Insider payment, last 1 yr | Pt 3, L7 | Repeatable: Insider name, Reason for payment, Total paid, Amount still owed, Dates (box matches Q6) | Insider defined in a plain-language info-tip above Q7; cross-ref Debts |
-| 8 | Payment/transfer benefiting an insider, last 1 yr | Pt 3, L8 | Repeatable: Insider name, Reason, Total paid, Amount still owed, Dates (box matches Q6/Q7) | Cross-ref Debts/Assets |
-| 9 | Lawsuit / court / administrative action, last 1 yr | Pt 4, L9 | Repeatable: Case title, Court/agency, Nature of case, Status | Parenthetical lists suit types; jobtip → upload court paperwork box |
-| 10 | Property repossessed/foreclosed/garnished/seized, last 1 yr | Pt 4, L10 | Repeatable: Creditor name, Describe the property, Explain what happened, Date, Value of property | jobtip → upload court paperwork + HR contact (to stop garnishment) |
-| 11 | Creditor/bank setoff, last 90 days | Pt 4, L11 | Repeatable: Creditor/bank name, Describe the action the creditor took, Date of action, Amount | Manual |
-| 12 | Property with receiver/custodian/assignee, last 1 yr | Pt 4, L12 | Single "provide more details" textarea | Simplified (form is essentially Yes/No + explain) |
-| 13 | Gifts > $600 to any one person, last 2 yrs | Pt 5, L13 | Repeatable: Who received, Relationship to you, Describe the gift, Value, Date | Manual |
-| 14 | Gifts/contributions > $600 to a charity, last 2 yrs | Pt 5, L14 | Repeatable: Charity/organization, Describe what was contributed, Total given, Date(s) | Box mirrors Q13, reframed to charity |
-| 15 | Losses to theft/fire/disaster/gambling, last 1 yr | Pt 6, L15 | Repeatable: Describe the loss, Value of loss, Insurance/reimbursement received, Date | Manual |
-| 16 | Paid anyone consulted about seeking bankruptcy relief, last 1 yr | Pt 7, L16 | Repeatable: Who you paid, Date of payment, Amount of payment | Parenthetical (attorneys, petition preparers, credit counseling); "what for" field dropped (always money) |
-| 17 | Paid anyone who promised to help deal with/pay creditors, last 1 yr | Pt 7, L17 | Repeatable: Who you paid, Date of payment, Amount of payment (box matches Q16) | Parenthetical (debt consolidation, settlement, repayment, money-management program) |
-| 18 | Sold/traded/transferred property outside ordinary course, last 2 yrs | Pt 7, L18 | Repeatable: Describe property transferred, Who received it, Relationship to you, Value received, Date | "Ordinary course" defined in the parenthetical |
-| 19 | Transfer to self-settled trust / asset-protection device, last 10 yrs | Pt 7, L19 | Repeatable: Name of trust, Describe property transferred, Value, Date | Cross-ref Assets |
-| 20 | Financial accounts closed/sold/moved, last 1 yr | Pt 8, L20 | Repeatable: Institution name, Type of account, Last 4 of account #, Closing balance, Date closed/moved | Cross-ref bank statements |
-| 21 | Safe deposit box / depository, now or last 1 yr | Pt 8, L21 | Repeatable: Depository/institution, Who else had access, Describe the contents, Do you still have it? (Y/N) | Manual |
-| 22 | Storage unit / off-site storage, last 1 yr | Pt 8, L22 | Repeatable: Storage facility/location, Describe what is stored, Who else has access, Do you still have it? (Y/N) | Manual |
-| 23 | Property you hold/control for someone else | Pt 9, L23 | Repeatable: Owner of the property, Describe the property, Where it is located, Value | Parenthetical (borrowed, storing for, holding in trust) |
-| 24 | Government notice of environmental liability | Pt 10, L24 | Repeatable: Name of site, Government unit, Environmental law, Date of notice | Part 10 opens with a plain-language definitions info-tip (environmental law / site / hazardous material) |
-| 25 | You notified government of hazardous release | Pt 10, L25 | Repeatable: Name of site, Government unit, Environmental law, Date of notice (box matches Q24) | Manual |
-| 26 | Party to an environmental proceeding | Pt 10, L26 | Repeatable: Case title, Court or agency, Nature of the case, Status | Parenthetical (includes settlements and orders) |
-| 27 | Owned/connected to a business, last 4 yrs | Pt 11, L27 | Repeatable: Business name, Type of business, EIN (if any), Dates business existed (From/To on one line) | Parenthetical lists the 5 Form 107 connection types (sole proprietor/self-employed; LLC/LLP member; partner; officer/director/managing exec; 5%+ owner) |
-| 28 | Gave a financial statement about your business, last 2 yrs | Pt 11, L28 | Repeatable: Who received the statement, Date | Box trimmed to match Form 107 (name + date only) |
+| 1 | Other addresses, last 3 yrs | Pt 1, L2 | Debtor 1 address (number/street, city, State, ZIP, From/To) + conditional Debtor 2 column (joint) with "Same as prior address" checkbox | **Source of truth for address history → venue (180-day) + exemption (730-day) derivation** |
+| 2 | Community-property cohabitation, last 8 yrs | Pt 1, L3 | Yes/No (AZ, CA, ID, LA, NV, NM, PR, TX, WA, WI listed) | Manual |
+| 3 | Job/business income, this yr + 2 prior | Pt 2, L4 | Yes/No + type checkboxes (wages vs. self-employment/business); conditional Debtor 2 block | **Amounts derived from uploaded pay stubs/tax returns**, not hand-entered |
+| 4 | Other income, this yr + 2 prior | Pt 2, L5 | Repeatable source cards + "whose income" (You/spouse) | Amounts derived from documents; catches income not on returns |
+| 5 | 90-day payment of $600+ to one creditor | Pt 3, L6 | Repeatable: Creditor name, Reason for payment, Total paid, Amount still owed, Dates | **The "primarily consumer debts?" threshold determination on L6 is DERIVED from the Debts business-debt branch, not asked here** |
+| 6 | Insider payment, last 1 yr | Pt 3, L7 | Repeatable: Insider name, Reason for payment, Total paid, Amount still owed, Dates (box matches Q6) | Insider defined in a plain-language info-tip above Q7; cross-ref Debts |
+| 7 | Payment/transfer benefiting an insider, last 1 yr | Pt 3, L8 | Repeatable: Insider name, Reason, Total paid, Amount still owed, Dates (box matches Q6/Q7) | Cross-ref Debts/Assets |
+| 8 | Lawsuit / court / administrative action, last 1 yr | Pt 4, L9 | Repeatable: Case title, Court/agency, Nature of case, Status | Parenthetical lists suit types; jobtip → upload court paperwork box |
+| 9 | Property repossessed/foreclosed/garnished/seized, last 1 yr | Pt 4, L10 | Repeatable: Creditor name, Describe the property, Explain what happened, Date, Value of property | jobtip → upload court paperwork + HR contact (to stop garnishment) |
+| 10 | Creditor/bank setoff, last 90 days | Pt 4, L11 | Repeatable: Creditor/bank name, Describe the action the creditor took, Date of action, Amount | Manual |
+| 11 | Property with receiver/custodian/assignee, last 1 yr | Pt 4, L12 | Single "provide more details" textarea | Simplified (form is essentially Yes/No + explain) |
+| 12 | Gifts > $600 to any one person, last 2 yrs | Pt 5, L13 | Repeatable: Who received, Relationship to you, Describe the gift, Value, Date | Manual |
+| 13 | Gifts/contributions > $600 to a charity, last 2 yrs | Pt 5, L14 | Repeatable: Charity/organization, Describe what was contributed, Total given, Date(s) | Box mirrors Q13, reframed to charity |
+| 14 | Losses to theft/fire/disaster/gambling, last 1 yr | Pt 6, L15 | Repeatable: Describe the loss, Value of loss, Insurance/reimbursement received, Date | Manual |
+| 15 | Paid anyone consulted about seeking bankruptcy relief, last 1 yr | Pt 7, L16 | Repeatable: Who you paid, Date of payment, Amount of payment | Parenthetical (attorneys, petition preparers, credit counseling); "what for" field dropped (always money) |
+| 16 | Paid anyone who promised to help deal with/pay creditors, last 1 yr | Pt 7, L17 | Repeatable: Who you paid, Date of payment, Amount of payment (box matches Q16) | Parenthetical (debt consolidation, settlement, repayment, money-management program) |
+| 17 | Sold/traded/transferred property outside ordinary course, last 2 yrs | Pt 7, L18 | Repeatable: Describe property transferred, Who received it, Relationship to you, Value received, Date | "Ordinary course" defined in the parenthetical |
+| 18 | Transfer to self-settled trust / asset-protection device, last 10 yrs | Pt 7, L19 | Repeatable: Name of trust, Describe property transferred, Value, Date | Cross-ref Assets |
+| 19 | Financial accounts closed/sold/moved, last 1 yr | Pt 8, L20 | Repeatable: Institution name, Type of account, Last 4 of account #, Closing balance, Date closed/moved | Cross-ref bank statements |
+| 20 | Safe deposit box / depository, now or last 1 yr | Pt 8, L21 | Repeatable: Depository/institution, Who else had access, Describe the contents, Do you still have it? (Y/N) | Manual |
+| 21 | Storage unit / off-site storage, last 1 yr | Pt 8, L22 | Repeatable: Storage facility/location, Describe what is stored, Who else has access, Do you still have it? (Y/N) | Manual |
+| 22 | Property you hold/control for someone else | Pt 9, L23 | Repeatable: Owner of the property, Describe the property, Where it is located, Value | Parenthetical (borrowed, storing for, holding in trust) |
+| 23 | Government notice of environmental liability | Pt 10, L24 | Repeatable: Name of site, Government unit, Environmental law, Date of notice | Part 10 opens with a plain-language definitions info-tip (environmental law / site / hazardous material) |
+| 24 | You notified government of hazardous release | Pt 10, L25 | Repeatable: Name of site, Government unit, Environmental law, Date of notice (box matches Q24) | Manual |
+| 25 | Party to an environmental proceeding | Pt 10, L26 | Repeatable: Case title, Court or agency, Nature of the case, Status | Parenthetical (includes settlements and orders) |
+| 26 | Owned/connected to a business, last 4 yrs | Pt 11, L27 | Repeatable: Business name, Type of business, EIN (if any), Dates business existed (From/To on one line) | Parenthetical lists the 5 Form 107 connection types (sole proprietor/self-employed; LLC/LLP member; partner; officer/director/managing exec; 5%+ owner) |
+| 27 | Gave a financial statement about your business, last 2 yrs | Pt 11, L28 | Repeatable: Who received the statement, Date | Box trimmed to match Form 107 (name + date only) |
 
 **On-screen numbering now matches Form 107 line numbers** (this replaces the earlier "internal sequence" caveat — the old page led with insiders before the 90-day payment; it now follows the form order exactly, so Q# = line #). The dev can map on-screen Q*n* directly to Form 107 line *n*.
 

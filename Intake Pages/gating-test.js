@@ -205,14 +205,14 @@ function railCount(doc){ const c=doc.querySelector('.docbar .count'); return c?c
     await sleep(400);
     assert('sofa: court_paperwork hidden by default', visible(dom, doc, 'court_paperwork') === false);
     // Q9 yes
-    const q9 = [...doc.querySelectorAll('.sofa-q')].find(q => q.querySelector('.qn') && q.querySelector('.qn').textContent.trim()==='9');
+    const q9 = [...doc.querySelectorAll('.sofa-q')].find(q => q.querySelector('.qn') && q.querySelector('.qn').textContent.trim()==='8');
     q9.querySelectorAll('.toggle span')[0].dispatchEvent(new dom.window.MouseEvent('click',{bubbles:true})); await sleep(250);
-    assert('sofa: court_paperwork appears on Q9=Yes', visible(dom, doc, 'court_paperwork') === true);
+    assert('sofa: court_paperwork appears on Q8(lawsuit)=Yes', visible(dom, doc, 'court_paperwork') === true);
     q9.querySelectorAll('.toggle span')[1].dispatchEvent(new dom.window.MouseEvent('click',{bubbles:true})); await sleep(250);
-    assert('sofa: court_paperwork hides on Q9=No', visible(dom, doc, 'court_paperwork') === false);
-    const q10 = [...doc.querySelectorAll('.sofa-q')].find(q => q.querySelector('.qn') && q.querySelector('.qn').textContent.trim()==='10');
+    assert('sofa: court_paperwork hides on Q8=No', visible(dom, doc, 'court_paperwork') === false);
+    const q10 = [...doc.querySelectorAll('.sofa-q')].find(q => q.querySelector('.qn') && q.querySelector('.qn').textContent.trim()==='9');
     q10.querySelectorAll('.toggle span')[0].dispatchEvent(new dom.window.MouseEvent('click',{bubbles:true})); await sleep(250);
-    assert('sofa: court_paperwork appears on Q10=Yes (OR gate)', visible(dom, doc, 'court_paperwork') === true);
+    assert('sofa: court_paperwork appears on Q9(repo/garnish)=Yes (OR gate)', visible(dom, doc, 'court_paperwork') === true);
   }
 
   /* ================= PERSONAL: spouse docs ================= */
