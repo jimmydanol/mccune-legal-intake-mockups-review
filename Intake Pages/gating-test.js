@@ -342,6 +342,43 @@ function railCount(doc){ const c=doc.querySelector('.docbar .count'); return c?c
     assert('personal: joint=yes persisted', trg.joint==='yes', JSON.stringify(trg));
   }
 
+  /* ---- personal: REVISIT restores answers, storage survives (the bug Matt hit) ---- */
+  {
+    const dom = load('personal.html', null, { mcl_marital: 'Married', mcl_joint: 'yes' });
+    const doc = dom.window.document; await sleep(500);
+    assert('personal(revisit): marital select restored', doc.getElementById('maritalSel').value==='Married', doc.getElementById('maritalSel').value);
+    assert('personal(revisit): spouse block visible', doc.getElementById('spouseBlock').style.display!=='none');
+    const sp0 = doc.getElementById('jointTg').querySelectorAll('span')[0];
+    assert('personal(revisit): joint toggle restored to Yes', sp0.classList.contains('on'));
+    assert('personal(revisit): mcl_joint NOT clobbered', dom.window.sessionStorage.getItem('mcl_joint')==='yes', dom.window.sessionStorage.getItem('mcl_joint'));
+    assert('personal(revisit): mcl_marital NOT clobbered', dom.window.sessionStorage.getItem('mcl_marital')==='Married', dom.window.sessionStorage.getItem('mcl_marital'));
+    const trg = JSON.parse(dom.window.sessionStorage.getItem('mcl_doc_triggers')||'{}');
+    assert('personal(revisit): doc_triggers joint stays yes', trg.joint==='yes', JSON.stringify(trg));
+  }
+
+  /* ---- SOFA: spouse columns appear with joint=yes once a question opens ---- */
+  {
+    const dom = load('financial-affairs.html', null, { mcl_joint: 'yes', mcl_marital: 'Married' });
+    const doc = dom.window.document; await sleep(400);
+    // answer on-screen Q3 (income) Yes and check its spouse block becomes visible
+    const q3 = [...doc.querySelectorAll('.sofa-q')].find(q => q.querySelector('.qn') && q.querySelector('.qn').textContent.trim()==='3');
+    q3.querySelectorAll('.toggle span')[0].dispatchEvent(new dom.window.MouseEvent('click',{bubbles:true}));
+    await sleep(250);
+    const spouseEls = [...doc.querySelectorAll('.spouse-only,.spouse-addr-col')];
+    const anyVisible = spouseEls.some(el => { let e=el; while(e&&e.tagName!=='BODY'){ if(e.style&&e.style.display==='none')return false; e=e.parentElement; } return true; });
+    assert('sofa(joint): spouse/D2 block visible after answering Yes', anyVisible, String(spouseEls.length)+' spouse els');
+  }
+  {
+    const dom = load('financial-affairs.html', null, { mcl_joint: 'no' });
+    const doc = dom.window.document; await sleep(400);
+    const q3 = [...doc.querySelectorAll('.sofa-q')].find(q => q.querySelector('.qn') && q.querySelector('.qn').textContent.trim()==='3');
+    q3.querySelectorAll('.toggle span')[0].dispatchEvent(new dom.window.MouseEvent('click',{bubbles:true}));
+    await sleep(250);
+    const spouseEls = [...doc.querySelectorAll('.spouse-only,.spouse-addr-col')];
+    const anyVisible = spouseEls.some(el => { let e=el; while(e&&e.tagName!=='BODY'){ if(e.style&&e.style.display==='none')return false; e=e.parentElement; } return true; });
+    assert('sofa(not joint): spouse/D2 blocks stay hidden', !anyVisible);
+  }
+
   console.log(`\n=== DYNAMIC SIMULATION: ${pass} passed, ${fail} failed ===`);
   failures.forEach(f=>console.log('FAIL: '+f));
   process.exit(fail?1:0);

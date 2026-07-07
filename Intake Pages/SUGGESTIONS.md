@@ -942,6 +942,22 @@ dynamic + 107 static pass.
 
 ---
 
+## Round 43 — Fix: Personal now restores its answers; SOFA spouse columns work reliably (2026-07-06)
+**File(s):** personal.html, gating-test.js
+
+**What changed:** Matt's live test of the SOFA Debtor-2 columns failed. Root
+cause: personal.html had NO restore-on-load — revisiting it reset the marital
+select to blank, the base sync() then overwrote `mcl_marital` with '' at load
+(pre-existing bug), and Round 40's stale-joint guard then cleared `mcl_joint`
+too. Any return trip through Personal silently killed the spouse logic
+downstream. Fix: a pre-script snapshots storage before the base script runs;
+the overlay restores the marital select and joint toggle from it (via real
+change/click events so all the base reveal logic replays). New harness
+scenarios: revisit-restores-and-preserves-storage, plus SOFA spouse columns
+visible with joint=yes and hidden without — **111 dynamic + 107 static pass.**
+
+---
+
 <!-- Add new rounds below this line. Template:
 
 ## Round N — short title (date)
