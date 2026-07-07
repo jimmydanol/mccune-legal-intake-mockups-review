@@ -969,6 +969,18 @@ debtor must answer every line under penalty of perjury.
 
 ---
 
+## Round 45 — Debts: all questions mandatory with required marker (2026-07-07)
+**File(s):** debts.html
+
+**What changed:** All eight Yes/No gate questions (other-secured, domestic
+support, back taxes, student loans, co-signer, business debt, >50% business
+debt, and the per-property HOA question in the generated panel) plus the
+unsecured-debt total estimate now carry the red asterisk, nbsp-glued per the
+same-line rule. Dev rule same as SOFA (Round 44): every gate must be
+explicitly answered — a blank is not a No.
+
+---
+
 <!-- Add new rounds below this line. Template:
 
 ## Round N — short title (date)
