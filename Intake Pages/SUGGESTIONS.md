@@ -958,6 +958,17 @@ visible with joint=yes and hidden without — **111 dynamic + 107 static pass.**
 
 ---
 
+## Round 44 — All SOFA questions mandatory with required marker (2026-07-07)
+**File(s):** financial-affairs.html, FIELD-MAP.md
+
+**What changed:** All 27 SOFA questions now carry the red asterisk, glued to
+the question mark with a non-breaking space (same-line rule from Round 34's
+asterisk fix). FIELD-MAP §6 notes the dev-build rule: every Yes/No must be
+explicitly answered — a blank is not a No. Matches Form 107 reality: the
+debtor must answer every line under penalty of perjury.
+
+---
+
 <!-- Add new rounds below this line. Template:
 
 ## Round N — short title (date)
