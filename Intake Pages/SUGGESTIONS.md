@@ -981,6 +981,18 @@ explicitly answered — a blank is not a No.
 
 ---
 
+## Round 46 — Income: all gate questions mandatory with required marker (2026-07-07)
+**File(s):** income.html
+
+**What changed:** "Are you employed?" and "Is there any other source of monthly
+income in your household?" now carry the red asterisk, plus the two spouse
+mirrors in the conditional married block. Same dev rule: explicit Yes/No
+required — a blank is not a No. (These four gates also drive the pay-stub /
+other-income document triggers, so an unanswered gate would otherwise silently
+suppress document requests.)
+
+---
+
 <!-- Add new rounds below this line. Template:
 
 ## Round N — short title (date)
