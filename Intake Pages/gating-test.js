@@ -136,6 +136,21 @@ function railCount(doc){ const c=doc.querySelector('.docbar .count'); return c?c
     assert('assets: persists vehicle_financed=yes', trg.vehicle_financed === 'yes', JSON.stringify(trg));
   }
 
+  /* ---- assets: structured address; street-only carryover ---- */
+  {
+    const dom = load('assets.html'); const doc = dom.window.document;
+    await sleep(400);
+    clickYes(dom, doc, 'realEstateTg', 0); await sleep(250);
+    const card = doc.querySelector('#realEstateBlock .reitem');
+    const labels = [...card.querySelectorAll('label')].map(l=>l.textContent.trim());
+    assert('assets: address block has street/city/state/zip', labels.some(l=>l.startsWith('Property address'))&&labels.some(l=>l.startsWith('City'))&&labels.some(l=>l.startsWith('State'))&&labels.some(l=>l.startsWith('ZIP')), JSON.stringify(labels.slice(0,5)));
+    const street = card.querySelector('input');
+    street.value = '123 Main St';
+    street.dispatchEvent(new dom.window.Event('input',{bubbles:true})); await sleep(150);
+    const sec = JSON.parse(dom.window.sessionStorage.getItem('mcl_secured')||'{}');
+    assert('assets: only street carries to mcl_secured', JSON.stringify(sec.properties)===JSON.stringify(['123 Main St']), JSON.stringify(sec.properties));
+  }
+
   /* ================= DEBTS: no assets answered ================= */
   {
     const dom = load('debts.html'); const doc = dom.window.document;

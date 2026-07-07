@@ -161,7 +161,7 @@ These are *outputs* the system calculates from data collected elsewhere. They ex
 
 | Intake field | → Form destination | ← Source doc(s) | Extraction | Notes |
 |---|---|---|---|---|
-| Property address | Schedule A/B Pt 1 | — | Manual | |
+| Property address — structured: number & street / City / State / ZIP | Schedule A/B Pt 1 (line 1.1 full address, per the official form) | — | Manual | Mirrors the Personal Info home-address block. **Only the number & street carries over** to the Debts secured-debt panel label ("Your property · [street]") to attach the asset to its mortgage/HOA debt |
 | Home purchase date (MM/YYYY) | Schedule A/B Pt 1 | — | Manual | |
 | Estimated value | Schedule A/B Pt 1 (current value) | Zillow valuation | Manual | Zillow.com link + upload the valuation |
 | Do you want to keep the house? | (intent of debtor / Statement of Intention) | — | Manual | |

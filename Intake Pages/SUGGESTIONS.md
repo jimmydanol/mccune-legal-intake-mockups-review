@@ -914,6 +914,20 @@ pass.**
 
 ---
 
+## Round 41 — Assets: structured property address per Schedule A/B (2026-07-06)
+**File(s):** assets.html, FIELD-MAP.md, gating-test.js
+
+**What changed:** The real-estate card's single "Property address" line is now a
+structured block matching Personal Info's home address exactly (Number and
+street / City / State select / ZIP), because Schedule A/B Pt 1 needs the full
+mailing address. The Debts carryover intentionally uses **street only** — the
+secured-debt panel header stays "Your property · 123 Main St" so the debtor can
+attach the mortgage/HOA to the right asset without address clutter. Carryover
+mechanics unchanged (street is still the card's first input). Repeatable
+"Add another property" cards clone the full structured block.
+
+---
+
 <!-- Add new rounds below this line. Template:
 
 ## Round N — short title (date)
