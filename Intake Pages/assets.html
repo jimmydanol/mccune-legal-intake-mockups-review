@@ -757,6 +757,7 @@ table.exp td:last-child{width:140px;}
 (function(){
   var ADDRESS_SUGGEST_ENDPOINT='https://intake.bkfastlane.com/api/address-suggest';
   var DEFAULT_FILING_STATE='CO';
+  var DEFAULT_REVIEW_COUNTY='Boulder County';
   var MAX_ADDRESS_SUGGESTIONS=10;
   var STATE_CODE_NAMES={AL:'Alabama',AK:'Alaska',AZ:'Arizona',AR:'Arkansas',CA:'California',CO:'Colorado',CT:'Connecticut',DE:'Delaware',DC:'District of Columbia',FL:'Florida',GA:'Georgia',HI:'Hawaii',ID:'Idaho',IL:'Illinois',IN:'Indiana',IA:'Iowa',KS:'Kansas',KY:'Kentucky',LA:'Louisiana',ME:'Maine',MD:'Maryland',MA:'Massachusetts',MI:'Michigan',MN:'Minnesota',MS:'Mississippi',MO:'Missouri',MT:'Montana',NE:'Nebraska',NV:'Nevada',NH:'New Hampshire',NJ:'New Jersey',NM:'New Mexico',NY:'New York',NC:'North Carolina',ND:'North Dakota',OH:'Ohio',OK:'Oklahoma',OR:'Oregon',PA:'Pennsylvania',RI:'Rhode Island',SC:'South Carolina',SD:'South Dakota',TN:'Tennessee',TX:'Texas',UT:'Utah',VT:'Vermont',VA:'Virginia',WA:'Washington',WV:'West Virginia',WI:'Wisconsin',WY:'Wyoming'};
   function zillowAddressSearchSlug(address){
@@ -853,6 +854,15 @@ table.exp td:last-child{width:140px;}
       suggestion.zipCode
     ].join('|').toLowerCase();
   }
+  function normalizedCountyName(value){
+    return String(value || '').trim().toLowerCase();
+  }
+  function addressSuggestionSortScore(suggestion){
+    var score=0;
+    if(suggestion.stateCode===DEFAULT_FILING_STATE) score+=20;
+    if(normalizedCountyName(suggestion.county)===normalizedCountyName(DEFAULT_REVIEW_COUNTY)) score+=100;
+    return score;
+  }
   function propertyAddress(card){
     var controls=realEstateControls(card);
     return [
@@ -943,7 +953,14 @@ table.exp td:last-child{width:140px;}
         merged.push(suggestion);
       });
     });
-    return merged.slice(0,MAX_ADDRESS_SUGGESTIONS);
+    return merged.map(function(suggestion,index){
+      return {index:index,score:addressSuggestionSortScore(suggestion),suggestion:suggestion};
+    }).sort(function(left,right){
+      if(right.score!==left.score) return right.score-left.score;
+      return left.index-right.index;
+    }).map(function(item){
+      return item.suggestion;
+    }).slice(0,MAX_ADDRESS_SUGGESTIONS);
   }
   function loadAddressSuggestions(query,context){
     var trimmed=(query || '').trim();
@@ -970,7 +987,7 @@ table.exp td:last-child{width:140px;}
     var location=[suggestion.city,suggestion.stateCode,suggestion.zipCode].filter(Boolean).join(', ');
     var county=suggestion.county || '';
     if(county && location.toLowerCase().indexOf(county.toLowerCase())<0){
-      return location ? location+' · '+county : county;
+      return location ? county+' · '+location : county;
     }
     return location;
   }
