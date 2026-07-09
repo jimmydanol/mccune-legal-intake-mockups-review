@@ -63,7 +63,7 @@ window.JIMMY_CHANGE_ITEMS = [
     category: "Collaboration",
     status: "Live on Matt and Jimmy sites",
     commit: "c80fa1e + shared sync",
-    pages: ["Change log"],
+    pages: ["Colab"],
     summary: "Page 9 includes a shared comment feed where Matt and Jimmy can post messages, see the same conversation, and receive automatic updates.",
     mattDecision: "The shared conversation is included on both Page 9 URLs.",
     links: [

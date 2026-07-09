@@ -17,7 +17,7 @@ pages so each renders on its own with no build step and no external dependencies
 | `financial-affairs.html` | Stage 6 — financial affairs (SOFA questions) |
 | `counseling.html` | Stage 7 — credit counseling class (explainer + certificate upload; soft gate) |
 | `documents.html` | Stage 8 — document summary & submit |
-| `jimmy-changes.html` | Stage 9 — shared Matt/Jimmy changelog, approvals, and conversation |
+| `jimmy-changes.html` | Stage 9 — Colab changelog, approvals, and conversation |
 | `confirmation.html` | Post-submit thank-you |
 
 Open `login.html` and click through. Navigation, toggles, document upload/N/A,

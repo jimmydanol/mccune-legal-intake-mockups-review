@@ -372,7 +372,7 @@
     var lines = [
       "McCune intake changes needing approval",
       "Shared branch: " + (meta.branch || "main"),
-      "Change log: " + (meta.publishUrl || window.location.href),
+      "Colab page: " + (meta.publishUrl || window.location.href),
       "Matt site: " + (meta.mattPublishUrl || "https://mmccune22.github.io/mccune-legal-intake-mockups/"),
       ""
     ];
