@@ -756,8 +756,6 @@ table.exp td:last-child{width:140px;}
 <script>
 (function(){
   var ADDRESS_SUGGEST_ENDPOINT='https://intake.bkfastlane.com/api/address-suggest';
-  var DEFAULT_ADDRESS_CONTEXT={city:'Boulder',state:'CO',zipCode:''};
-  var MAX_ADDRESS_SUGGESTIONS=5;
   var STATE_CODE_NAMES={AL:'Alabama',AK:'Alaska',AZ:'Arizona',AR:'Arkansas',CA:'California',CO:'Colorado',CT:'Connecticut',DE:'Delaware',DC:'District of Columbia',FL:'Florida',GA:'Georgia',HI:'Hawaii',ID:'Idaho',IL:'Illinois',IN:'Indiana',IA:'Iowa',KS:'Kansas',KY:'Kentucky',LA:'Louisiana',ME:'Maine',MD:'Maryland',MA:'Massachusetts',MI:'Michigan',MN:'Minnesota',MS:'Mississippi',MO:'Missouri',MT:'Montana',NE:'Nebraska',NV:'Nevada',NH:'New Hampshire',NJ:'New Jersey',NM:'New Mexico',NY:'New York',NC:'North Carolina',ND:'North Dakota',OH:'Ohio',OK:'Oklahoma',OR:'Oregon',PA:'Pennsylvania',RI:'Rhode Island',SC:'South Carolina',SD:'South Dakota',TN:'Tennessee',TX:'Texas',UT:'Utah',VT:'Vermont',VA:'Virginia',WA:'Washington',WV:'West Virginia',WI:'Wisconsin',WY:'Wyoming'};
   function zillowAddressSearchSlug(address){
     return address
@@ -819,6 +817,32 @@ table.exp td:last-child{width:140px;}
     var zipCode=selectedValue(controls.zip);
     return {city:city,state:state,zipCode:zipCode};
   }
+  function queryHasLocality(value){
+    var query=' '+String(value || '').trim().toLowerCase()+' ';
+    if(/\b\d{5}(?:-\d{4})?\b/.test(query)) return true;
+    if(query.indexOf(',')>=0) return true;
+    for(var code in STATE_CODE_NAMES){
+      if(!Object.prototype.hasOwnProperty.call(STATE_CODE_NAMES,code)) continue;
+      if(query.indexOf(' '+code.toLowerCase()+' ')>=0) return true;
+      if(query.indexOf(' '+STATE_CODE_NAMES[code].toLowerCase()+' ')>=0) return true;
+    }
+    return false;
+  }
+  function hasLocalityContext(context){
+    return Boolean(context && (context.city || context.zipCode));
+  }
+  function suggestionMatchesContext(suggestion,context){
+    if(!context) return true;
+    var wantedState=stateCodeForAddressContext(context.state).toUpperCase();
+    var wantedZip=String(context.zipCode || '').replace(/\D/g,'').slice(0,5);
+    var wantedCity=String(context.city || '').trim().toLowerCase();
+    var suggestionCity=suggestion.city.toLowerCase();
+    var suggestionCounty=suggestion.county.toLowerCase();
+    if(wantedState && suggestion.stateCode!==wantedState) return false;
+    if(wantedZip && suggestion.zipCode.replace(/\D/g,'').slice(0,5)!==wantedZip) return false;
+    if(wantedCity && suggestionCity!==wantedCity && suggestionCounty.indexOf(wantedCity)<0) return false;
+    return true;
+  }
   function propertyAddress(card){
     var controls=realEstateControls(card);
     return [
@@ -873,38 +897,13 @@ table.exp td:last-child{width:140px;}
       zipCode:String(value.zipCode || '').trim()
     };
   }
-  function hasAddressContext(context){
-    return Boolean(context && (context.city || context.state || context.zipCode));
-  }
-  function addressSuggestionKey(suggestion){
-    return [
-      suggestion.streetAddress,
-      suggestion.city,
-      suggestion.stateCode || suggestion.state,
-      suggestion.zipCode
-    ].join('|').toLowerCase();
-  }
-  function isDefaultLocalSuggestion(suggestion){
-    if(!suggestion || suggestion.stateCode!=='CO') return false;
-    var city=suggestion.city.toLowerCase();
-    var county=suggestion.county.toLowerCase();
-    return city==='boulder' || city==='superior' || county.indexOf('boulder')>=0;
-  }
-  function mergeDefaultLocalSuggestions(primary,local){
-    var merged=[];
-    var seen={};
-    function add(suggestion){
-      var key=addressSuggestionKey(suggestion);
-      if(!key || seen[key]) return;
-      seen[key]=true;
-      merged.push(suggestion);
+  function loadAddressSuggestions(query,context){
+    var trimmed=(query || '').trim();
+    if(trimmed.length<5) return Promise.resolve({configured:true,suggestions:[]});
+    context=context || {};
+    if(!hasLocalityContext(context) && !queryHasLocality(trimmed)){
+      return Promise.resolve({configured:true,needsContext:true,suggestions:[]});
     }
-    local.filter(isDefaultLocalSuggestion).forEach(add);
-    primary.forEach(add);
-    local.filter(function(suggestion){return !isDefaultLocalSuggestion(suggestion);}).forEach(add);
-    return merged.slice(0,MAX_ADDRESS_SUGGESTIONS);
-  }
-  function fetchAddressSuggestions(trimmed,context){
     var params=new URLSearchParams({q:trimmed});
     if(context.city) params.set('city',context.city);
     if(context.state) params.set('state',context.state);
@@ -914,6 +913,11 @@ table.exp td:last-child{width:140px;}
         return response.json().catch(function(){return null;}).then(function(payload){
           if(!payload || typeof payload!=='object') throw new Error('Invalid address suggestions response');
           var suggestions=Array.isArray(payload.suggestions) ? payload.suggestions.map(normalizeSuggestion).filter(Boolean) : [];
+          if(hasLocalityContext(context) || context.state){
+            suggestions=suggestions.filter(function(suggestion){
+              return suggestionMatchesContext(suggestion,context);
+            });
+          }
           return {
             configured:payload.configured!==false,
             error:typeof payload.error==='string' ? payload.error : '',
@@ -922,26 +926,13 @@ table.exp td:last-child{width:140px;}
         });
       });
   }
-  function loadAddressSuggestions(query,context){
-    var trimmed=(query || '').trim();
-    if(trimmed.length<5) return Promise.resolve({configured:true,suggestions:[]});
-    context=context || {};
-    if(hasAddressContext(context)) return fetchAddressSuggestions(trimmed,context);
-    return fetchAddressSuggestions(trimmed,{})
-      .then(function(primary){
-        if(!primary.configured) return primary;
-        return fetchAddressSuggestions(trimmed,DEFAULT_ADDRESS_CONTEXT)
-          .then(function(local){
-            return {
-              configured:primary.configured,
-              error:primary.error || local.error,
-              suggestions:mergeDefaultLocalSuggestions(primary.suggestions,local.suggestions)
-            };
-          })
-          .catch(function(){
-            return primary;
-          });
-      });
+  function suggestionLocationText(suggestion){
+    var location=[suggestion.city,suggestion.stateCode,suggestion.zipCode].filter(Boolean).join(', ');
+    var county=suggestion.county || '';
+    if(county && location.toLowerCase().indexOf(county.toLowerCase())<0){
+      return location ? location+' · '+county : county;
+    }
+    return location;
   }
   function renderSuggestions(card,suggestions){
     var parts=autocompleteParts(card);
@@ -959,7 +950,7 @@ table.exp td:last-child{width:140px;}
       option.dataset.addressSuggestionIndex=String(index);
       option.innerHTML='<strong></strong><span></span>';
       option.querySelector('strong').textContent=suggestion.streetAddress;
-      option.querySelector('span').textContent=[suggestion.city,suggestion.stateCode,suggestion.zipCode].filter(Boolean).join(', ');
+      option.querySelector('span').textContent=suggestionLocationText(suggestion);
       parts.menu.appendChild(option);
     });
     parts.menu.hidden=false;
@@ -1015,6 +1006,11 @@ table.exp td:last-child{width:140px;}
         if(!payload.configured){
           closeAutocomplete(card);
           setAutocompleteStatus(card,payload.error || 'Address suggestions need setup.');
+          return;
+        }
+        if(payload.needsContext){
+          closeAutocomplete(card);
+          setAutocompleteStatus(card,'Add city or ZIP, or type the full address with state, to narrow matches.');
           return;
         }
         renderSuggestions(card,payload.suggestions);
