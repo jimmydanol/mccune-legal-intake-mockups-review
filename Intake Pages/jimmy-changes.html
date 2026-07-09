@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>McCune Legal Intake - Jimmy's Changes</title>
+<style>
+:root{--bg:#f5f6f7;--panel:#fff;--line:#d9dde3;--ink:#1f2933;--muted:#677384;--nav:#143d52;--navText:#fff;--accent:#2f7d8c;--accentDark:#255e69;--ok:#1f7a55;--warn:#9a5b12;--danger:#a23c3c;--soft:#eef6f7;--soft2:#f7f9fa;--shadow:0 2px 8px rgba(15,23,42,.08);--radius:8px;--font:Arial,Helvetica,sans-serif}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);font-family:var(--font);color:var(--ink);font-size:16px;line-height:1.4}
+.app{max-width:1180px;margin:20px auto;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow)}
+.hdr{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 20px;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.logo{width:44px;height:44px;border-radius:50%;background:#11364a;color:white;display:grid;place-items:center;font-weight:bold;letter-spacing:.02em}
+.brand h1{margin:0;font-size:20px;line-height:1.2}
+.brand small{display:block;color:var(--muted);margin-top:2px}
+.branch-badge{display:inline-flex;align-items:center;gap:8px;border:1px solid #b8dce2;background:#e9f8fa;color:#155565;border-radius:999px;padding:7px 10px;font-size:13px;font-weight:700;white-space:nowrap}
+.branch-dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
+.topnav{display:flex;overflow-x:auto;background:var(--nav);padding:0 12px}
+.topnav a{display:flex;align-items:center;gap:8px;color:var(--navText);text-decoration:none;padding:13px 12px;border-bottom:4px solid transparent;white-space:nowrap;font-size:14px;opacity:.86}
+.topnav a.active{opacity:1;border-bottom-color:#8bd4df;background:rgba(255,255,255,.08)}
+.topnav a.done .n{background:#d9eef2;color:#143d52}
+.topnav .n{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.16);font-size:12px;font-weight:700}
+.content{padding:28px}
+.page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;border-bottom:1px solid var(--line);padding-bottom:20px}
+.eyebrow{margin:0 0 6px;color:var(--accentDark);font-size:13px;font-weight:700;text-transform:uppercase}
+h2{margin:0;font-size:28px;line-height:1.15}
+.head-copy{max-width:720px;color:var(--muted);margin:8px 0 0}
+.meta-panel{border:1px solid var(--line);border-radius:var(--radius);background:var(--soft2);padding:12px 14px;min-width:260px;font-size:13px;color:var(--muted)}
+.meta-panel strong{display:block;color:var(--ink);font-size:14px;margin-bottom:3px}
+.summary-strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:20px 0}
+.metric{border:1px solid var(--line);border-radius:var(--radius);background:var(--soft2);padding:14px}
+.metric .num{display:block;font-size:26px;font-weight:800;color:var(--nav);line-height:1}
+.metric .label{display:block;margin-top:6px;color:var(--muted);font-size:13px}
+.toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid var(--line);border-radius:var(--radius);padding:12px;background:#fff}
+.toolbar-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.selection-note{font-size:14px;color:var(--muted)}
+button,.link-button{border:1px solid var(--accentDark);background:var(--accent);color:#fff;border-radius:6px;padding:9px 12px;font:inherit;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:38px}
+button.secondary,.link-button.secondary{background:#fff;color:var(--accentDark)}
+button.ghost{background:#fff;color:var(--muted);border-color:var(--line)}
+button:disabled{opacity:.55;cursor:not-allowed}
+.change-list{display:grid;gap:12px;margin-top:16px}
+.change-item{border:1px solid var(--line);border-radius:var(--radius);background:#fff;padding:16px;display:grid;grid-template-columns:1fr auto;gap:14px;align-items:start}
+.change-item.selected{border-color:#84c8d2;background:#f6fcfd}
+.change-main{min-width:0}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.tag{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:999px;background:var(--soft2);padding:4px 8px;font-size:12px;color:var(--muted);font-weight:700}
+.tag.status{border-color:#bcdacf;background:#edf8f2;color:var(--ok)}
+.tag.commit{font-family:Consolas,Monaco,monospace;color:#39485a}
+.change-title{margin:0 0 7px;font-size:20px;line-height:1.2}
+.change-summary{margin:0;color:#39485a}
+.decision{margin:10px 0 0;color:var(--muted);font-size:14px}
+.page-list{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 0;padding:0;list-style:none}
+.page-list li{border:1px solid #d5e6e9;background:#f3fafb;color:#245a64;border-radius:999px;padding:4px 8px;font-size:12px;font-weight:700}
+.card-links{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.card-links a{color:var(--accentDark);font-weight:700;text-decoration:none;border-bottom:1px solid currentColor}
+.pick-control{display:grid;gap:8px;justify-items:end;min-width:178px}
+.pick-control button{width:100%}
+.picked-label{font-size:13px;color:var(--ok);font-weight:700;min-height:18px}
+.empty{border:1px dashed var(--line);border-radius:var(--radius);padding:18px;color:var(--muted);background:var(--soft2)}
+.toast{position:fixed;right:18px;bottom:18px;background:#143d52;color:#fff;border-radius:8px;padding:11px 14px;box-shadow:var(--shadow);opacity:0;transform:translateY(8px);pointer-events:none;transition:opacity .18s ease,transform .18s ease}
+.toast.show{opacity:1;transform:translateY(0)}
+@media(max-width:760px){
+  .app{margin:0;border-left:0;border-right:0}
+  .hdr,.page-head,.toolbar{align-items:flex-start;flex-direction:column}
+  .content{padding:20px 16px}
+  .summary-strip{grid-template-columns:1fr}
+  .change-item{grid-template-columns:1fr}
+  .pick-control{justify-items:stretch;min-width:0}
+  .branch-badge{white-space:normal}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="hdr">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">ML</div>
+      <div>
+        <h1>McCune Legal Intake</h1>
+        <small>Chapter 7 bankruptcy intake mockup</small>
+      </div>
+    </div>
+    <div class="branch-badge"><span class="branch-dot" aria-hidden="true"></span><span>Jimmy Branch</span></div>
+  </header>
+  <nav class="topnav" aria-label="Intake pages">
+    <a class="done" href="personal.html"><span class="n">1</span><span class="lbl">Personal Info</span></a>
+    <a class="done" href="income.html"><span class="n">2</span><span class="lbl">Income</span></a>
+    <a class="done" href="assets.html"><span class="n">3</span><span class="lbl">Assets</span></a>
+    <a class="done" href="debts.html"><span class="n">4</span><span class="lbl">Debts</span></a>
+    <a class="done" href="expenses.html"><span class="n">5</span><span class="lbl">Expenses</span></a>
+    <a class="done" href="financial-affairs.html"><span class="n">6</span><span class="lbl">Financial affairs</span></a>
+    <a class="done" href="counseling.html"><span class="n">7</span><span class="lbl">Counseling class</span></a>
+    <a class="done" href="documents.html"><span class="n">8</span><span class="lbl">Documents</span></a>
+    <a class="active" href="jimmy-changes.html"><span class="n">9</span><span class="lbl">Jimmy's changes</span></a>
+  </nav>
+  <main class="content">
+    <section class="page-head" aria-labelledby="pageTitle">
+      <div>
+        <p class="eyebrow">Page 9</p>
+        <h2 id="pageTitle">Jimmy's changes</h2>
+        <p class="head-copy">Select the branch changes Matt wants copied into his branch, then copy or email the selected list.</p>
+      </div>
+      <aside class="meta-panel">
+        <strong id="branchName">Jimmy branch</strong>
+        <span id="updatedOn">Updated from checklist data</span>
+      </aside>
+    </section>
+
+    <section class="summary-strip" aria-label="Checklist summary">
+      <div class="metric"><span class="num" id="totalCount">0</span><span class="label">changes listed</span></div>
+      <div class="metric"><span class="num" id="selectedCount">0</span><span class="label">selected for Matt</span></div>
+      <div class="metric"><span class="num" id="pageCount">0</span><span class="label">intake pages touched</span></div>
+    </section>
+
+    <section class="toolbar" aria-label="Checklist actions">
+      <div class="selection-note" id="selectionNote">No changes selected yet.</div>
+      <div class="toolbar-actions">
+        <button type="button" class="secondary" id="copySelected">Copy selected</button>
+        <button type="button" id="emailSelected">Email selected</button>
+        <button type="button" class="ghost" id="clearSelected">Clear</button>
+      </div>
+    </section>
+
+    <section class="change-list" id="changeList" aria-label="Jimmy branch change checklist"></section>
+  </main>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="jimmy-changes.js"></script>
+<script>
+(function(){
+  var meta = window.JIMMY_CHANGE_META || {};
+  var items = Array.isArray(window.JIMMY_CHANGE_ITEMS) ? window.JIMMY_CHANGE_ITEMS : [];
+  var storageKey = "mcl_jimmy_changes_selected_v1";
+  var selections = readSelections();
+  var list = document.getElementById("changeList");
+  var totalCount = document.getElementById("totalCount");
+  var selectedCount = document.getElementById("selectedCount");
+  var pageCount = document.getElementById("pageCount");
+  var selectionNote = document.getElementById("selectionNote");
+  var copyButton = document.getElementById("copySelected");
+  var emailButton = document.getElementById("emailSelected");
+  var clearButton = document.getElementById("clearSelected");
+  var toast = document.getElementById("toast");
+
+  document.getElementById("branchName").textContent = meta.branch || "Jimmy branch";
+  document.getElementById("updatedOn").textContent = meta.updated ? "Updated " + meta.updated : "Updated from checklist data";
+
+  list.addEventListener("click", function(event){
+    var button = event.target.closest("[data-toggle-change]");
+    if (!button) return;
+    var id = button.getAttribute("data-toggle-change");
+    selections[id] = !selections[id];
+    saveSelections();
+    render();
+  });
+
+  copyButton.addEventListener("click", function(){
+    var text = buildSelectedText();
+    if (!text) return showToast("Select at least one change first.");
+    copyText(text);
+  });
+
+  emailButton.addEventListener("click", function(){
+    var text = buildSelectedText();
+    if (!text) return showToast("Select at least one change first.");
+    var subject = encodeURIComponent("Jimmy branch changes selected for Matt");
+    var body = encodeURIComponent(text);
+    window.location.href = "mailto:?subject=" + subject + "&body=" + body;
+  });
+
+  clearButton.addEventListener("click", function(){
+    selections = {};
+    saveSelections();
+    render();
+    showToast("Selections cleared.");
+  });
+
+  render();
+
+  function readSelections(){
+    try {
+      return JSON.parse(localStorage.getItem(storageKey) || "{}") || {};
+    } catch (error) {
+      return {};
+    }
+  }
+
+  function saveSelections(){
+    localStorage.setItem(storageKey, JSON.stringify(selections));
+  }
+
+  function render(){
+    var selectedItems = getSelectedItems();
+    var pages = uniquePages(items);
+    totalCount.textContent = String(items.length);
+    selectedCount.textContent = String(selectedItems.length);
+    pageCount.textContent = String(pages.length);
+    selectionNote.textContent = selectedItems.length
+      ? selectedItems.length + " selected. Selection is saved in this browser."
+      : "No changes selected yet.";
+    copyButton.disabled = selectedItems.length === 0;
+    emailButton.disabled = selectedItems.length === 0;
+    clearButton.disabled = selectedItems.length === 0;
+
+    if (!items.length) {
+      list.innerHTML = '<div class="empty">No Jimmy branch changes are listed yet.</div>';
+      return;
+    }
+
+    list.innerHTML = items.map(function(item){
+      var selected = !!selections[item.id];
+      return '<article class="change-item' + (selected ? ' selected' : '') + '">' +
+        '<div class="change-main">' +
+          '<div class="tags">' +
+            '<span class="tag">' + escapeHtml(item.category || "Change") + '</span>' +
+            '<span class="tag status">' + escapeHtml(item.status || "Listed") + '</span>' +
+            '<span class="tag commit">' + escapeHtml(item.commit || "branch") + '</span>' +
+          '</div>' +
+          '<h3 class="change-title">' + escapeHtml(item.title) + '</h3>' +
+          '<p class="change-summary">' + escapeHtml(item.summary || "") + '</p>' +
+          '<p class="decision">' + escapeHtml(item.mattDecision || "") + '</p>' +
+          renderPages(item.pages) +
+          renderLinks(item.links) +
+        '</div>' +
+        '<div class="pick-control">' +
+          '<button type="button" class="' + (selected ? 'secondary' : '') + '" data-toggle-change="' + escapeHtml(item.id) + '">' + (selected ? "Selected" : "Matt wants this") + '</button>' +
+          '<span class="picked-label">' + (selected ? "Ready to copy" : "") + '</span>' +
+        '</div>' +
+      '</article>';
+    }).join("");
+  }
+
+  function renderPages(pages){
+    if (!Array.isArray(pages) || !pages.length) return "";
+    return '<ul class="page-list">' + pages.map(function(page){
+      return '<li>' + escapeHtml(page) + '</li>';
+    }).join("") + '</ul>';
+  }
+
+  function renderLinks(links){
+    if (!Array.isArray(links) || !links.length) return "";
+    return '<div class="card-links">' + links.map(function(link){
+      return '<a href="' + escapeAttribute(link.href) + '">' + escapeHtml(link.label) + '</a>';
+    }).join("") + '</div>';
+  }
+
+  function getSelectedItems(){
+    return items.filter(function(item){ return !!selections[item.id]; });
+  }
+
+  function uniquePages(sourceItems){
+    var seen = {};
+    sourceItems.forEach(function(item){
+      (item.pages || []).forEach(function(page){ seen[page] = true; });
+    });
+    return Object.keys(seen);
+  }
+
+  function buildSelectedText(){
+    var selectedItems = getSelectedItems();
+    if (!selectedItems.length) return "";
+    var lines = [
+      "Jimmy branch changes selected for Matt",
+      "Branch: " + (meta.branch || "Jimmy branch"),
+      "URL: " + (meta.publishUrl || window.location.href),
+      ""
+    ];
+    selectedItems.forEach(function(item, index){
+      lines.push((index + 1) + ". " + item.title);
+      if (item.summary) lines.push("   " + item.summary);
+      if (item.pages && item.pages.length) lines.push("   Pages: " + item.pages.join(", "));
+      if (item.commit) lines.push("   Ref: " + item.commit);
+      lines.push("");
+    });
+    return lines.join("\n").trim();
+  }
+
+  function copyText(text){
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function(){
+        showToast("Selected changes copied.");
+      }).catch(function(){
+        fallbackCopy(text);
+      });
+      return;
+    }
+    fallbackCopy(text);
+  }
+
+  function fallbackCopy(text){
+    var area = document.createElement("textarea");
+    area.value = text;
+    area.setAttribute("readonly", "");
+    area.style.position = "fixed";
+    area.style.left = "-9999px";
+    document.body.appendChild(area);
+    area.select();
+    document.execCommand("copy");
+    document.body.removeChild(area);
+    showToast("Selected changes copied.");
+  }
+
+  function showToast(message){
+    toast.textContent = message;
+    toast.classList.add("show");
+    window.clearTimeout(showToast.timer);
+    showToast.timer = window.setTimeout(function(){
+      toast.classList.remove("show");
+    }, 2200);
+  }
+
+  function escapeHtml(value){
+    return String(value == null ? "" : value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  function escapeAttribute(value){
+    return escapeHtml(value || "#");
+  }
+})();
+</script>
+</body>
+</html>
