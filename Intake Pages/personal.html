@@ -626,4 +626,39 @@ table.exp td:last-child{width:140px;}
   var _sel=document.getElementById('maritalSel'); if(_sel)_sel.addEventListener('change',function(){setTimeout(apply,0);});
   setTimeout(apply,150);
 })();
-</script></body></html>
+</script>
+<script>(function(){
+  var KEY='mcl_carryover_v1';
+  function read(){ try{ return JSON.parse(sessionStorage.getItem(KEY)||'{}'); }catch(e){ return {}; } }
+  function norm(text){ return String(text||'').replace(/\s+/g,' ').replace('*','').trim().toLowerCase(); }
+  function inputFor(labelText){
+    var wanted=norm(labelText);
+    var fields=document.querySelectorAll('.content .field');
+    for(var i=0;i<fields.length;i++){
+      var label=fields[i].querySelector('label');
+      if(label&&norm(label.textContent)===wanted) return fields[i].querySelector('input,textarea,select');
+    }
+    return null;
+  }
+  function setIfBlank(input,value){
+    if(input&&value&&!input.value.trim()){
+      input.value=value;
+      input.dispatchEvent(new Event('input',{bubbles:true}));
+      input.dispatchEvent(new Event('change',{bubbles:true}));
+    }
+  }
+  function splitName(fullName){
+    var parts=String(fullName||'').trim().split(/\s+/).filter(Boolean);
+    if(parts.length<1) return {};
+    if(parts.length===1) return {first:parts[0]};
+    if(parts.length===2) return {first:parts[0],last:parts[1]};
+    return {first:parts[0],middle:parts.slice(1,-1).join(' '),last:parts[parts.length-1]};
+  }
+  var account=(read().account)||{};
+  var name=splitName(account.fullName);
+  setIfBlank(inputFor('First name'),name.first);
+  setIfBlank(inputFor('Middle name'),name.middle);
+  setIfBlank(inputFor('Last name'),name.last);
+  setIfBlank(inputFor('Email address'),account.email);
+})();</script>
+</body></html>
