@@ -6,7 +6,7 @@
   var legacySelectionKey = "mcl_jimmy_changes_selected_v1";
   var outboxStorageKey = "mcl_jimmy_changes_outbox_v1";
   var textStorageKey = "mcl_jimmy_changes_text_edits_v1";
-  var actor = readString(actorStorageKey);
+  var actor = reviewerFromUrl() || readString(actorStorageKey) || "Jimmy";
   var outbox = readArray(outboxStorageKey);
   var textEdits = readJson(textStorageKey);
   var sharedState = { items: {}, revision: 0, updatedAt: null };
@@ -30,6 +30,7 @@
 
   document.getElementById("branchName").textContent = meta.branch || "Jimmy branch";
   document.getElementById("updatedOn").textContent = meta.updated ? "Updated " + meta.updated : "Updated from checklist data";
+  localStorage.setItem(actorStorageKey, actor);
 
   document.querySelectorAll("[data-reviewer]").forEach(function(button){
     button.addEventListener("click", function(){
@@ -51,10 +52,6 @@
     }
     var action = actionButton.getAttribute("data-checklist-action");
     var id = actionButton.getAttribute("data-change-id");
-    if (action === "implemented" && actor !== "Jimmy") {
-      showToast("Jimmy marks changes implemented.");
-      return;
-    }
     var item = findItem(id);
     if (!item) return;
     var state = effectiveItemState(id);
@@ -242,7 +239,6 @@
       var requesters = activeRequesters(state);
       var isRequested = requesters.length > 0;
       var isImplemented = Boolean(state.implemented && state.implemented.active);
-      var currentRequest = Boolean(actor && state.requests[actor] && state.requests[actor].active);
       var edited = Boolean(textEdits[item.id]);
       var pending = outbox.some(function(entry){ return entry.featureId === item.id; });
       var cardClass = "change-item" + (isRequested ? " requested" : "") + (isImplemented ? " completed" : "");
@@ -261,8 +257,8 @@
           renderLinks(item.links) +
         '</div>' +
         '<div class="pick-control">' +
-          '<button type="button" class="implement' + (currentRequest ? ' active' : '') + '" data-checklist-action="implement" data-change-id="' + escapeAttribute(item.id) + '" aria-pressed="' + String(currentRequest) + '"' + disableAttribute(!actor || pending) + '>Implement</button>' +
-          '<button type="button" class="implemented' + (isImplemented ? ' active' : '') + '" data-checklist-action="implemented" data-change-id="' + escapeAttribute(item.id) + '" aria-pressed="' + String(isImplemented) + '" title="Jimmy marks completed changes"' + disableAttribute(actor !== "Jimmy" || pending) + '>Implemented</button>' +
+          '<button type="button" class="implement' + (isRequested ? ' active' : '') + '" data-checklist-action="implement" data-change-id="' + escapeAttribute(item.id) + '" aria-pressed="' + String(isRequested) + '"' + disableAttribute(pending) + '>Implement</button>' +
+          '<button type="button" class="implemented' + (isImplemented ? ' active' : '') + '" data-checklist-action="implemented" data-change-id="' + escapeAttribute(item.id) + '" aria-pressed="' + String(isImplemented) + '" title="Mark this change implemented"' + disableAttribute(pending) + '>Implemented</button>' +
           '<div class="state-details">' + renderStateDetails(state) + '</div>' +
           (edited ? '<button type="button" class="ghost reset-copy" data-reset-writing="' + escapeAttribute(item.id) + '">Reset writing</button>' : '') +
         '</div>' +
@@ -480,6 +476,11 @@
 
   function readString(key){
     var value = localStorage.getItem(key) || "";
+    return value === "Matt" || value === "Jimmy" ? value : "";
+  }
+
+  function reviewerFromUrl(){
+    var value = new URLSearchParams(window.location.search).get("reviewer") || "";
     return value === "Matt" || value === "Jimmy" ? value : "";
   }
 

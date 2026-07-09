@@ -8,7 +8,7 @@ matter, credential, or document data.
 The board records append-only KV events for:
 
 - `implement`: Matt or Jimmy requests a listed Jimmy-branch change.
-- `implemented`: Jimmy records that the approved change reached Matt's branch.
+- `implemented`: Matt or Jimmy records that the approved change reached Matt's branch.
 
 Reviewer identity is self-selected on the public review page. This is an
 operational two-person prototype, not authenticated approval evidence.
