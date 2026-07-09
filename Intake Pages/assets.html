@@ -756,6 +756,8 @@ table.exp td:last-child{width:140px;}
 <script>
 (function(){
   var ADDRESS_SUGGEST_ENDPOINT='https://intake.bkfastlane.com/api/address-suggest';
+  var DEFAULT_FILING_STATE='CO';
+  var MAX_ADDRESS_SUGGESTIONS=10;
   var STATE_CODE_NAMES={AL:'Alabama',AK:'Alaska',AZ:'Arizona',AR:'Arkansas',CA:'California',CO:'Colorado',CT:'Connecticut',DE:'Delaware',DC:'District of Columbia',FL:'Florida',GA:'Georgia',HI:'Hawaii',ID:'Idaho',IL:'Illinois',IN:'Indiana',IA:'Iowa',KS:'Kansas',KY:'Kentucky',LA:'Louisiana',ME:'Maine',MD:'Maryland',MA:'Massachusetts',MI:'Michigan',MN:'Minnesota',MS:'Mississippi',MO:'Missouri',MT:'Montana',NE:'Nebraska',NV:'Nevada',NH:'New Hampshire',NJ:'New Jersey',NM:'New Mexico',NY:'New York',NC:'North Carolina',ND:'North Dakota',OH:'Ohio',OK:'Oklahoma',OR:'Oregon',PA:'Pennsylvania',RI:'Rhode Island',SC:'South Carolina',SD:'South Dakota',TN:'Tennessee',TX:'Texas',UT:'Utah',VT:'Vermont',VA:'Virginia',WA:'Washington',WV:'West Virginia',WI:'Wisconsin',WY:'Wyoming'};
   function zillowAddressSearchSlug(address){
     return address
@@ -829,7 +831,7 @@ table.exp td:last-child{width:140px;}
     return false;
   }
   function hasLocalityContext(context){
-    return Boolean(context && (context.city || context.zipCode));
+    return Boolean(context && (context.city || context.state || context.zipCode));
   }
   function suggestionMatchesContext(suggestion,context){
     if(!context) return true;
@@ -842,6 +844,14 @@ table.exp td:last-child{width:140px;}
     if(wantedZip && suggestion.zipCode.replace(/\D/g,'').slice(0,5)!==wantedZip) return false;
     if(wantedCity && suggestionCity!==wantedCity && suggestionCounty.indexOf(wantedCity)<0) return false;
     return true;
+  }
+  function addressSuggestionKey(suggestion){
+    return [
+      suggestion.streetAddress,
+      suggestion.city,
+      suggestion.stateCode || suggestion.state,
+      suggestion.zipCode
+    ].join('|').toLowerCase();
   }
   function propertyAddress(card){
     var controls=realEstateControls(card);
@@ -897,13 +907,8 @@ table.exp td:last-child{width:140px;}
       zipCode:String(value.zipCode || '').trim()
     };
   }
-  function loadAddressSuggestions(query,context){
-    var trimmed=(query || '').trim();
-    if(trimmed.length<5) return Promise.resolve({configured:true,suggestions:[]});
+  function fetchAddressSuggestions(trimmed,context){
     context=context || {};
-    if(!hasLocalityContext(context) && !queryHasLocality(trimmed)){
-      return Promise.resolve({configured:true,needsContext:true,suggestions:[]});
-    }
     var params=new URLSearchParams({q:trimmed});
     if(context.city) params.set('city',context.city);
     if(context.state) params.set('state',context.state);
@@ -925,6 +930,41 @@ table.exp td:last-child{width:140px;}
           };
         });
       });
+  }
+  function mergeAddressSuggestionGroups(groups){
+    var merged=[];
+    var seen={};
+    groups.forEach(function(group){
+      if(!group || !Array.isArray(group.suggestions)) return;
+      group.suggestions.forEach(function(suggestion){
+        var key=addressSuggestionKey(suggestion);
+        if(!key || seen[key]) return;
+        seen[key]=true;
+        merged.push(suggestion);
+      });
+    });
+    return merged.slice(0,MAX_ADDRESS_SUGGESTIONS);
+  }
+  function loadAddressSuggestions(query,context){
+    var trimmed=(query || '').trim();
+    if(trimmed.length<5) return Promise.resolve({configured:true,suggestions:[]});
+    context=context || {};
+    if(hasLocalityContext(context) || queryHasLocality(trimmed)){
+      return fetchAddressSuggestions(trimmed,context);
+    }
+    return Promise.all([
+      fetchAddressSuggestions(trimmed+' '+DEFAULT_FILING_STATE,{}).catch(function(){return null;}),
+      fetchAddressSuggestions(trimmed,{state:DEFAULT_FILING_STATE}).catch(function(){return null;}),
+      fetchAddressSuggestions(trimmed,{}).catch(function(){return null;})
+    ]).then(function(groups){
+      var configured=groups.some(function(group){return group && group.configured;});
+      var error=(groups.find(function(group){return group && group.error;}) || {}).error || '';
+      return {
+        configured:configured,
+        error:error,
+        suggestions:mergeAddressSuggestionGroups(groups)
+      };
+    });
   }
   function suggestionLocationText(suggestion){
     var location=[suggestion.city,suggestion.stateCode,suggestion.zipCode].filter(Boolean).join(', ');
@@ -1006,11 +1046,6 @@ table.exp td:last-child{width:140px;}
         if(!payload.configured){
           closeAutocomplete(card);
           setAutocompleteStatus(card,payload.error || 'Address suggestions need setup.');
-          return;
-        }
-        if(payload.needsContext){
-          closeAutocomplete(card);
-          setAutocompleteStatus(card,'Add city or ZIP, or type the full address with state, to narrow matches.');
           return;
         }
         renderSuggestions(card,payload.suggestions);
