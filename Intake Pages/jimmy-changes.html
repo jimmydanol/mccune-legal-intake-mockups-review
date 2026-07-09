@@ -11,7 +11,7 @@ body{margin:0;background:var(--bg);font-family:var(--font);color:var(--ink);font
 .app{max-width:1180px;margin:20px auto;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow)}
 .hdr{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 20px;border-bottom:1px solid var(--line)}
 .brand{display:flex;align-items:center;gap:12px;min-width:0}
-.logo{width:44px;height:44px;border-radius:50%;background:#11364a;color:white;display:grid;place-items:center;font-weight:bold;letter-spacing:.02em}
+.logo{width:44px;height:44px;border-radius:50%;background:#11364a;color:white;display:grid;place-items:center;font-weight:bold;letter-spacing:0}
 .brand h1{margin:0;font-size:20px;line-height:1.2}
 .brand small{display:block;color:var(--muted);margin-top:2px}
 .branch-badge{display:inline-flex;align-items:center;gap:8px;border:1px solid #b8dce2;background:#e9f8fa;color:#155565;border-radius:999px;padding:7px 10px;font-size:13px;font-weight:700;white-space:nowrap}
@@ -23,12 +23,24 @@ body{margin:0;background:var(--bg);font-family:var(--font);color:var(--ink);font
 .topnav .n{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.16);font-size:12px;font-weight:700}
 .content{padding:28px}
 .page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;border-bottom:1px solid var(--line);padding-bottom:20px}
-.eyebrow{margin:0 0 6px;color:var(--accentDark);font-size:13px;font-weight:700;text-transform:uppercase}
-h2{margin:0;font-size:28px;line-height:1.15}
+.eyebrow{margin:0 0 6px;color:var(--accentDark);font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0}
+h2{margin:0;font-size:28px;line-height:1.15;letter-spacing:0}
 .head-copy{max-width:720px;color:var(--muted);margin:8px 0 0}
 .meta-panel{border:1px solid var(--line);border-radius:var(--radius);background:var(--soft2);padding:12px 14px;min-width:260px;font-size:13px;color:var(--muted)}
 .meta-panel strong{display:block;color:var(--ink);font-size:14px;margin-bottom:3px}
-.summary-strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:20px 0}
+.reviewer-bar{display:flex;align-items:center;justify-content:space-between;gap:14px;border:1px solid var(--line);background:#fff;padding:12px 14px;margin-top:20px}
+.reviewer-picker{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.reviewer-label{font-size:14px;font-weight:700;color:var(--ink)}
+.reviewer-options{display:inline-grid;grid-template-columns:repeat(2,88px);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.reviewer-options button{border:0;border-radius:0;min-height:36px;background:#fff;color:var(--muted);padding:7px 12px}
+.reviewer-options button+button{border-left:1px solid var(--line)}
+.reviewer-options button.active{background:var(--nav);color:#fff}
+.sync-wrap{text-align:right;min-width:220px}
+.sync-status{display:block;font-size:14px;font-weight:700;color:var(--ok)}
+.sync-status.warning{color:var(--warn)}
+.sync-status.error{color:var(--danger)}
+.sync-detail{display:block;font-size:12px;color:var(--muted);margin-top:2px}
+.summary-strip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:14px 0 20px}
 .metric{border:1px solid var(--line);border-radius:var(--radius);background:var(--soft2);padding:14px}
 .metric .num{display:block;font-size:26px;font-weight:800;color:var(--nav);line-height:1}
 .metric .label{display:block;margin-top:6px;color:var(--muted);font-size:13px}
@@ -40,14 +52,16 @@ button.secondary,.link-button.secondary{background:#fff;color:var(--accentDark)}
 button.ghost{background:#fff;color:var(--muted);border-color:var(--line)}
 button:disabled{opacity:.55;cursor:not-allowed}
 .change-list{display:grid;gap:12px;margin-top:16px}
-.change-item{border:1px solid var(--line);border-radius:var(--radius);background:#fff;padding:16px;display:grid;grid-template-columns:1fr auto;gap:14px;align-items:start}
-.change-item.selected{border-color:#84c8d2;background:#f6fcfd}
+.change-item{border:1px solid var(--line);border-radius:var(--radius);background:#fff;padding:16px;display:grid;grid-template-columns:1fr 220px;gap:18px;align-items:start}
+.change-item.requested{border-color:#84c8d2;background:#f6fcfd}
+.change-item.completed{border-color:#83c4a6;background:#f4fbf7}
 .change-main{min-width:0}
 .tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
 .tag{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:999px;background:var(--soft2);padding:4px 8px;font-size:12px;color:var(--muted);font-weight:700}
 .tag.status{border-color:#bcdacf;background:#edf8f2;color:var(--ok)}
 .tag.commit{font-family:Consolas,Monaco,monospace;color:#39485a}
-.change-title{margin:0 0 7px;font-size:20px;line-height:1.2}
+.tag.pending{border-color:#e1c79e;background:#fff8eb;color:var(--warn)}
+.change-title{margin:0 0 7px;font-size:20px;line-height:1.2;letter-spacing:0}
 .change-summary{margin:0;color:#39485a}
 .decision{margin:10px 0 0;color:var(--muted);font-size:14px}
 .editable-copy{border-radius:6px;outline:1px solid transparent;transition:background .15s ease,outline-color .15s ease,box-shadow .15s ease}
@@ -58,21 +72,30 @@ button:disabled{opacity:.55;cursor:not-allowed}
 .page-list li{border:1px solid #d5e6e9;background:#f3fafb;color:#245a64;border-radius:999px;padding:4px 8px;font-size:12px;font-weight:700}
 .card-links{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
 .card-links a{color:var(--accentDark);font-weight:700;text-decoration:none;border-bottom:1px solid currentColor}
-.pick-control{display:grid;gap:8px;justify-items:end;min-width:178px}
-.pick-control button{width:100%}
-.picked-label{font-size:13px;color:var(--ok);font-weight:700;min-height:18px}
+.pick-control{display:grid;grid-template-columns:1fr 1fr;gap:8px;min-width:0}
+.pick-control button{width:100%;min-height:42px;padding:8px}
+.pick-control .implement.active{background:var(--accentDark);color:#fff}
+.pick-control .implemented{border-color:var(--ok);background:#fff;color:var(--ok)}
+.pick-control .implemented.active{background:var(--ok);color:#fff}
+.state-details{grid-column:1/-1;display:grid;gap:4px;border-top:1px solid var(--line);padding-top:9px;margin-top:2px;min-height:42px}
+.state-line{font-size:12px;color:var(--muted)}
+.state-line strong{color:var(--ink)}
+.state-line.complete strong{color:var(--ok)}
+.pick-control .reset-copy{grid-column:1/-1}
 .empty{border:1px dashed var(--line);border-radius:var(--radius);padding:18px;color:var(--muted);background:var(--soft2)}
-.toast{position:fixed;right:18px;bottom:18px;background:#143d52;color:#fff;border-radius:8px;padding:11px 14px;box-shadow:var(--shadow);opacity:0;transform:translateY(8px);pointer-events:none;transition:opacity .18s ease,transform .18s ease}
+.toast{position:fixed;right:18px;bottom:18px;background:#143d52;color:#fff;border-radius:8px;padding:11px 14px;box-shadow:var(--shadow);opacity:0;transform:translateY(8px);pointer-events:none;transition:opacity .18s ease,transform .18s ease;z-index:10}
 .toast.show{opacity:1;transform:translateY(0)}
+@media(max-width:900px){.summary-strip{grid-template-columns:repeat(2,minmax(0,1fr))}.change-item{grid-template-columns:1fr}}
 @media(max-width:760px){
   .app{margin:0;border-left:0;border-right:0}
-  .hdr,.page-head,.toolbar{align-items:flex-start;flex-direction:column}
+  .hdr,.page-head,.toolbar,.reviewer-bar{align-items:flex-start;flex-direction:column}
   .content{padding:20px 16px}
-  .summary-strip{grid-template-columns:1fr}
+  .summary-strip{grid-template-columns:1fr 1fr}
   .change-item{grid-template-columns:1fr}
-  .pick-control{justify-items:stretch;min-width:0}
+  .sync-wrap{text-align:left;min-width:0}
   .branch-badge{white-space:normal}
 }
+@media(max-width:420px){.summary-strip{grid-template-columns:1fr}.pick-control{grid-template-columns:1fr}.state-details,.pick-control .reset-copy{grid-column:1}}
 </style>
 </head>
 <body>
@@ -80,10 +103,7 @@ button:disabled{opacity:.55;cursor:not-allowed}
   <header class="hdr">
     <div class="brand">
       <div class="logo" aria-hidden="true">ML</div>
-      <div>
-        <h1>McCune Legal Intake</h1>
-        <small>Chapter 7 bankruptcy intake mockup</small>
-      </div>
+      <div><h1>McCune Legal Intake</h1><small>Chapter 7 bankruptcy intake mockup</small></div>
     </div>
     <div class="branch-badge"><span class="branch-dot" aria-hidden="true"></span><span>Jimmy Branch</span></div>
   </header>
@@ -103,26 +123,38 @@ button:disabled{opacity:.55;cursor:not-allowed}
       <div>
         <p class="eyebrow">Page 9</p>
         <h2 id="pageTitle">Jimmy's changes</h2>
-        <p class="head-copy">Select the branch changes Matt wants copied into his branch, then copy or email the selected list.</p>
+        <p class="head-copy">Use Implement to request a branch change. Jimmy uses Implemented after the approved change is in Matt's branch.</p>
       </div>
-      <aside class="meta-panel">
-        <strong id="branchName">Jimmy branch</strong>
-        <span id="updatedOn">Updated from checklist data</span>
-      </aside>
+      <aside class="meta-panel"><strong id="branchName">Jimmy branch</strong><span id="updatedOn">Updated from checklist data</span></aside>
+    </section>
+
+    <section class="reviewer-bar" aria-label="Reviewer and shared-save status">
+      <div class="reviewer-picker">
+        <span class="reviewer-label">Reviewing as</span>
+        <div class="reviewer-options" role="group" aria-label="Choose reviewer">
+          <button type="button" class="ghost" data-reviewer="Matt" aria-pressed="false">Matt</button>
+          <button type="button" class="ghost" data-reviewer="Jimmy" aria-pressed="false">Jimmy</button>
+        </div>
+      </div>
+      <div class="sync-wrap" aria-live="polite">
+        <span class="sync-status warning" id="syncStatus">Choose Matt or Jimmy</span>
+        <span class="sync-detail" id="syncDetail">Selections are shared after a reviewer is chosen.</span>
+      </div>
     </section>
 
     <section class="summary-strip" aria-label="Checklist summary">
       <div class="metric"><span class="num" id="totalCount">0</span><span class="label">changes listed</span></div>
-      <div class="metric"><span class="num" id="selectedCount">0</span><span class="label">selected for Matt</span></div>
+      <div class="metric"><span class="num" id="requestedCount">0</span><span class="label">requested to implement</span></div>
+      <div class="metric"><span class="num" id="implementedCount">0</span><span class="label">implemented</span></div>
       <div class="metric"><span class="num" id="pageCount">0</span><span class="label">intake pages touched</span></div>
     </section>
 
     <section class="toolbar" aria-label="Checklist actions">
-      <div class="selection-note" id="selectionNote">No changes selected yet.</div>
+      <div class="selection-note" id="selectionNote">Shared checklist is loading.</div>
       <div class="toolbar-actions">
-        <button type="button" class="secondary" id="copySelected">Copy selected</button>
-        <button type="button" id="emailSelected">Email selected</button>
-        <button type="button" class="ghost" id="clearSelected">Clear</button>
+        <button type="button" class="secondary" id="copySelected">Copy requests</button>
+        <button type="button" id="emailSelected">Email requests</button>
+        <button type="button" class="ghost" id="clearSelected">Clear my requests</button>
         <button type="button" class="ghost" id="resetWriting">Reset writing</button>
       </div>
     </section>
@@ -132,320 +164,7 @@ button:disabled{opacity:.55;cursor:not-allowed}
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <script src="jimmy-changes.js"></script>
-<script>
-(function(){
-  var meta = window.JIMMY_CHANGE_META || {};
-  var items = Array.isArray(window.JIMMY_CHANGE_ITEMS) ? window.JIMMY_CHANGE_ITEMS : [];
-  var storageKey = "mcl_jimmy_changes_selected_v1";
-  var textStorageKey = "mcl_jimmy_changes_text_edits_v1";
-  var selections = readSelections();
-  var textEdits = readJson(textStorageKey);
-  var list = document.getElementById("changeList");
-  var totalCount = document.getElementById("totalCount");
-  var selectedCount = document.getElementById("selectedCount");
-  var pageCount = document.getElementById("pageCount");
-  var selectionNote = document.getElementById("selectionNote");
-  var copyButton = document.getElementById("copySelected");
-  var emailButton = document.getElementById("emailSelected");
-  var clearButton = document.getElementById("clearSelected");
-  var resetWritingButton = document.getElementById("resetWriting");
-  var toast = document.getElementById("toast");
-
-  document.getElementById("branchName").textContent = meta.branch || "Jimmy branch";
-  document.getElementById("updatedOn").textContent = meta.updated ? "Updated " + meta.updated : "Updated from checklist data";
-
-  list.addEventListener("click", function(event){
-    var button = event.target.closest("[data-toggle-change]");
-    var resetButton = event.target.closest("[data-reset-writing]");
-    if (resetButton) {
-      resetItemWriting(resetButton.getAttribute("data-reset-writing"));
-      return;
-    }
-    if (!button) return;
-    var id = button.getAttribute("data-toggle-change");
-    selections[id] = !selections[id];
-    saveSelections();
-    render();
-  });
-
-  list.addEventListener("input", function(event){
-    var editable = event.target.closest("[data-edit-change]");
-    if (!editable) return;
-    setTextEdit(
-      editable.getAttribute("data-edit-change"),
-      editable.getAttribute("data-edit-field"),
-      editable.textContent
-    );
-    updateControls();
-  });
-
-  list.addEventListener("keydown", function(event){
-    var editable = event.target.closest("[data-edit-change]");
-    if (!editable || event.key !== "Enter") return;
-    event.preventDefault();
-    editable.blur();
-  });
-
-  list.addEventListener("focusout", function(event){
-    if (!event.target.closest("[data-edit-change]")) return;
-    render();
-  });
-
-  list.addEventListener("paste", function(event){
-    var editable = event.target.closest("[data-edit-change]");
-    if (!editable) return;
-    event.preventDefault();
-    var text = (event.clipboardData || window.clipboardData).getData("text/plain").replace(/\s+/g, " ");
-    document.execCommand("insertText", false, text);
-  });
-
-  copyButton.addEventListener("click", function(){
-    var text = buildSelectedText();
-    if (!text) return showToast("Select at least one change first.");
-    copyText(text);
-  });
-
-  emailButton.addEventListener("click", function(){
-    var text = buildSelectedText();
-    if (!text) return showToast("Select at least one change first.");
-    var subject = encodeURIComponent("Jimmy branch changes selected for Matt");
-    var body = encodeURIComponent(text);
-    window.location.href = "mailto:?subject=" + subject + "&body=" + body;
-  });
-
-  clearButton.addEventListener("click", function(){
-    selections = {};
-    saveSelections();
-    render();
-    showToast("Selections cleared.");
-  });
-
-  resetWritingButton.addEventListener("click", function(){
-    textEdits = {};
-    localStorage.removeItem(textStorageKey);
-    render();
-    showToast("Writing reset to branch defaults.");
-  });
-
-  render();
-
-  function readSelections(){
-    return readJson(storageKey);
-  }
-
-  function readJson(key){
-    try {
-      return JSON.parse(localStorage.getItem(key) || "{}") || {};
-    } catch (error) {
-      return {};
-    }
-  }
-
-  function saveSelections(){
-    localStorage.setItem(storageKey, JSON.stringify(selections));
-  }
-
-  function saveTextEdits(){
-    localStorage.setItem(textStorageKey, JSON.stringify(textEdits));
-  }
-
-  function render(){
-    updateControls();
-
-    if (!items.length) {
-      list.innerHTML = '<div class="empty">No Jimmy branch changes are listed yet.</div>';
-      return;
-    }
-
-    list.innerHTML = items.map(function(item){
-      var selected = !!selections[item.id];
-      var edited = !!textEdits[item.id];
-      return '<article class="change-item' + (selected ? ' selected' : '') + '">' +
-        '<div class="change-main">' +
-          '<div class="tags">' +
-            '<span class="tag">' + escapeHtml(item.category || "Change") + '</span>' +
-            '<span class="tag status">' + escapeHtml(item.status || "Listed") + '</span>' +
-            '<span class="tag commit">' + escapeHtml(item.commit || "branch") + '</span>' +
-          '</div>' +
-          editableText(item, "title", "h3", "change-title") +
-          editableText(item, "summary", "p", "change-summary") +
-          editableText(item, "mattDecision", "p", "decision") +
-          renderPages(item.pages) +
-          renderLinks(item.links) +
-        '</div>' +
-        '<div class="pick-control">' +
-          '<button type="button" class="' + (selected ? 'secondary' : '') + '" data-toggle-change="' + escapeHtml(item.id) + '">' + (selected ? "Selected" : "Matt wants this") + '</button>' +
-          '<span class="picked-label">' + (selected ? "Ready to copy" : "") + '</span>' +
-          (edited ? '<button type="button" class="ghost" data-reset-writing="' + escapeAttribute(item.id) + '">Reset writing</button>' : '') +
-        '</div>' +
-      '</article>';
-    }).join("");
-  }
-
-  function updateControls(){
-    var selectedItems = getSelectedItems();
-    var pages = uniquePages(items);
-    var hasWriting = hasTextEdits();
-    totalCount.textContent = String(items.length);
-    selectedCount.textContent = String(selectedItems.length);
-    pageCount.textContent = String(pages.length);
-    if (selectedItems.length && hasWriting) {
-      selectionNote.textContent = selectedItems.length + " selected. Writing edits are saved in this browser.";
-    } else if (selectedItems.length) {
-      selectionNote.textContent = selectedItems.length + " selected. Selection is saved in this browser.";
-    } else if (hasWriting) {
-      selectionNote.textContent = "Writing edits are saved in this browser.";
-    } else {
-      selectionNote.textContent = "Click card text to edit it directly.";
-    }
-    copyButton.disabled = selectedItems.length === 0;
-    emailButton.disabled = selectedItems.length === 0;
-    clearButton.disabled = selectedItems.length === 0;
-    resetWritingButton.disabled = !hasWriting;
-  }
-
-  function editableText(item, field, tagName, className){
-    return '<' + tagName +
-      ' class="' + className + ' editable-copy"' +
-      ' contenteditable="true"' +
-      ' spellcheck="true"' +
-      ' data-edit-change="' + escapeAttribute(item.id) + '"' +
-      ' data-edit-field="' + escapeAttribute(field) + '"' +
-      ' aria-label="Edit ' + escapeAttribute(field) + ' for ' + escapeAttribute(getItemText(item, "title")) + '">' +
-      escapeHtml(getItemText(item, field)) +
-      '</' + tagName + '>';
-  }
-
-  function renderPages(pages){
-    if (!Array.isArray(pages) || !pages.length) return "";
-    return '<ul class="page-list">' + pages.map(function(page){
-      return '<li>' + escapeHtml(page) + '</li>';
-    }).join("") + '</ul>';
-  }
-
-  function renderLinks(links){
-    if (!Array.isArray(links) || !links.length) return "";
-    return '<div class="card-links">' + links.map(function(link){
-      return '<a href="' + escapeAttribute(link.href) + '">' + escapeHtml(link.label) + '</a>';
-    }).join("") + '</div>';
-  }
-
-  function getSelectedItems(){
-    return items.filter(function(item){ return !!selections[item.id]; });
-  }
-
-  function findItem(id){
-    return items.find(function(item){ return item.id === id; });
-  }
-
-  function getItemText(item, field){
-    var itemEdits = textEdits[item.id] || {};
-    if (Object.prototype.hasOwnProperty.call(itemEdits, field)) {
-      return itemEdits[field];
-    }
-    return item[field] || "";
-  }
-
-  function setTextEdit(id, field, value){
-    var item = findItem(id);
-    if (!item || !field) return;
-    var original = item[field] || "";
-    if (!textEdits[id]) textEdits[id] = {};
-    if (value === original) {
-      delete textEdits[id][field];
-    } else {
-      textEdits[id][field] = value;
-    }
-    if (!Object.keys(textEdits[id]).length) delete textEdits[id];
-    saveTextEdits();
-  }
-
-  function resetItemWriting(id){
-    if (!textEdits[id]) return;
-    delete textEdits[id];
-    saveTextEdits();
-    render();
-    showToast("Writing reset for that change.");
-  }
-
-  function hasTextEdits(){
-    return Object.keys(textEdits).length > 0;
-  }
-
-  function uniquePages(sourceItems){
-    var seen = {};
-    sourceItems.forEach(function(item){
-      (item.pages || []).forEach(function(page){ seen[page] = true; });
-    });
-    return Object.keys(seen);
-  }
-
-  function buildSelectedText(){
-    var selectedItems = getSelectedItems();
-    if (!selectedItems.length) return "";
-    var lines = [
-      "Jimmy branch changes selected for Matt",
-      "Branch: " + (meta.branch || "Jimmy branch"),
-      "URL: " + (meta.publishUrl || window.location.href),
-      ""
-    ];
-    selectedItems.forEach(function(item, index){
-      lines.push((index + 1) + ". " + getItemText(item, "title"));
-      if (getItemText(item, "summary")) lines.push("   " + getItemText(item, "summary"));
-      if (item.pages && item.pages.length) lines.push("   Pages: " + item.pages.join(", "));
-      if (item.commit) lines.push("   Ref: " + item.commit);
-      lines.push("");
-    });
-    return lines.join("\n").trim();
-  }
-
-  function copyText(text){
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).then(function(){
-        showToast("Selected changes copied.");
-      }).catch(function(){
-        fallbackCopy(text);
-      });
-      return;
-    }
-    fallbackCopy(text);
-  }
-
-  function fallbackCopy(text){
-    var area = document.createElement("textarea");
-    area.value = text;
-    area.setAttribute("readonly", "");
-    area.style.position = "fixed";
-    area.style.left = "-9999px";
-    document.body.appendChild(area);
-    area.select();
-    document.execCommand("copy");
-    document.body.removeChild(area);
-    showToast("Selected changes copied.");
-  }
-
-  function showToast(message){
-    toast.textContent = message;
-    toast.classList.add("show");
-    window.clearTimeout(showToast.timer);
-    showToast.timer = window.setTimeout(function(){
-      toast.classList.remove("show");
-    }, 2200);
-  }
-
-  function escapeHtml(value){
-    return String(value == null ? "" : value)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#39;");
-  }
-
-  function escapeAttribute(value){
-    return escapeHtml(value || "#");
-  }
-})();
-</script>
-<script src="data-intake-best-practices.js"></script></body>
+<script src="jimmy-changes-app.js"></script>
+<script src="data-intake-best-practices.js"></script>
+</body>
 </html>

@@ -17,11 +17,13 @@ pages so each renders on its own with no build step and no external dependencies
 | `financial-affairs.html` | Stage 6 — financial affairs (SOFA questions) |
 | `counseling.html` | Stage 7 — credit counseling class (explainer + certificate upload; soft gate) |
 | `documents.html` | Stage 8 — document summary & submit |
-| `jimmy-changes.html` | Stage 9 - Jimmy branch change checklist for Matt review |
+| `jimmy-changes.html` | Stage 9 - shared Jimmy branch implementation checklist for Matt review |
 | `confirmation.html` | Post-submit thank-you |
 
 Open `login.html` and click through. Navigation, toggles, document upload/N/A,
-and progress are interactive (front-end only; no back end / no real file storage).
+and progress are interactive. Intake answers and uploads remain front-end-only
+mockup data. Page 9 uses the separate `review-api/` service for shared Matt/Jimmy
+implementation decisions; it does not store debtor or client data.
 
 ## Conventions
 
@@ -34,5 +36,6 @@ and progress are interactive (front-end only; no back end / no real file storage
 ## Status
 
 Front-end mockup. Login/save and document upload are simulated for click-through;
-wiring real authentication, persistence, and file storage is the next (back-end)
-phase.
+wiring real authentication, intake persistence, and file storage is the next
+back-end phase. Page 9 shared review state is intentionally limited to feature
+names, reviewer names, requested/implemented status, and timestamps.

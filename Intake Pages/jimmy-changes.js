@@ -1,7 +1,9 @@
 window.JIMMY_CHANGE_META = {
   updated: "2026-07-09",
   branch: "jimmy/assets-address-autocomplete-review-2026-07-08",
-  publishUrl: "https://jimmydanol.github.io/mccune-legal-intake-mockups-review/"
+  publishUrl: "https://jimmydanol.github.io/mccune-legal-intake-mockups-review/Intake%20Pages/jimmy-changes.html",
+  mattPublishUrl: "https://mmccune22.github.io/mccune-legal-intake-mockups/Intake%20Pages/",
+  reviewApiUrl: "https://mccune-review-api.pages.dev/api/checklist"
 };
 
 window.JIMMY_CHANGE_ITEMS = [
@@ -10,10 +12,10 @@ window.JIMMY_CHANGE_ITEMS = [
     title: "Data intake formatting best practices",
     category: "Data entry",
     status: "Live on Jimmy branch",
-    commit: "Jimmy branch",
+    commit: "618bc91",
     pages: ["All intake pages"],
     summary: "Structured fields now clean up as the debtor types or leaves the field: phone numbers, Social Security numbers, ZIP codes, dates, dollar amounts, email addresses, years, ages, EINs, and mileage.",
-    mattDecision: "Select this if Matt wants the full data-intake formatting behavior copied into his branch.",
+    mattDecision: "Choose Implement to request the full data-intake formatting behavior for Matt's branch.",
     links: [
       { label: "Open login", href: "login.html" },
       { label: "Open personal info", href: "personal.html" },
@@ -27,10 +29,10 @@ window.JIMMY_CHANGE_ITEMS = [
     title: "House asset Zestimate and geo/address API",
     category: "Assets",
     status: "Live on Jimmy branch",
-    commit: "Jimmy branch",
+    commit: "675714b + c795738",
     pages: ["Assets"],
     summary: "Real estate entries use the geo/address suggestion API and include a Get Zestimate button for property value lookup.",
-    mattDecision: "Select this if Matt wants the house asset Zestimate and geo/address workflow copied into his branch.",
+    mattDecision: "Choose Implement to request the house asset Zestimate and geo/address workflow for Matt's branch.",
     links: [
       { label: "Open assets", href: "assets.html" }
     ]
@@ -43,7 +45,7 @@ window.JIMMY_CHANGE_ITEMS = [
     commit: "f96cb1e",
     pages: ["Login", "Personal Information", "Debts", "Monthly expenses"],
     summary: "Clearly duplicate values carry forward: login name and email populate Personal, and mortgage, HOA, and vehicle payment amounts populate matching Expense rows.",
-    mattDecision: "Select this if Matt wants definite duplicate-entry carry-forward copied into his branch.",
+    mattDecision: "Choose Implement to request definite duplicate-entry carry-forward for Matt's branch.",
     links: [
       { label: "Open login", href: "login.html" },
       { label: "Open debts", href: "debts.html" },
