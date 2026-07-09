@@ -7,15 +7,19 @@ window.JIMMY_CHANGE_META = {
 window.JIMMY_CHANGE_ITEMS = [
   {
     id: "phone-formatting",
-    title: "Phone number entry formatting",
+    title: "Data intake formatting best practices",
     category: "Data entry",
     status: "Live on Jimmy branch",
-    commit: "c3d43f8",
-    pages: ["Personal Information"],
-    summary: "Debtor and spouse phone fields format typed or pasted digits as (202) 507-9145.",
-    mattDecision: "Select this if Matt wants the phone formatting behavior copied into his branch.",
+    commit: "Jimmy branch",
+    pages: ["All intake pages"],
+    summary: "Structured fields now clean up as the debtor types or leaves the field: phone numbers, Social Security numbers, ZIP codes, dates, dollar amounts, email addresses, years, ages, EINs, and mileage.",
+    mattDecision: "Select this if Matt wants the full data-intake formatting behavior copied into his branch.",
     links: [
-      { label: "Open personal info", href: "personal.html" }
+      { label: "Open login", href: "login.html" },
+      { label: "Open personal info", href: "personal.html" },
+      { label: "Open assets", href: "assets.html" },
+      { label: "Open debts", href: "debts.html" },
+      { label: "Open expenses", href: "expenses.html" }
     ]
   },
   {
