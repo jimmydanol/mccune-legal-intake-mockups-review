@@ -12,7 +12,7 @@
   var loadError = "";
   var forceScroll = true;
   var refreshTimer;
-  var lastRenderSignature = "";
+  var lastRenderSignature = null;
 
   var feed = document.getElementById("messageFeed");
   var form = document.getElementById("messageForm");
