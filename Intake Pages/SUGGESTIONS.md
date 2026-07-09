@@ -993,6 +993,25 @@ suppress document requests.)
 
 ---
 
+## Round 47 — Home address gets Jimmy's Find Address autocomplete (2026-07-09)
+**File(s):** personal.html
+
+**What changed:** Ported the assets address-autocomplete component (Jimmy's, from
+assets.html) to the Personal Info home address. Same endpoint
+(intake.bkfastlane.com/api/address-suggest), same CSS, same behavior: type 5+
+chars in Number and street → ranked suggestions (Boulder County / CO
+prioritized), click fills street/city/state/ZIP and closes the menu. Zillow
+zestimate branches self-disable on this page (no such elements). Verified via
+mocked-API smoke test + full harness (111/111).
+
+**Note for Jimmy:** the component now exists in two copies (assets.html +
+personal.html, rescoped to #homeAddressCard with 3 string-level changes).
+Good candidate to extract into a shared address-autocomplete.js alongside
+data-intake-best-practices.js. Spouse address + mailing address are not yet
+enhanced — say the word if wanted.
+
+---
+
 <!-- Add new rounds below this line. Template:
 
 ## Round N — short title (date)
