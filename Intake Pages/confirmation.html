@@ -65,7 +65,8 @@ a{color:var(--brand-accent);}
 .firm{display:flex;flex-direction:column;line-height:1.15;}
 .firm .nm{font-weight:800;letter-spacing:.13em;color:var(--firm-brand);font-size:16px;}
 .firm .tg{font-size:10px;letter-spacing:.05em;color:var(--muted);text-transform:uppercase;}
-.hdr-title{font-size:18px;color:var(--ink);font-weight:600;}
+.hdr-title{font-size:18px;color:var(--ink);font-weight:600;display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center;text-align:center;}
+.branch-badge{display:inline-flex;align-items:center;justify-content:center;background:var(--brand-soft);color:var(--brand-primary-d);border:1px solid var(--line);border-radius:999px;padding:4px 10px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;white-space:nowrap;}
 .hdr-right{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:13.5px;}
 .avatar{width:28px;height:28px;border-radius:50%;background:var(--brand-soft);color:var(--brand-primary);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;}
 
@@ -353,7 +354,7 @@ table.exp td:last-child{width:140px;}
 <div class="app">
   <div class="hdr">
     <div class="hdr-left"><div class="logo-mark"><svg viewBox="0 0 24 24"></svg></div><div class="firm"><span class="nm">MCCUNE LEGAL</span><span class="tg">We help people struggling with debt</span></div></div>
-    <div class="hdr-title">Intake Form</div>
+  <div class="hdr-title"><span>Intake Form</span><span class="branch-badge">Jimmy Branch</span></div>
     <div class="hdr-right"><span>Jordan Sample</span><span class="avatar">JS</span></div>
   </div>
 
