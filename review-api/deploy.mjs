@@ -96,7 +96,7 @@ async function deployWorker() {
   formData.append("manifest", "{}");
   formData.append("branch", "main");
   formData.append("commit_dirty", "false");
-  formData.append("commit_message", "Deploy shared McCune review checklist API");
+  formData.append("commit_message", "Deploy shared McCune review checklist and messages API");
   formData.append("_worker.bundle", await new Response(bundle).blob(), "_worker.bundle");
 
   const deployment = await cfFetch(
@@ -130,3 +130,4 @@ await ensureProject(namespaceId);
 await deployWorker();
 await verifyApi();
 console.log(`Checklist endpoint: https://${PROJECT_NAME}.pages.dev/api/checklist`);
+console.log(`Messages endpoint: https://${PROJECT_NAME}.pages.dev/api/messages`);

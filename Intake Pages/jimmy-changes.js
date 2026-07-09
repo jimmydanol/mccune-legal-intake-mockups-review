@@ -3,7 +3,8 @@ window.JIMMY_CHANGE_META = {
   branch: "jimmy/assets-address-autocomplete-review-2026-07-08",
   publishUrl: "https://jimmydanol.github.io/mccune-legal-intake-mockups-review/Intake%20Pages/jimmy-changes.html",
   mattPublishUrl: "https://mmccune22.github.io/mccune-legal-intake-mockups/Intake%20Pages/",
-  reviewApiUrl: "https://mccune-review-api.pages.dev/api/checklist"
+  reviewApiUrl: "https://mccune-review-api.pages.dev/api/checklist",
+  reviewMessagesApiUrl: "https://mccune-review-api.pages.dev/api/messages"
 };
 
 window.JIMMY_CHANGE_ITEMS = [

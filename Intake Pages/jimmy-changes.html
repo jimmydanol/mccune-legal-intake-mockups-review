@@ -40,6 +40,28 @@ h2{margin:0;font-size:28px;line-height:1.15;letter-spacing:0}
 .sync-status.warning{color:var(--warn)}
 .sync-status.error{color:var(--danger)}
 .sync-detail{display:block;font-size:12px;color:var(--muted);margin-top:2px}
+.conversation{border:1px solid var(--line);border-radius:var(--radius);background:#fff;margin-top:14px;overflow:hidden}
+.conversation-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 14px;border-bottom:1px solid var(--line);background:var(--soft2)}
+.conversation-title{margin:0;font-size:17px;line-height:1.2;letter-spacing:0}
+.conversation-status{display:block;margin-top:3px;color:var(--muted);font-size:12px}
+.conversation-status.error{color:var(--danger)}
+.message-feed{height:280px;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;background:#fff;scrollbar-gutter:stable}
+.message{max-width:min(76%,680px);align-self:flex-start}
+.message.jimmy{align-self:flex-end}
+.message-meta{display:flex;align-items:center;gap:7px;margin:0 4px 4px;color:var(--muted);font-size:12px}
+.message.jimmy .message-meta{justify-content:flex-end}
+.message-author{font-weight:800;color:var(--ink)}
+.message-body{margin:0;border:1px solid var(--line);border-radius:8px;background:#f5f7f9;padding:9px 11px;color:var(--ink);white-space:pre-wrap;overflow-wrap:anywhere}
+.message.jimmy .message-body{border-color:#acd7dd;background:#eaf7f8}
+.message-pending{color:var(--warn);font-weight:700}
+.message-empty{margin:auto;color:var(--muted);text-align:center}
+.message-form{border-top:1px solid var(--line);padding:12px 14px;background:var(--soft2)}
+.message-form label{display:block;margin-bottom:6px;color:var(--ink);font-size:13px;font-weight:800}
+.message-compose{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:end}
+.message-input{display:block;width:100%;min-height:74px;max-height:160px;resize:vertical;border:1px solid #b8c1cc;border-radius:6px;background:#fff;color:var(--ink);padding:10px 11px;font:inherit;line-height:1.35}
+.message-input:focus{outline:0;border-color:var(--accent);box-shadow:0 0 0 3px rgba(47,125,140,.14)}
+.message-send{min-width:88px}
+.message-form-foot{display:flex;justify-content:flex-end;margin-top:5px;color:var(--muted);font-size:12px}
 .summary-strip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:14px 0 20px}
 .metric{border:1px solid var(--line);border-radius:var(--radius);background:var(--soft2);padding:14px}
 .metric .num{display:block;font-size:26px;font-weight:800;color:var(--nav);line-height:1}
@@ -95,8 +117,9 @@ button:disabled{opacity:.55;cursor:not-allowed}
   .change-item{grid-template-columns:1fr}
   .sync-wrap{text-align:left;min-width:0}
   .branch-badge{white-space:normal}
+  .message{max-width:88%}
 }
-@media(max-width:420px){.summary-strip{grid-template-columns:1fr}.pick-control{grid-template-columns:1fr}.state-details,.pick-control .reset-copy{grid-column:1}}
+@media(max-width:420px){.summary-strip{grid-template-columns:1fr}.pick-control{grid-template-columns:1fr}.state-details,.pick-control .reset-copy{grid-column:1}.message-feed{height:320px}.message-compose{grid-template-columns:1fr}.message-send{width:100%}}
 </style>
 </head>
 <body>
@@ -143,6 +166,27 @@ button:disabled{opacity:.55;cursor:not-allowed}
       </div>
     </section>
 
+    <section class="conversation" aria-labelledby="conversationTitle">
+      <div class="conversation-head">
+        <div>
+          <h3 class="conversation-title" id="conversationTitle">Page 9 conversation</h3>
+          <span class="conversation-status" id="conversationStatus" aria-live="polite">Loading messages</span>
+        </div>
+        <button type="button" class="secondary" id="refreshConversation">Refresh</button>
+      </div>
+      <div class="message-feed" id="messageFeed" role="log" aria-live="polite" aria-label="Messages between Matt and Jimmy">
+        <p class="message-empty">Loading conversation.</p>
+      </div>
+      <form class="message-form" id="messageForm">
+        <label for="messageInput" id="messageActorLabel">Message as Jimmy</label>
+        <div class="message-compose">
+          <textarea class="message-input" id="messageInput" maxlength="1200" placeholder="Write a message" required></textarea>
+          <button class="message-send" id="sendMessage" type="submit" disabled>Send</button>
+        </div>
+        <div class="message-form-foot"><span id="messageCount">0 / 1200</span></div>
+      </form>
+    </section>
+
     <section class="summary-strip" aria-label="Checklist summary">
       <div class="metric"><span class="num" id="totalCount">0</span><span class="label">changes listed</span></div>
       <div class="metric"><span class="num" id="requestedCount">0</span><span class="label">requested to implement</span></div>
@@ -166,6 +210,7 @@ button:disabled{opacity:.55;cursor:not-allowed}
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <script src="jimmy-changes.js"></script>
 <script src="jimmy-changes-app.js?v=controls-v2"></script>
+<script src="jimmy-comments-app.js?v=chat-v1"></script>
 <script src="data-intake-best-practices.js"></script>
 </body>
 </html>

@@ -1,5 +1,8 @@
 const BOARD_ID = "mccune-jimmy-changes-v1";
 const EVENT_PREFIX = "mccune-review:v1:event:";
+const MESSAGE_PREFIX = "mccune-review:v1:message:";
+const MAX_MESSAGE_LENGTH = 1200;
+const MAX_VISIBLE_MESSAGES = 200;
 const ACTORS = new Set(["Matt", "Jimmy"]);
 const ACTIONS = new Set(["implement", "implemented"]);
 const ALLOWED_ORIGINS = new Set([
@@ -32,6 +35,22 @@ export default {
       return jsonResponse(request, { error: "Method is not allowed." }, 405);
     }
 
+    if (url.pathname === "/api/messages") {
+      if (!originIsAllowed(request)) {
+        return jsonResponse(request, { error: "Origin is not allowed." }, 403);
+      }
+
+      if (request.method === "GET") {
+        return jsonResponse(request, await readMessages(env.REVIEW_STORE));
+      }
+
+      if (request.method === "POST") {
+        return saveMessage(request, env.REVIEW_STORE);
+      }
+
+      return jsonResponse(request, { error: "Method is not allowed." }, 405);
+    }
+
     if (url.pathname === "/health") {
       return jsonResponse(request, {
         ok: true,
@@ -41,7 +60,7 @@ export default {
     }
 
     return new Response(
-      "McCune review checklist API. Use /health or /api/checklist.",
+      "McCune review API. Use /health, /api/checklist, or /api/messages.",
       {
         status: 200,
         headers: {
@@ -52,6 +71,77 @@ export default {
     );
   }
 };
+
+async function saveMessage(request, store) {
+  let payload;
+  try {
+    payload = await request.json();
+  } catch {
+    return jsonResponse(request, { error: "Request body must be valid JSON." }, 400);
+  }
+
+  const messageId = cleanString(payload.messageId, 80);
+  const actor = cleanString(payload.actor, 20);
+  const body = typeof payload.body === "string" ? payload.body.trim() : "";
+
+  if (!messageId || !/^[A-Za-z0-9_-]+$/.test(messageId)) {
+    return jsonResponse(request, { error: "A valid messageId is required." }, 400);
+  }
+  if (!ACTORS.has(actor)) {
+    return jsonResponse(request, { error: "Message actor must be Matt or Jimmy." }, 400);
+  }
+  if (!body) {
+    return jsonResponse(request, { error: "Message text is required." }, 400);
+  }
+  if (body.length > MAX_MESSAGE_LENGTH) {
+    return jsonResponse(request, { error: `Messages are limited to ${MAX_MESSAGE_LENGTH} characters.` }, 400);
+  }
+
+  const key = MESSAGE_PREFIX + messageId;
+  const existing = await store.get(key, "json");
+  if (existing && existing.boardId === BOARD_ID) {
+    return jsonResponse(request, { ok: true, message: existing });
+  }
+
+  const message = {
+    messageId,
+    boardId: BOARD_ID,
+    actor,
+    body,
+    createdAt: new Date().toISOString()
+  };
+  await store.put(key, JSON.stringify(message));
+  return jsonResponse(request, { ok: true, message });
+}
+
+async function readMessages(store) {
+  const messages = [];
+  let cursor;
+  do {
+    const page = await store.list({ prefix: MESSAGE_PREFIX, cursor, limit: 1000 });
+    const values = await Promise.all(page.keys.map((key) => store.get(key.name, "json")));
+    values.forEach((value) => {
+      if (value && value.boardId === BOARD_ID && ACTORS.has(value.actor) && value.body) {
+        messages.push(value);
+      }
+    });
+    cursor = page.list_complete ? undefined : page.cursor;
+  } while (cursor);
+
+  messages.sort((left, right) => {
+    const byDate = String(left.createdAt).localeCompare(String(right.createdAt));
+    return byDate || String(left.messageId).localeCompare(String(right.messageId));
+  });
+
+  const visibleMessages = messages.slice(-MAX_VISIBLE_MESSAGES);
+  return {
+    ok: true,
+    boardId: BOARD_ID,
+    revision: messages.length,
+    updatedAt: visibleMessages.length ? visibleMessages[visibleMessages.length - 1].createdAt : null,
+    messages: visibleMessages
+  };
+}
 
 async function saveAction(request, store) {
   let payload;

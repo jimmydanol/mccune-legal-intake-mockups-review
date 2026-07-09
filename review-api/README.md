@@ -1,7 +1,8 @@
-# Shared review checklist API
+# Shared review API
 
-This Cloudflare Pages Function stores Page 9 implementation decisions in an
-isolated prefix within the existing Intake collaboration KV namespace.
+This Cloudflare Pages Function stores Page 9 implementation decisions and its
+Matt/Jimmy conversation in isolated prefixes within the existing Intake
+collaboration KV namespace.
 It is separate from the debtor intake data flow and must never receive client,
 matter, credential, or document data.
 
@@ -9,6 +10,7 @@ The board records append-only KV events for:
 
 - `implement`: Matt or Jimmy requests a listed Jimmy-branch change.
 - `implemented`: Matt or Jimmy records that the approved change reached Matt's branch.
+- `message`: Matt or Jimmy posts a Page 9 comment of up to 1,200 characters.
 
 Reviewer identity is self-selected on the public review page. This is an
 operational two-person prototype, not authenticated approval evidence.
@@ -26,6 +28,7 @@ The deployer creates or reuses:
 - Pages project: `mccune-review-api`
 - Existing source binding: `bk-fastlane-intake/INTAKE_COMMENTS`
 - API binding: `REVIEW_STORE`
-- API: `https://mccune-review-api.pages.dev/api/checklist`
+- Checklist API: `https://mccune-review-api.pages.dev/api/checklist`
+- Messages API: `https://mccune-review-api.pages.dev/api/messages`
 
 No credential or account identifier is written to the repository.
