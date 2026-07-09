@@ -4,7 +4,7 @@ const MESSAGE_PREFIX = "mccune-review:v1:message:";
 const MAX_MESSAGE_LENGTH = 1200;
 const MAX_VISIBLE_MESSAGES = 200;
 const ACTORS = new Set(["Matt", "Jimmy"]);
-const ACTIONS = new Set(["implement", "implemented"]);
+const ACTIONS = new Set(["implement", "implemented", "approval-needed", "approved"]);
 const ALLOWED_ORIGINS = new Set([
   "https://jimmydanol.github.io",
   "https://mmccune22.github.io",
@@ -218,7 +218,9 @@ function applyEvent(board, event) {
   const item = board.items[event.featureId] || {
     title: event.featureTitle,
     requests: { Matt: null, Jimmy: null },
-    implemented: null
+    implemented: null,
+    approvalNeeded: null,
+    approved: null
   };
   item.title = event.featureTitle || item.title;
   const state = {
@@ -229,6 +231,8 @@ function applyEvent(board, event) {
   };
   if (event.action === "implement") item.requests[event.actor] = state;
   if (event.action === "implemented") item.implemented = state;
+  if (event.action === "approval-needed") item.approvalNeeded = state;
+  if (event.action === "approved") item.approved = state;
   board.items[event.featureId] = item;
   board.updatedAt = maxTimestamp(board.updatedAt, state.at);
 }

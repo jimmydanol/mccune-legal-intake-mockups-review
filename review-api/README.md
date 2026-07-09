@@ -6,11 +6,16 @@ collaboration KV namespace.
 It is separate from the debtor intake data flow and must never receive client,
 matter, credential, or document data.
 
-The board records append-only KV events for:
+The changelog records append-only KV events for:
 
 - `implement`: Matt or Jimmy requests a listed Jimmy-branch change.
 - `implemented`: Matt or Jimmy records that the approved change reached Matt's branch.
+- `approval-needed`: Jimmy elevates a significant change for Matt's approval.
+- `approved`: Matt records his approval of an elevated change.
 - `message`: Matt or Jimmy posts a Page 9 comment of up to 1,200 characters.
+
+The implementation actions remain supported for historical Page 9 entries. The
+current interface uses the approval actions for the changelog workflow.
 
 Reviewer identity is self-selected on the public review page. This is an
 operational two-person prototype, not authenticated approval evidence.

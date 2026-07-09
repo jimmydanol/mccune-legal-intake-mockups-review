@@ -11,6 +11,7 @@ window.JIMMY_CHANGE_ITEMS = [
   {
     id: "phone-formatting",
     title: "Data intake formatting best practices",
+    date: "2026-07-09",
     category: "Data entry",
     status: "Live on Matt and Jimmy sites",
     commit: "618bc91",
@@ -28,6 +29,7 @@ window.JIMMY_CHANGE_ITEMS = [
   {
     id: "asset-address-zestimate",
     title: "House asset Zestimate and geo/address API",
+    date: "2026-07-09",
     category: "Assets",
     status: "Live on Matt and Jimmy sites",
     commit: "675714b + c795738",
@@ -41,6 +43,7 @@ window.JIMMY_CHANGE_ITEMS = [
   {
     id: "duplicate-entry-carryover",
     title: "Definite duplicate entry carry-forward",
+    date: "2026-07-09",
     category: "Data entry",
     status: "Live on Matt and Jimmy sites",
     commit: "f96cb1e",
@@ -56,10 +59,11 @@ window.JIMMY_CHANGE_ITEMS = [
   {
     id: "shared-page9-conversation",
     title: "Shared Page 9 conversation",
+    date: "2026-07-09",
     category: "Collaboration",
     status: "Live on Matt and Jimmy sites",
     commit: "c80fa1e + shared sync",
-    pages: ["Jimmy's changes"],
+    pages: ["Change log"],
     summary: "Page 9 includes a shared comment feed where Matt and Jimmy can post messages, see the same conversation, and receive automatic updates.",
     mattDecision: "The shared conversation is included on both Page 9 URLs.",
     links: [

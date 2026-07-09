@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>McCune Legal Intake - Jimmy's Changes</title>
+<title>McCune Legal Intake - Change Log</title>
 <style>
 :root{--bg:#f5f6f7;--panel:#fff;--line:#d9dde3;--ink:#1f2933;--muted:#677384;--nav:#143d52;--navText:#fff;--accent:#2f7d8c;--accentDark:#255e69;--ok:#1f7a55;--warn:#9a5b12;--danger:#a23c3c;--soft:#eef6f7;--soft2:#f7f9fa;--shadow:0 2px 8px rgba(15,23,42,.08);--radius:8px;--font:Arial,Helvetica,sans-serif}
 *{box-sizing:border-box}
@@ -75,8 +75,8 @@ button.ghost{background:#fff;color:var(--muted);border-color:var(--line)}
 button:disabled{opacity:.55;cursor:not-allowed}
 .change-list{display:grid;gap:12px;margin-top:16px}
 .change-item{border:1px solid var(--line);border-radius:var(--radius);background:#fff;padding:16px;display:grid;grid-template-columns:1fr 220px;gap:18px;align-items:start}
-.change-item.requested{border-color:#84c8d2;background:#f6fcfd}
-.change-item.completed{border-color:#83c4a6;background:#f4fbf7}
+.change-item.needs-approval{border-color:#d6b16d;background:#fffaf0}
+.change-item.approved{border-color:#83c4a6;background:#f4fbf7}
 .change-main{min-width:0}
 .tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
 .tag{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:999px;background:var(--soft2);padding:4px 8px;font-size:12px;color:var(--muted);font-weight:700}
@@ -96,14 +96,15 @@ button:disabled{opacity:.55;cursor:not-allowed}
 .card-links a{color:var(--accentDark);font-weight:700;text-decoration:none;border-bottom:1px solid currentColor}
 .pick-control{display:grid;grid-template-columns:1fr 1fr;gap:8px;min-width:0}
 .pick-control button{width:100%;min-height:42px;padding:8px}
-.pick-control .implement{border-color:var(--accentDark);background:#fff;color:var(--accentDark)}
-.pick-control .implement.active{background:var(--accentDark);color:#fff}
-.pick-control .implemented{border-color:var(--ok);background:#fff;color:var(--ok)}
-.pick-control .implemented.active{background:var(--ok);color:#fff}
+.pick-control .approval-needed{border-color:var(--warn);background:#fff;color:var(--warn)}
+.pick-control .approval-needed.active{background:var(--warn);color:#fff}
+.pick-control .approved{border-color:var(--ok);background:#fff;color:var(--ok)}
+.pick-control .approved.active{background:var(--ok);color:#fff}
 .state-details{grid-column:1/-1;display:grid;gap:4px;border-top:1px solid var(--line);padding-top:9px;margin-top:2px;min-height:42px}
 .state-line{font-size:12px;color:var(--muted)}
 .state-line strong{color:var(--ink)}
 .state-line.complete strong{color:var(--ok)}
+.state-line.pending-approval{color:var(--warn);font-weight:700}
 .pick-control .reset-copy{grid-column:1/-1}
 .empty{border:1px dashed var(--line);border-radius:var(--radius);padding:18px;color:var(--muted);background:var(--soft2)}
 .toast{position:fixed;right:18px;bottom:18px;background:#143d52;color:#fff;border-radius:8px;padding:11px 14px;box-shadow:var(--shadow);opacity:0;transform:translateY(8px);pointer-events:none;transition:opacity .18s ease,transform .18s ease;z-index:10}
@@ -140,16 +141,16 @@ button:disabled{opacity:.55;cursor:not-allowed}
     <a class="done" href="financial-affairs.html"><span class="n">6</span><span class="lbl">Financial affairs</span></a>
     <a class="done" href="counseling.html"><span class="n">7</span><span class="lbl">Counseling class</span></a>
     <a class="done" href="documents.html"><span class="n">8</span><span class="lbl">Documents</span></a>
-    <a class="active" href="jimmy-changes.html"><span class="n">9</span><span class="lbl">Jimmy's changes</span></a>
+    <a class="active" href="jimmy-changes.html"><span class="n">9</span><span class="lbl">Change log</span></a>
   </nav>
   <main class="content">
     <section class="page-head" aria-labelledby="pageTitle">
       <div>
         <p class="eyebrow">Page 9</p>
-        <h2 id="pageTitle">Jimmy's changes</h2>
-        <p class="head-copy">Use Implement to request a branch change. Use Implemented after the approved change is in Matt's branch.</p>
+        <h2 id="pageTitle">Change log</h2>
+        <p class="head-copy">Significant feature and design changes across the shared intake.</p>
       </div>
-      <aside class="meta-panel"><strong id="branchName">Jimmy branch</strong><span id="updatedOn">Updated from checklist data</span></aside>
+      <aside class="meta-panel"><strong id="branchName">Shared main</strong><span id="updatedOn">Updated from changelog data</span></aside>
     </section>
 
     <section class="reviewer-bar" aria-label="Reviewer and shared-save status">
@@ -162,7 +163,7 @@ button:disabled{opacity:.55;cursor:not-allowed}
       </div>
       <div class="sync-wrap" aria-live="polite">
         <span class="sync-status warning" id="syncStatus">Choose Matt or Jimmy</span>
-        <span class="sync-detail" id="syncDetail">Selections are shared after a reviewer is chosen.</span>
+        <span class="sync-detail" id="syncDetail">Approval status is shared after a reviewer is chosen.</span>
       </div>
     </section>
 
@@ -187,29 +188,28 @@ button:disabled{opacity:.55;cursor:not-allowed}
       </form>
     </section>
 
-    <section class="summary-strip" aria-label="Checklist summary">
+    <section class="summary-strip" aria-label="Change log summary">
       <div class="metric"><span class="num" id="totalCount">0</span><span class="label">changes listed</span></div>
-      <div class="metric"><span class="num" id="requestedCount">0</span><span class="label">requested to implement</span></div>
-      <div class="metric"><span class="num" id="implementedCount">0</span><span class="label">implemented</span></div>
+      <div class="metric"><span class="num" id="approvalNeededCount">0</span><span class="label">approval needed</span></div>
+      <div class="metric"><span class="num" id="approvedCount">0</span><span class="label">approved</span></div>
       <div class="metric"><span class="num" id="pageCount">0</span><span class="label">intake pages touched</span></div>
     </section>
 
-    <section class="toolbar" aria-label="Checklist actions">
-      <div class="selection-note" id="selectionNote">Shared checklist is loading.</div>
+    <section class="toolbar" aria-label="Change log actions">
+      <div class="selection-note" id="selectionNote">Shared change log is loading.</div>
       <div class="toolbar-actions">
-        <button type="button" class="secondary" id="copySelected">Copy requests</button>
-        <button type="button" id="emailSelected">Email requests</button>
-        <button type="button" class="ghost" id="clearSelected">Clear my requests</button>
+        <button type="button" class="secondary" id="copySelected">Copy approval list</button>
+        <button type="button" id="emailSelected">Email approval list</button>
         <button type="button" class="ghost" id="resetWriting">Reset writing</button>
       </div>
     </section>
 
-    <section class="change-list" id="changeList" aria-label="Jimmy branch change checklist"></section>
+    <section class="change-list" id="changeList" aria-label="Shared intake change log"></section>
   </main>
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
-<script src="jimmy-changes.js"></script>
-<script src="jimmy-changes-app.js?v=controls-v2"></script>
+<script src="jimmy-changes.js?v=changelog-v1"></script>
+<script src="jimmy-changes-app.js?v=approvals-v1"></script>
 <script src="jimmy-comments-app.js?v=chat-v2"></script>
 <script src="data-intake-best-practices.js"></script>
 </body>

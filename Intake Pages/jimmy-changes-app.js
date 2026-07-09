@@ -3,8 +3,7 @@
   var items = Array.isArray(window.JIMMY_CHANGE_ITEMS) ? window.JIMMY_CHANGE_ITEMS : [];
   var apiUrl = meta.reviewApiUrl || "";
   var actorStorageKey = "mcl_jimmy_changes_actor_v1";
-  var legacySelectionKey = "mcl_jimmy_changes_selected_v1";
-  var outboxStorageKey = "mcl_jimmy_changes_outbox_v1";
+  var outboxStorageKey = "mcl_changelog_outbox_v1";
   var textStorageKey = "mcl_jimmy_changes_text_edits_v1";
   var actor = reviewerFromUrl() || readString(actorStorageKey) || "Jimmy";
   var outbox = readArray(outboxStorageKey);
@@ -16,20 +15,19 @@
   var refreshTimer;
   var list = document.getElementById("changeList");
   var totalCount = document.getElementById("totalCount");
-  var requestedCount = document.getElementById("requestedCount");
-  var implementedCount = document.getElementById("implementedCount");
+  var approvalNeededCount = document.getElementById("approvalNeededCount");
+  var approvedCount = document.getElementById("approvedCount");
   var pageCount = document.getElementById("pageCount");
   var selectionNote = document.getElementById("selectionNote");
   var copyButton = document.getElementById("copySelected");
   var emailButton = document.getElementById("emailSelected");
-  var clearButton = document.getElementById("clearSelected");
   var resetWritingButton = document.getElementById("resetWriting");
   var syncStatus = document.getElementById("syncStatus");
   var syncDetail = document.getElementById("syncDetail");
   var toast = document.getElementById("toast");
 
   document.getElementById("branchName").textContent = meta.branch || "Jimmy branch";
-  document.getElementById("updatedOn").textContent = meta.updated ? "Updated " + meta.updated : "Updated from checklist data";
+  document.getElementById("updatedOn").textContent = meta.updated ? "Updated " + meta.updated : "Updated from changelog data";
   localStorage.setItem(actorStorageKey, actor);
 
   document.querySelectorAll("[data-reviewer]").forEach(function(button){
@@ -55,9 +53,20 @@
     var item = findItem(id);
     if (!item) return;
     var state = effectiveItemState(id);
-    var active = action === "implement"
-      ? !Boolean(state.requests[actor] && state.requests[actor].active)
-      : !Boolean(state.implemented && state.implemented.active);
+    if (action === "approval-needed" && actor !== "Jimmy") {
+      showToast("Switch to Jimmy to elevate a change.");
+      return;
+    }
+    if (action === "approved" && actor !== "Matt") {
+      showToast("Switch to Matt to record approval.");
+      return;
+    }
+    var active = action === "approval-needed"
+      ? !Boolean(state.approvalNeeded && state.approvalNeeded.active)
+      : !Boolean(state.approved && state.approved.active);
+    if (action === "approval-needed" && active && state.approved && state.approved.active) {
+      queueAction(item, "approved", false, true);
+    }
     queueAction(item, action, active);
   });
 
@@ -93,27 +102,15 @@
   });
 
   copyButton.addEventListener("click", function(){
-    var text = buildRequestedText();
-    if (!text) return showToast("No implementation requests yet.");
+    var text = buildApprovalText();
+    if (!text) return showToast("No changes need approval.");
     copyText(text);
   });
 
   emailButton.addEventListener("click", function(){
-    var text = buildRequestedText();
-    if (!text) return showToast("No implementation requests yet.");
-    window.location.href = "mailto:?subject=" + encodeURIComponent("McCune intake implementation requests") + "&body=" + encodeURIComponent(text);
-  });
-
-  clearButton.addEventListener("click", function(){
-    if (!actor) return showToast("Choose Matt or Jimmy first.");
-    var activeItems = items.filter(function(item){
-      var request = effectiveItemState(item.id).requests[actor];
-      return request && request.active;
-    });
-    if (!activeItems.length) return;
-    activeItems.forEach(function(item){ queueAction(item, "implement", false, true); });
-    flushOutbox();
-    showToast(actor + " requests cleared.");
+    var text = buildApprovalText();
+    if (!text) return showToast("No changes need approval.");
+    window.location.href = "mailto:?subject=" + encodeURIComponent("McCune intake approval needed") + "&body=" + encodeURIComponent(text);
   });
 
   resetWritingButton.addEventListener("click", function(){
@@ -142,22 +139,8 @@
     if (nextActor !== "Matt" && nextActor !== "Jimmy") return;
     actor = nextActor;
     localStorage.setItem(actorStorageKey, actor);
-    migrateLegacySelections();
     render();
     flushOutbox();
-  }
-
-  function migrateLegacySelections(){
-    var legacy = readJson(legacySelectionKey);
-    var selectedIds = Object.keys(legacy).filter(function(id){ return Boolean(legacy[id]); });
-    if (!selectedIds.length) return;
-    selectedIds.forEach(function(id){
-      var item = findItem(id);
-      var request = effectiveItemState(id).requests[actor];
-      if (item && !(request && request.active)) queueAction(item, "implement", true, true);
-    });
-    localStorage.removeItem(legacySelectionKey);
-    showToast("Existing selections queued for " + actor + ".");
   }
 
   function queueAction(item, action, active, deferFlush){
@@ -213,13 +196,13 @@
     try {
       var response = await fetch(apiUrl, { cache: "no-store" });
       var body = await response.json().catch(function(){ return {}; });
-      if (!response.ok || !body.ok) throw new Error(body.error || "Shared checklist failed to load.");
+      if (!response.ok || !body.ok) throw new Error(body.error || "Shared changelog failed to load.");
       acceptSharedState(body);
       syncMode = outbox.length ? "saving" : "ready";
       syncError = "";
     } catch (error) {
       syncMode = "offline";
-      syncError = error && error.message ? error.message : "Shared checklist is unavailable.";
+      syncError = error && error.message ? error.message : "Shared changelog is unavailable.";
     }
     render();
   }
@@ -230,21 +213,22 @@
     renderSyncStatus();
 
     if (!items.length) {
-      list.innerHTML = '<div class="empty">No Jimmy branch changes are listed yet.</div>';
+      list.innerHTML = '<div class="empty">No significant changes are logged yet.</div>';
       return;
     }
 
     list.innerHTML = items.map(function(item){
       var state = effectiveItemState(item.id);
-      var requesters = activeRequesters(state);
-      var isRequested = requesters.length > 0;
-      var isImplemented = Boolean(state.implemented && state.implemented.active);
+      var approvalNeeded = Boolean(state.approvalNeeded && state.approvalNeeded.active);
+      var isApproved = Boolean(approvalNeeded && state.approved && state.approved.active);
+      var isOutstanding = approvalNeeded && !isApproved;
       var edited = Boolean(textEdits[item.id]);
       var pending = outbox.some(function(entry){ return entry.featureId === item.id; });
-      var cardClass = "change-item" + (isRequested ? " requested" : "") + (isImplemented ? " completed" : "");
+      var cardClass = "change-item" + (isOutstanding ? " needs-approval" : "") + (isApproved ? " approved" : "");
       return '<article class="' + cardClass + '">' +
         '<div class="change-main">' +
           '<div class="tags">' +
+            (item.date ? '<time class="tag" datetime="' + escapeAttribute(item.date) + '">' + escapeHtml(formatEntryDate(item.date)) + '</time>' : '') +
             '<span class="tag">' + escapeHtml(item.category || "Change") + '</span>' +
             '<span class="tag status">' + escapeHtml(item.status || "Listed") + '</span>' +
             '<span class="tag commit">' + escapeHtml(item.commit || "branch") + '</span>' +
@@ -257,8 +241,8 @@
           renderLinks(item.links) +
         '</div>' +
         '<div class="pick-control">' +
-          '<button type="button" class="implement' + (isRequested ? ' active' : '') + '" data-checklist-action="implement" data-change-id="' + escapeAttribute(item.id) + '" aria-pressed="' + String(isRequested) + '"' + disableAttribute(pending) + '>Implement</button>' +
-          '<button type="button" class="implemented' + (isImplemented ? ' active' : '') + '" data-checklist-action="implemented" data-change-id="' + escapeAttribute(item.id) + '" aria-pressed="' + String(isImplemented) + '" title="Mark this change implemented"' + disableAttribute(pending) + '>Implemented</button>' +
+          '<button type="button" class="approval-needed' + (approvalNeeded ? ' active' : '') + '" data-checklist-action="approval-needed" data-change-id="' + escapeAttribute(item.id) + '" aria-pressed="' + String(approvalNeeded) + '" title="Elevate this change for Matt approval"' + disableAttribute(pending || actor !== "Jimmy") + '>Approval needed</button>' +
+          '<button type="button" class="approved' + (isApproved ? ' active' : '') + '" data-checklist-action="approved" data-change-id="' + escapeAttribute(item.id) + '" aria-pressed="' + String(isApproved) + '" title="Record Matt approval"' + disableAttribute(pending || actor !== "Matt" || !approvalNeeded) + '>Approved</button>' +
           '<div class="state-details">' + renderStateDetails(state) + '</div>' +
           (edited ? '<button type="button" class="ghost reset-copy" data-reset-writing="' + escapeAttribute(item.id) + '">Reset writing</button>' : '') +
         '</div>' +
@@ -285,7 +269,7 @@
     if (!actor) {
       syncStatus.textContent = "Choose Matt or Jimmy";
       syncStatus.classList.add("warning");
-      syncDetail.textContent = "Selections are shared after a reviewer is chosen.";
+      syncDetail.textContent = "Approval status is shared after a reviewer is chosen.";
       return;
     }
     if (syncMode === "offline") {
@@ -301,56 +285,52 @@
       return;
     }
     if (syncMode === "loading") {
-      syncStatus.textContent = "Loading shared checklist";
+      syncStatus.textContent = "Loading shared changelog";
       syncStatus.classList.add("warning");
       syncDetail.textContent = "Checking for Matt and Jimmy updates.";
       return;
     }
     syncStatus.textContent = "Shared and saved";
-    syncDetail.textContent = sharedState.updatedAt ? "Last change " + formatDate(sharedState.updatedAt) + "." : "No shared selections yet.";
+    syncDetail.textContent = sharedState.updatedAt ? "Last update " + formatDate(sharedState.updatedAt) + "." : "No approval activity yet.";
   }
 
   function updateControls(){
-    var requestedItems = getRequestedItems();
-    var implementedItems = items.filter(function(item){
+    var approvalItems = getApprovalItems();
+    var approvedItems = items.filter(function(item){
       var state = effectiveItemState(item.id);
-      return state.implemented && state.implemented.active;
+      return state.approvalNeeded && state.approvalNeeded.active && state.approved && state.approved.active;
     });
-    var actorRequests = actor ? requestedItems.filter(function(item){
-      var request = effectiveItemState(item.id).requests[actor];
-      return request && request.active;
-    }) : [];
+    var outstandingItems = approvalItems.filter(function(item){
+      var approved = effectiveItemState(item.id).approved;
+      return !(approved && approved.active);
+    });
     totalCount.textContent = String(items.length);
-    requestedCount.textContent = String(requestedItems.length);
-    implementedCount.textContent = String(implementedItems.length);
+    approvalNeededCount.textContent = String(outstandingItems.length);
+    approvedCount.textContent = String(approvedItems.length);
     pageCount.textContent = String(uniquePages(items).length);
     if (!actor) {
-      selectionNote.textContent = "Choose Matt or Jimmy before changing the shared checklist.";
-    } else if (requestedItems.length || implementedItems.length) {
-      selectionNote.textContent = requestedItems.length + " requested and " + implementedItems.length + " implemented. Reviewing as " + actor + ".";
+      selectionNote.textContent = "Choose Matt or Jimmy before changing approval status.";
+    } else if (outstandingItems.length || approvedItems.length) {
+      selectionNote.textContent = outstandingItems.length + " awaiting approval and " + approvedItems.length + " approved. Reviewing as " + actor + ".";
     } else {
-      selectionNote.textContent = "No shared implementation requests yet. Reviewing as " + actor + ".";
+      selectionNote.textContent = "No approvals pending. Reviewing as " + actor + ".";
     }
-    copyButton.disabled = requestedItems.length === 0;
-    emailButton.disabled = requestedItems.length === 0;
-    clearButton.disabled = !actor || actorRequests.length === 0;
+    copyButton.disabled = outstandingItems.length === 0;
+    emailButton.disabled = outstandingItems.length === 0;
     resetWritingButton.disabled = !hasTextEdits();
   }
 
   function effectiveItemState(id){
     var source = sharedState.items && sharedState.items[id] ? sharedState.items[id] : {};
     var state = {
-      requests: {
-        Matt: source.requests && source.requests.Matt ? copyState(source.requests.Matt) : null,
-        Jimmy: source.requests && source.requests.Jimmy ? copyState(source.requests.Jimmy) : null
-      },
-      implemented: source.implemented ? copyState(source.implemented) : null
+      approvalNeeded: source.approvalNeeded ? copyState(source.approvalNeeded) : null,
+      approved: source.approved ? copyState(source.approved) : null
     };
     outbox.forEach(function(entry){
       if (entry.featureId !== id) return;
       var next = { active: entry.active, actor: entry.actor, at: entry.queuedAt, pending: true };
-      if (entry.action === "implement") state.requests[entry.actor] = next;
-      if (entry.action === "implemented") state.implemented = next;
+      if (entry.action === "approval-needed") state.approvalNeeded = next;
+      if (entry.action === "approved") state.approved = next;
     });
     return state;
   }
@@ -359,49 +339,48 @@
     return { active: Boolean(value.active), actor: value.actor, at: value.at, eventId: value.eventId };
   }
 
-  function activeRequesters(state){
-    return ["Matt", "Jimmy"].filter(function(name){
-      return state.requests[name] && state.requests[name].active;
-    });
-  }
-
   function renderStateDetails(state){
-    var requesters = activeRequesters(state);
     var lines = [];
-    if (requesters.length) {
-      lines.push('<span class="state-line"><strong>Implement:</strong> ' + requesters.map(function(name){
-        return escapeHtml(name) + " " + escapeHtml(formatDate(state.requests[name].at));
-      }).join("; ") + '</span>');
+    if (state.approvalNeeded && state.approvalNeeded.active) {
+      lines.push('<span class="state-line"><strong>Approval requested:</strong> ' + escapeHtml(state.approvalNeeded.actor) + " " + escapeHtml(formatDate(state.approvalNeeded.at)) + '</span>');
     } else {
-      lines.push('<span class="state-line">No implementation request.</span>');
+      lines.push('<span class="state-line">Logged with no approval required.</span>');
     }
-    if (state.implemented && state.implemented.active) {
-      lines.push('<span class="state-line complete"><strong>Implemented:</strong> ' + escapeHtml(state.implemented.actor) + " " + escapeHtml(formatDate(state.implemented.at)) + '</span>');
-    } else {
-      lines.push('<span class="state-line">Not implemented yet.</span>');
+    if (state.approvalNeeded && state.approvalNeeded.active) {
+      if (state.approved && state.approved.active) {
+        lines.push('<span class="state-line complete"><strong>Approved:</strong> ' + escapeHtml(state.approved.actor) + " " + escapeHtml(formatDate(state.approved.at)) + '</span>');
+      } else {
+        lines.push('<span class="state-line pending-approval">Awaiting Matt approval.</span>');
+      }
     }
     return lines.join("");
   }
 
-  function getRequestedItems(){
-    return items.filter(function(item){ return activeRequesters(effectiveItemState(item.id)).length > 0; });
+  function getApprovalItems(){
+    return items.filter(function(item){
+      var approval = effectiveItemState(item.id).approvalNeeded;
+      return approval && approval.active;
+    });
   }
 
-  function buildRequestedText(){
-    var requestedItems = getRequestedItems();
-    if (!requestedItems.length) return "";
+  function buildApprovalText(){
+    var approvalItems = getApprovalItems().filter(function(item){
+      var approved = effectiveItemState(item.id).approved;
+      return !(approved && approved.active);
+    });
+    if (!approvalItems.length) return "";
     var lines = [
-      "McCune intake implementation requests",
-      "Jimmy branch: " + (meta.branch || "Jimmy branch"),
-      "Review page: " + (meta.publishUrl || window.location.href),
+      "McCune intake changes needing approval",
+      "Shared branch: " + (meta.branch || "main"),
+      "Change log: " + (meta.publishUrl || window.location.href),
       "Matt site: " + (meta.mattPublishUrl || "https://mmccune22.github.io/mccune-legal-intake-mockups/"),
       ""
     ];
-    requestedItems.forEach(function(item, index){
+    approvalItems.forEach(function(item, index){
       var state = effectiveItemState(item.id);
       lines.push((index + 1) + ". " + getItemText(item, "title"));
-      lines.push("   Requested by: " + activeRequesters(state).join(", "));
-      lines.push("   Status: " + (state.implemented && state.implemented.active ? "Implemented by " + state.implemented.actor : "Not implemented"));
+      lines.push("   Approval requested by: " + state.approvalNeeded.actor);
+      lines.push("   Status: Awaiting Matt approval");
       if (getItemText(item, "summary")) lines.push("   " + getItemText(item, "summary"));
       if (item.pages && item.pages.length) lines.push("   Pages: " + item.pages.join(", "));
       if (item.commit) lines.push("   Ref: " + item.commit);
@@ -496,11 +475,18 @@
     return date.toLocaleString([], { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
   }
 
+  function formatEntryDate(value){
+    if (!value) return "";
+    var date = new Date(value + "T12:00:00");
+    if (Number.isNaN(date.getTime())) return value;
+    return date.toLocaleDateString([], { year: "numeric", month: "short", day: "numeric" });
+  }
+
   function disableAttribute(disabled){ return disabled ? ' disabled aria-disabled="true"' : ""; }
 
   function copyText(text){
     if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).then(function(){ showToast("Implementation requests copied."); }).catch(function(){ fallbackCopy(text); });
+      navigator.clipboard.writeText(text).then(function(){ showToast("Approval list copied."); }).catch(function(){ fallbackCopy(text); });
       return;
     }
     fallbackCopy(text);
@@ -516,7 +502,7 @@
     area.select();
     document.execCommand("copy");
     document.body.removeChild(area);
-    showToast("Implementation requests copied.");
+    showToast("Approval list copied.");
   }
 
   function showToast(message){
