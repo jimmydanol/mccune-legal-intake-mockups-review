@@ -2,7 +2,8 @@
 
 This Cloudflare Pages Function stores Page 9 implementation decisions and its
 Matt/Jimmy conversation in isolated prefixes within the existing Intake
-collaboration KV namespace.
+collaboration KV namespace. It also stores Matt-to-Jimmy feature requests and
+their implementation status.
 It is separate from the debtor intake data flow and must never receive client,
 matter, credential, or document data.
 
@@ -13,6 +14,8 @@ The changelog records append-only KV events for:
 - `approval-needed`: Jimmy elevates a significant change for Matt's approval.
 - `approved`: Matt records his approval of an elevated change.
 - `message`: Matt or Jimmy posts a Page 9 comment of up to 1,200 characters.
+- `request create`: Matt submits a feature request for Jimmy.
+- `request implemented`: Jimmy records whether a request has been implemented.
 
 The implementation actions remain supported for historical Page 9 entries. The
 current interface uses the approval actions for the changelog workflow.
@@ -35,5 +38,6 @@ The deployer creates or reuses:
 - API binding: `REVIEW_STORE`
 - Checklist API: `https://mccune-review-api.pages.dev/api/checklist`
 - Messages API: `https://mccune-review-api.pages.dev/api/messages`
+- Feature requests API: `https://mccune-review-api.pages.dev/api/requests`
 
 No credential or account identifier is written to the repository.

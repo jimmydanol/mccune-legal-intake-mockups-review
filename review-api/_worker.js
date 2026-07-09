@@ -1,8 +1,12 @@
 const BOARD_ID = "mccune-jimmy-changes-v1";
 const EVENT_PREFIX = "mccune-review:v1:event:";
 const MESSAGE_PREFIX = "mccune-review:v1:message:";
+const REQUEST_EVENT_PREFIX = "mccune-review:v1:request-event:";
 const MAX_MESSAGE_LENGTH = 1200;
 const MAX_VISIBLE_MESSAGES = 200;
+const MAX_REQUEST_TITLE_LENGTH = 180;
+const MAX_REQUEST_DETAILS_LENGTH = 1200;
+const MAX_VISIBLE_REQUESTS = 200;
 const ACTORS = new Set(["Matt", "Jimmy"]);
 const ACTIONS = new Set(["implement", "implemented", "approval-needed", "approved"]);
 const ALLOWED_ORIGINS = new Set([
@@ -51,6 +55,22 @@ export default {
       return jsonResponse(request, { error: "Method is not allowed." }, 405);
     }
 
+    if (url.pathname === "/api/requests") {
+      if (!originIsAllowed(request)) {
+        return jsonResponse(request, { error: "Origin is not allowed." }, 403);
+      }
+
+      if (request.method === "GET") {
+        return jsonResponse(request, await readRequests(env.REVIEW_STORE));
+      }
+
+      if (request.method === "POST") {
+        return saveRequestAction(request, env.REVIEW_STORE);
+      }
+
+      return jsonResponse(request, { error: "Method is not allowed." }, 405);
+    }
+
     if (url.pathname === "/health") {
       return jsonResponse(request, {
         ok: true,
@@ -60,7 +80,7 @@ export default {
     }
 
     return new Response(
-      "McCune review API. Use /health, /api/checklist, or /api/messages.",
+      "McCune review API. Use /health, /api/checklist, /api/messages, or /api/requests.",
       {
         status: 200,
         headers: {
@@ -71,6 +91,114 @@ export default {
     );
   }
 };
+
+async function saveRequestAction(request, store) {
+  let payload;
+  try {
+    payload = await request.json();
+  } catch {
+    return jsonResponse(request, { error: "Request body must be valid JSON." }, 400);
+  }
+
+  const eventId = cleanString(payload.eventId, 80);
+  const requestId = cleanString(payload.requestId, 80);
+  const actor = cleanString(payload.actor, 20);
+  const action = cleanString(payload.action, 20);
+  const title = cleanString(payload.title, MAX_REQUEST_TITLE_LENGTH);
+  const details = typeof payload.details === "string" ? payload.details.trim() : "";
+
+  if (!eventId || !/^[A-Za-z0-9_-]+$/.test(eventId)) {
+    return jsonResponse(request, { error: "A valid eventId is required." }, 400);
+  }
+  if (!requestId || !/^[A-Za-z0-9_-]+$/.test(requestId)) {
+    return jsonResponse(request, { error: "A valid requestId is required." }, 400);
+  }
+  if (!ACTORS.has(actor)) {
+    return jsonResponse(request, { error: "Request actor must be Matt or Jimmy." }, 400);
+  }
+  if (action !== "create" && action !== "implemented") {
+    return jsonResponse(request, { error: "Request action is invalid." }, 400);
+  }
+  if (action === "create" && actor !== "Matt") {
+    return jsonResponse(request, { error: "Feature requests must be submitted as Matt." }, 400);
+  }
+  if (action === "create" && !title) {
+    return jsonResponse(request, { error: "A request title is required." }, 400);
+  }
+  if (details.length > MAX_REQUEST_DETAILS_LENGTH) {
+    return jsonResponse(request, { error: `Request details are limited to ${MAX_REQUEST_DETAILS_LENGTH} characters.` }, 400);
+  }
+  if (action === "implemented" && (actor !== "Jimmy" || typeof payload.active !== "boolean")) {
+    return jsonResponse(request, { error: "Only Jimmy can update implementation status." }, 400);
+  }
+
+  const event = {
+    eventId,
+    boardId: BOARD_ID,
+    requestId,
+    actor,
+    action,
+    title: action === "create" ? title : "",
+    details: action === "create" ? details : "",
+    active: action === "implemented" ? payload.active : true,
+    createdAt: normalizeTimestamp(cleanString(payload.queuedAt, 40)) || new Date().toISOString()
+  };
+  await store.put(REQUEST_EVENT_PREFIX + eventId, JSON.stringify(event));
+  return jsonResponse(request, await readRequests(store));
+}
+
+async function readRequests(store) {
+  const events = [];
+  let cursor;
+  do {
+    const page = await store.list({ prefix: REQUEST_EVENT_PREFIX, cursor, limit: 1000 });
+    const values = await Promise.all(page.keys.map((key) => store.get(key.name, "json")));
+    values.forEach((value) => {
+      if (value && value.boardId === BOARD_ID && value.requestId && value.action) events.push(value);
+    });
+    cursor = page.list_complete ? undefined : page.cursor;
+  } while (cursor);
+
+  events.sort((left, right) => {
+    const byDate = String(left.createdAt).localeCompare(String(right.createdAt));
+    return byDate || String(left.eventId).localeCompare(String(right.eventId));
+  });
+
+  const byId = {};
+  let updatedAt = null;
+  events.forEach((event) => {
+    if (event.action === "create" && event.actor === "Matt" && event.title) {
+      byId[event.requestId] = byId[event.requestId] || {
+        requestId: event.requestId,
+        title: event.title,
+        details: event.details || "",
+        requestedBy: "Matt",
+        createdAt: normalizeTimestamp(event.createdAt),
+        implemented: null
+      };
+    }
+    if (event.action === "implemented" && event.actor === "Jimmy" && byId[event.requestId]) {
+      byId[event.requestId].implemented = {
+        active: Boolean(event.active),
+        actor: "Jimmy",
+        at: normalizeTimestamp(event.createdAt),
+        eventId: event.eventId
+      };
+    }
+    updatedAt = maxTimestamp(updatedAt, normalizeTimestamp(event.createdAt));
+  });
+
+  const requests = Object.values(byId)
+    .sort((left, right) => String(right.createdAt).localeCompare(String(left.createdAt)))
+    .slice(0, MAX_VISIBLE_REQUESTS);
+  return {
+    ok: true,
+    boardId: BOARD_ID,
+    revision: events.length,
+    updatedAt,
+    requests
+  };
+}
 
 async function saveMessage(request, store) {
   let payload;

@@ -4,7 +4,8 @@ window.JIMMY_CHANGE_META = {
   publishUrl: window.location.origin + window.location.pathname,
   mattPublishUrl: "https://mmccune22.github.io/mccune-legal-intake-mockups/Intake%20Pages/",
   reviewApiUrl: "https://mccune-review-api.pages.dev/api/checklist",
-  reviewMessagesApiUrl: "https://mccune-review-api.pages.dev/api/messages"
+  reviewMessagesApiUrl: "https://mccune-review-api.pages.dev/api/messages",
+  reviewRequestsApiUrl: "https://mccune-review-api.pages.dev/api/requests"
 };
 
 window.JIMMY_CHANGE_ITEMS = [
@@ -66,6 +67,20 @@ window.JIMMY_CHANGE_ITEMS = [
     pages: ["Colab"],
     summary: "Page 9 includes a shared comment feed where Matt and Jimmy can post messages, see the same conversation, and receive automatic updates.",
     mattDecision: "The shared conversation is included on both Page 9 URLs.",
+    links: [
+      { label: "Open Page 9", href: "jimmy-changes.html" }
+    ]
+  },
+  {
+    id: "matt-feature-requests",
+    title: "Matt-to-Jimmy feature requests",
+    date: "2026-07-09",
+    category: "Collaboration",
+    status: "Live on Matt and Jimmy sites",
+    commit: "feature-requests-v1",
+    pages: ["Colab"],
+    summary: "Page 9 includes a shared feature request section where Matt can submit requests and Jimmy can record when each request is implemented.",
+    mattDecision: "Requests and implementation status stay synchronized across both Page 9 URLs.",
     links: [
       { label: "Open Page 9", href: "jimmy-changes.html" }
     ]
