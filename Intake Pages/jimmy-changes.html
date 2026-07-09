@@ -50,6 +50,10 @@ button:disabled{opacity:.55;cursor:not-allowed}
 .change-title{margin:0 0 7px;font-size:20px;line-height:1.2}
 .change-summary{margin:0;color:#39485a}
 .decision{margin:10px 0 0;color:var(--muted);font-size:14px}
+.editable-copy{border-radius:6px;outline:1px solid transparent;transition:background .15s ease,outline-color .15s ease,box-shadow .15s ease}
+.editable-copy:hover{background:#f7fbfc;outline-color:#d5e6e9}
+.editable-copy:focus{background:#fff;outline-color:#72b9c4;box-shadow:0 0 0 3px rgba(47,125,140,.14)}
+.editable-copy[contenteditable="true"]:empty::before{content:"Click to add text";color:#9aa6b2}
 .page-list{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 0;padding:0;list-style:none}
 .page-list li{border:1px solid #d5e6e9;background:#f3fafb;color:#245a64;border-radius:999px;padding:4px 8px;font-size:12px;font-weight:700}
 .card-links{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
@@ -119,6 +123,7 @@ button:disabled{opacity:.55;cursor:not-allowed}
         <button type="button" class="secondary" id="copySelected">Copy selected</button>
         <button type="button" id="emailSelected">Email selected</button>
         <button type="button" class="ghost" id="clearSelected">Clear</button>
+        <button type="button" class="ghost" id="resetWriting">Reset writing</button>
       </div>
     </section>
 
@@ -132,7 +137,9 @@ button:disabled{opacity:.55;cursor:not-allowed}
   var meta = window.JIMMY_CHANGE_META || {};
   var items = Array.isArray(window.JIMMY_CHANGE_ITEMS) ? window.JIMMY_CHANGE_ITEMS : [];
   var storageKey = "mcl_jimmy_changes_selected_v1";
+  var textStorageKey = "mcl_jimmy_changes_text_edits_v1";
   var selections = readSelections();
+  var textEdits = readJson(textStorageKey);
   var list = document.getElementById("changeList");
   var totalCount = document.getElementById("totalCount");
   var selectedCount = document.getElementById("selectedCount");
@@ -141,6 +148,7 @@ button:disabled{opacity:.55;cursor:not-allowed}
   var copyButton = document.getElementById("copySelected");
   var emailButton = document.getElementById("emailSelected");
   var clearButton = document.getElementById("clearSelected");
+  var resetWritingButton = document.getElementById("resetWriting");
   var toast = document.getElementById("toast");
 
   document.getElementById("branchName").textContent = meta.branch || "Jimmy branch";
@@ -148,11 +156,47 @@ button:disabled{opacity:.55;cursor:not-allowed}
 
   list.addEventListener("click", function(event){
     var button = event.target.closest("[data-toggle-change]");
+    var resetButton = event.target.closest("[data-reset-writing]");
+    if (resetButton) {
+      resetItemWriting(resetButton.getAttribute("data-reset-writing"));
+      return;
+    }
     if (!button) return;
     var id = button.getAttribute("data-toggle-change");
     selections[id] = !selections[id];
     saveSelections();
     render();
+  });
+
+  list.addEventListener("input", function(event){
+    var editable = event.target.closest("[data-edit-change]");
+    if (!editable) return;
+    setTextEdit(
+      editable.getAttribute("data-edit-change"),
+      editable.getAttribute("data-edit-field"),
+      editable.textContent
+    );
+    updateControls();
+  });
+
+  list.addEventListener("keydown", function(event){
+    var editable = event.target.closest("[data-edit-change]");
+    if (!editable || event.key !== "Enter") return;
+    event.preventDefault();
+    editable.blur();
+  });
+
+  list.addEventListener("focusout", function(event){
+    if (!event.target.closest("[data-edit-change]")) return;
+    render();
+  });
+
+  list.addEventListener("paste", function(event){
+    var editable = event.target.closest("[data-edit-change]");
+    if (!editable) return;
+    event.preventDefault();
+    var text = (event.clipboardData || window.clipboardData).getData("text/plain").replace(/\s+/g, " ");
+    document.execCommand("insertText", false, text);
   });
 
   copyButton.addEventListener("click", function(){
@@ -176,11 +220,22 @@ button:disabled{opacity:.55;cursor:not-allowed}
     showToast("Selections cleared.");
   });
 
+  resetWritingButton.addEventListener("click", function(){
+    textEdits = {};
+    localStorage.removeItem(textStorageKey);
+    render();
+    showToast("Writing reset to branch defaults.");
+  });
+
   render();
 
   function readSelections(){
+    return readJson(storageKey);
+  }
+
+  function readJson(key){
     try {
-      return JSON.parse(localStorage.getItem(storageKey) || "{}") || {};
+      return JSON.parse(localStorage.getItem(key) || "{}") || {};
     } catch (error) {
       return {};
     }
@@ -190,18 +245,12 @@ button:disabled{opacity:.55;cursor:not-allowed}
     localStorage.setItem(storageKey, JSON.stringify(selections));
   }
 
+  function saveTextEdits(){
+    localStorage.setItem(textStorageKey, JSON.stringify(textEdits));
+  }
+
   function render(){
-    var selectedItems = getSelectedItems();
-    var pages = uniquePages(items);
-    totalCount.textContent = String(items.length);
-    selectedCount.textContent = String(selectedItems.length);
-    pageCount.textContent = String(pages.length);
-    selectionNote.textContent = selectedItems.length
-      ? selectedItems.length + " selected. Selection is saved in this browser."
-      : "No changes selected yet.";
-    copyButton.disabled = selectedItems.length === 0;
-    emailButton.disabled = selectedItems.length === 0;
-    clearButton.disabled = selectedItems.length === 0;
+    updateControls();
 
     if (!items.length) {
       list.innerHTML = '<div class="empty">No Jimmy branch changes are listed yet.</div>';
@@ -210,6 +259,7 @@ button:disabled{opacity:.55;cursor:not-allowed}
 
     list.innerHTML = items.map(function(item){
       var selected = !!selections[item.id];
+      var edited = !!textEdits[item.id];
       return '<article class="change-item' + (selected ? ' selected' : '') + '">' +
         '<div class="change-main">' +
           '<div class="tags">' +
@@ -217,18 +267,53 @@ button:disabled{opacity:.55;cursor:not-allowed}
             '<span class="tag status">' + escapeHtml(item.status || "Listed") + '</span>' +
             '<span class="tag commit">' + escapeHtml(item.commit || "branch") + '</span>' +
           '</div>' +
-          '<h3 class="change-title">' + escapeHtml(item.title) + '</h3>' +
-          '<p class="change-summary">' + escapeHtml(item.summary || "") + '</p>' +
-          '<p class="decision">' + escapeHtml(item.mattDecision || "") + '</p>' +
+          editableText(item, "title", "h3", "change-title") +
+          editableText(item, "summary", "p", "change-summary") +
+          editableText(item, "mattDecision", "p", "decision") +
           renderPages(item.pages) +
           renderLinks(item.links) +
         '</div>' +
         '<div class="pick-control">' +
           '<button type="button" class="' + (selected ? 'secondary' : '') + '" data-toggle-change="' + escapeHtml(item.id) + '">' + (selected ? "Selected" : "Matt wants this") + '</button>' +
           '<span class="picked-label">' + (selected ? "Ready to copy" : "") + '</span>' +
+          (edited ? '<button type="button" class="ghost" data-reset-writing="' + escapeAttribute(item.id) + '">Reset writing</button>' : '') +
         '</div>' +
       '</article>';
     }).join("");
+  }
+
+  function updateControls(){
+    var selectedItems = getSelectedItems();
+    var pages = uniquePages(items);
+    var hasWriting = hasTextEdits();
+    totalCount.textContent = String(items.length);
+    selectedCount.textContent = String(selectedItems.length);
+    pageCount.textContent = String(pages.length);
+    if (selectedItems.length && hasWriting) {
+      selectionNote.textContent = selectedItems.length + " selected. Writing edits are saved in this browser.";
+    } else if (selectedItems.length) {
+      selectionNote.textContent = selectedItems.length + " selected. Selection is saved in this browser.";
+    } else if (hasWriting) {
+      selectionNote.textContent = "Writing edits are saved in this browser.";
+    } else {
+      selectionNote.textContent = "Click card text to edit it directly.";
+    }
+    copyButton.disabled = selectedItems.length === 0;
+    emailButton.disabled = selectedItems.length === 0;
+    clearButton.disabled = selectedItems.length === 0;
+    resetWritingButton.disabled = !hasWriting;
+  }
+
+  function editableText(item, field, tagName, className){
+    return '<' + tagName +
+      ' class="' + className + ' editable-copy"' +
+      ' contenteditable="true"' +
+      ' spellcheck="true"' +
+      ' data-edit-change="' + escapeAttribute(item.id) + '"' +
+      ' data-edit-field="' + escapeAttribute(field) + '"' +
+      ' aria-label="Edit ' + escapeAttribute(field) + ' for ' + escapeAttribute(getItemText(item, "title")) + '">' +
+      escapeHtml(getItemText(item, field)) +
+      '</' + tagName + '>';
   }
 
   function renderPages(pages){
@@ -249,6 +334,44 @@ button:disabled{opacity:.55;cursor:not-allowed}
     return items.filter(function(item){ return !!selections[item.id]; });
   }
 
+  function findItem(id){
+    return items.find(function(item){ return item.id === id; });
+  }
+
+  function getItemText(item, field){
+    var itemEdits = textEdits[item.id] || {};
+    if (Object.prototype.hasOwnProperty.call(itemEdits, field)) {
+      return itemEdits[field];
+    }
+    return item[field] || "";
+  }
+
+  function setTextEdit(id, field, value){
+    var item = findItem(id);
+    if (!item || !field) return;
+    var original = item[field] || "";
+    if (!textEdits[id]) textEdits[id] = {};
+    if (value === original) {
+      delete textEdits[id][field];
+    } else {
+      textEdits[id][field] = value;
+    }
+    if (!Object.keys(textEdits[id]).length) delete textEdits[id];
+    saveTextEdits();
+  }
+
+  function resetItemWriting(id){
+    if (!textEdits[id]) return;
+    delete textEdits[id];
+    saveTextEdits();
+    render();
+    showToast("Writing reset for that change.");
+  }
+
+  function hasTextEdits(){
+    return Object.keys(textEdits).length > 0;
+  }
+
   function uniquePages(sourceItems){
     var seen = {};
     sourceItems.forEach(function(item){
@@ -267,8 +390,8 @@ button:disabled{opacity:.55;cursor:not-allowed}
       ""
     ];
     selectedItems.forEach(function(item, index){
-      lines.push((index + 1) + ". " + item.title);
-      if (item.summary) lines.push("   " + item.summary);
+      lines.push((index + 1) + ". " + getItemText(item, "title"));
+      if (getItemText(item, "summary")) lines.push("   " + getItemText(item, "summary"));
       if (item.pages && item.pages.length) lines.push("   Pages: " + item.pages.join(", "));
       if (item.commit) lines.push("   Ref: " + item.commit);
       lines.push("");
