@@ -188,6 +188,27 @@ button:disabled{opacity:.55;cursor:not-allowed}
       </div>
     </section>
 
+    <section class="conversation" aria-labelledby="conversationTitle">
+      <div class="conversation-head">
+        <div>
+          <h3 class="conversation-title" id="conversationTitle">Page 9 conversation</h3>
+          <span class="conversation-status" id="conversationStatus" aria-live="polite">Loading messages</span>
+        </div>
+        <button type="button" class="secondary" id="refreshConversation">Refresh</button>
+      </div>
+      <div class="message-feed" id="messageFeed" role="log" aria-live="polite" aria-label="Messages between Matt and Jimmy">
+        <p class="message-empty">Loading conversation.</p>
+      </div>
+      <form class="message-form" id="messageForm">
+        <label for="messageInput" id="messageActorLabel">Message as Jimmy</label>
+        <div class="message-compose">
+          <textarea class="message-input" id="messageInput" maxlength="1200" placeholder="Write a message" required></textarea>
+          <button class="message-send" id="sendMessage" type="submit" disabled>Send</button>
+        </div>
+        <div class="message-form-foot"><span id="messageCount">0 / 1200</span></div>
+      </form>
+    </section>
+
     <section class="feature-requests" aria-labelledby="featureRequestTitle">
       <div class="feature-request-head">
         <div>
@@ -210,27 +231,6 @@ button:disabled{opacity:.55;cursor:not-allowed}
       <div class="request-list" id="requestList" aria-live="polite">
         <p class="request-empty">Loading feature requests.</p>
       </div>
-    </section>
-
-    <section class="conversation" aria-labelledby="conversationTitle">
-      <div class="conversation-head">
-        <div>
-          <h3 class="conversation-title" id="conversationTitle">Page 9 conversation</h3>
-          <span class="conversation-status" id="conversationStatus" aria-live="polite">Loading messages</span>
-        </div>
-        <button type="button" class="secondary" id="refreshConversation">Refresh</button>
-      </div>
-      <div class="message-feed" id="messageFeed" role="log" aria-live="polite" aria-label="Messages between Matt and Jimmy">
-        <p class="message-empty">Loading conversation.</p>
-      </div>
-      <form class="message-form" id="messageForm">
-        <label for="messageInput" id="messageActorLabel">Message as Jimmy</label>
-        <div class="message-compose">
-          <textarea class="message-input" id="messageInput" maxlength="1200" placeholder="Write a message" required></textarea>
-          <button class="message-send" id="sendMessage" type="submit" disabled>Send</button>
-        </div>
-        <div class="message-form-foot"><span id="messageCount">0 / 1200</span></div>
-      </form>
     </section>
 
     <section class="change-list" id="changeList" aria-label="Shared intake Colab"></section>
