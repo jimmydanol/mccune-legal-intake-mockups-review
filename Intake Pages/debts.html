@@ -694,6 +694,47 @@ table.exp td:last-child{width:140px;}
   gateReveal('bizDebtTg','bizDebtBlock');
   gateReveal('biz50Tg','biz50Block');
 })();</script>
+<script>(function(){
+  var KEY='mcl_carryover_v1';
+  function read(){ try{ return JSON.parse(sessionStorage.getItem(KEY)||'{}'); }catch(e){ return {}; } }
+  function write(data){ try{ sessionStorage.setItem(KEY, JSON.stringify(data)); }catch(e){} }
+  function norm(text){ return String(text||'').replace(/\s+/g,' ').replace('*','').trim().toLowerCase(); }
+  function fieldInput(scope,labelText){
+    var wanted=norm(labelText);
+    var fields=scope.querySelectorAll('.field');
+    for(var i=0;i<fields.length;i++){
+      var label=fields[i].querySelector('label');
+      if(label&&norm(label.textContent)===wanted) return fields[i].querySelector('input,textarea,select');
+    }
+    return null;
+  }
+  function collectValues(selector,labelText){
+    var values=[];
+    document.querySelectorAll(selector).forEach(function(scope){
+      if(scope.offsetParent===null) return;
+      var input=fieldInput(scope,labelText);
+      if(input&&input.value.trim()) values.push(input.value.trim());
+    });
+    return values;
+  }
+  function sync(){
+    var data=read();
+    data.expenses=data.expenses||{};
+    data.expenses.mortgagePayments=collectValues('#securedDebts .prop-panel .mtgitem','Monthly payment');
+    data.expenses.hoaDues=collectValues('#securedDebts .prop-panel .hoaitem','Monthly dues');
+    data.expenses.vehiclePayments=collectValues('#securedDebts .veh-panel .item','Monthly payment');
+    data.expenses.updatedAt=Date.now();
+    write(data);
+  }
+  document.addEventListener('input',function(e){
+    if(e.target.closest&&e.target.closest('#securedDebts')) sync();
+  });
+  document.addEventListener('click',function(e){
+    if(e.target.closest&&e.target.closest('#securedDebts')) setTimeout(sync,0);
+  });
+  setTimeout(sync,0);
+  setTimeout(sync,200);
+})();</script>
 <script>(function(){var fl=document.getElementById("savedFlag");if(!fl)return;function show(){fl.style.visibility="visible";document.removeEventListener("input",show);}document.addEventListener("input",show);})();</script>
 <script>
 /* DOC-LOGIC trigger gating (mockup):

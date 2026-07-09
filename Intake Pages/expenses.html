@@ -529,5 +529,46 @@ table.exp td:last-child{width:140px;}
   });
 })();
 </script>
+<script>(function(){
+  var KEY='mcl_carryover_v1';
+  function read(){ try{ return JSON.parse(sessionStorage.getItem(KEY)||'{}'); }catch(e){ return {}; } }
+  function norm(text){ return String(text||'').replace(/\s+/g,' ').trim().toLowerCase(); }
+  function rowInput(labelStart){
+    var wanted=norm(labelStart);
+    var rows=document.querySelectorAll('table.exp tr');
+    for(var i=0;i<rows.length;i++){
+      var first=rows[i].querySelector('td');
+      if(first&&norm(first.textContent).indexOf(wanted)===0) return rows[i].querySelector('input');
+    }
+    return null;
+  }
+  function numberValue(value){
+    var n=parseFloat(String(value||'').replace(/[^0-9.-]/g,''));
+    return isNaN(n)?0:n;
+  }
+  function money(values){
+    values=(values||[]).filter(function(v){ return String(v||'').trim(); });
+    if(!values.length) return '';
+    if(values.length===1) return values[0];
+    var total=values.reduce(function(sum,value){ return sum+numberValue(value); },0);
+    if(!total) return '';
+    return '$'+Math.round(total).toLocaleString();
+  }
+  function fill(input,value,key){
+    if(!input||!value) return;
+    if(!input.value.trim()||input.dataset.carryoverKey===key){
+      input.value=value;
+      input.dataset.carryoverKey=key;
+      input.dispatchEvent(new Event('input',{bubbles:true}));
+      input.dispatchEvent(new Event('change',{bubbles:true}));
+    }
+  }
+  var expenses=(read().expenses)||{};
+  var mortgages=expenses.mortgagePayments||[];
+  fill(rowInput('Rent or home/mortgage payment'),money(mortgages.slice(0,1)),'mortgage-primary');
+  fill(rowInput('Additional mortgage / home equity payments'),money(mortgages.slice(1)),'mortgage-additional');
+  fill(rowInput('HOA / association dues'),money(expenses.hoaDues||[]),'hoa-dues');
+  fill(rowInput('Vehicle payments'),money(expenses.vehiclePayments||[]),'vehicle-payments');
+})();</script>
 <script>(function(){var fl=document.getElementById("savedFlag");if(!fl)return;function show(){fl.style.visibility="visible";document.removeEventListener("input",show);}document.addEventListener("input",show);})();</script>
 </body></html>
