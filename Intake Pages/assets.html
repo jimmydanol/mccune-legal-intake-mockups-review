@@ -894,12 +894,13 @@ table.exp td:last-child{width:140px;}
     var status=autocompleteParts(card).status;
     if(status) status.textContent=message || '';
   }
-  function closeAutocomplete(card){
+  function closeAutocomplete(card,clearSuggestions){
     var parts=autocompleteParts(card);
     if(parts.menu){
       parts.menu.hidden=true;
       parts.menu.innerHTML='';
     }
+    if(clearSuggestions) card.__addressSuggestions=[];
   }
   function normalizeSuggestion(value){
     if(!value || typeof value!=='object') return null;
@@ -1026,22 +1027,37 @@ table.exp td:last-child{width:140px;}
   }
   function selectAddressSuggestion(card,suggestion){
     var controls=realEstateControls(card);
+    card.__suppressAddressAutocomplete=true;
+    clearTimeout(card.__addressAutocompleteTimer);
+    card.__addressAutocompleteRequestId=(card.__addressAutocompleteRequestId || 0)+1;
     if(controls.street) controls.street.value=suggestion.streetAddress;
     if(controls.city) controls.city.value=suggestion.city;
     if(controls.zip) controls.zip.value=suggestion.zipCode;
     setStateSelectValue(controls.state,suggestion.stateCode,suggestion.state);
-    card.__skipAddressQuery=suggestion.streetAddress;
-    closeAutocomplete(card);
+    card.__skipAddressQuery='';
+    card.__selectedAddressStreet=suggestion.streetAddress;
+    closeAutocomplete(card,true);
     setAutocompleteStatus(card,'');
     updateZillowButton(card);
-    if(controls.street) controls.street.dispatchEvent(new Event('input',{bubbles:true}));
-    [controls.city,controls.state,controls.zip].forEach(function(control){
-      if(control) control.dispatchEvent(new Event('change',{bubbles:true}));
-    });
+    try{
+      if(controls.street) controls.street.dispatchEvent(new Event('input',{bubbles:true}));
+      [controls.city,controls.state,controls.zip].forEach(function(control){
+        if(control) control.dispatchEvent(new Event('change',{bubbles:true}));
+      });
+    }finally{
+      card.__suppressAddressAutocomplete=false;
+    }
   }
   function scheduleAddressAutocomplete(card){
+    if(card.__suppressAddressAutocomplete){
+      closeAutocomplete(card,true);
+      setAutocompleteStatus(card,'');
+      return;
+    }
     var controls=realEstateControls(card);
     var query=selectedValue(controls.street);
+    var context=addressAutocompleteContext(controls);
+    if(card.__selectedAddressStreet && query!==card.__selectedAddressStreet) context={};
     if(card.__skipAddressQuery===query){
       card.__skipAddressQuery='';
       closeAutocomplete(card);
@@ -1058,7 +1074,7 @@ table.exp td:last-child{width:140px;}
     card.__addressAutocompleteRequestId=requestId;
     card.__addressAutocompleteTimer=setTimeout(function(){
       setAutocompleteStatus(card,'Finding addresses...');
-      loadAddressSuggestions(query,addressAutocompleteContext(controls)).then(function(payload){
+      loadAddressSuggestions(query,context).then(function(payload){
         if(card.__addressAutocompleteRequestId!==requestId) return;
         if(!payload.configured){
           closeAutocomplete(card);
@@ -1159,7 +1175,7 @@ table.exp td:last-child{width:140px;}
   });
   document.addEventListener('focusin',function(e){
     var card=e.target.closest && e.target.closest('#realEstateBlock .reitem');
-    if(card && e.target===realEstateControls(card).street && card.__addressSuggestions && card.__addressSuggestions.length){
+    if(card && !card.__suppressAddressAutocomplete && e.target===realEstateControls(card).street && card.__addressSuggestions && card.__addressSuggestions.length){
       renderSuggestions(card,card.__addressSuggestions);
     }
   });
