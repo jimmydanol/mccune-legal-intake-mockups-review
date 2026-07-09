@@ -64,7 +64,9 @@
   updateComposer();
   renderMessages();
   refreshMessages().finally(function(){ flushOutbox(); });
-  refreshTimer = window.setInterval(refreshMessages, 5000);
+  refreshTimer = window.setInterval(function(){
+    if (document.visibilityState === "visible") refreshMessages();
+  }, 30000);
   window.addEventListener("beforeunload", function(){ window.clearInterval(refreshTimer); });
 
   function queueMessage(){

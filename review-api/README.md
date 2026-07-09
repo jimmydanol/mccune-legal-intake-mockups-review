@@ -20,6 +20,11 @@ The changelog records append-only KV events for:
 The implementation actions remain supported for historical Page 9 entries. The
 current interface uses the approval actions for the changelog workflow.
 
+The live API stores one compact snapshot per collaboration feature. Normal GET
+requests use a single KV read and do not scan key prefixes. Older append-only
+records migrate into the snapshots automatically, with bounded retries when a
+Cloudflare KV list quota is unavailable.
+
 Reviewer identity is self-selected on the public review page. This is an
 operational two-person prototype, not authenticated approval evidence.
 

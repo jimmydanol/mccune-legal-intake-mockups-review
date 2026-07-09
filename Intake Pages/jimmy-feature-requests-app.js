@@ -53,7 +53,9 @@
 
   render();
   refreshRequests().finally(function(){ flushOutbox(); });
-  refreshTimer = window.setInterval(refreshRequests, 7000);
+  refreshTimer = window.setInterval(function(){
+    if (document.visibilityState === "visible") refreshRequests();
+  }, 30000);
   window.addEventListener("beforeunload", function(){ window.clearInterval(refreshTimer); });
 
   function queueCreate(){

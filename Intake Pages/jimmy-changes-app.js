@@ -104,7 +104,9 @@
 
   render();
   refreshSharedState().finally(function(){ flushOutbox(); });
-  refreshTimer = window.setInterval(refreshSharedState, 8000);
+  refreshTimer = window.setInterval(function(){
+    if (document.visibilityState === "visible") refreshSharedState();
+  }, 30000);
   window.addEventListener("beforeunload", function(){ window.clearInterval(refreshTimer); });
 
   function setActor(nextActor){
