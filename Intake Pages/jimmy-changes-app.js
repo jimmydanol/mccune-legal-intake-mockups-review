@@ -14,14 +14,6 @@
   var flushing = false;
   var refreshTimer;
   var list = document.getElementById("changeList");
-  var totalCount = document.getElementById("totalCount");
-  var approvalNeededCount = document.getElementById("approvalNeededCount");
-  var approvedCount = document.getElementById("approvedCount");
-  var pageCount = document.getElementById("pageCount");
-  var selectionNote = document.getElementById("selectionNote");
-  var copyButton = document.getElementById("copySelected");
-  var emailButton = document.getElementById("emailSelected");
-  var resetWritingButton = document.getElementById("resetWriting");
   var syncStatus = document.getElementById("syncStatus");
   var syncDetail = document.getElementById("syncDetail");
   var toast = document.getElementById("toast");
@@ -78,7 +70,6 @@
       editable.getAttribute("data-edit-field"),
       editable.textContent
     );
-    updateControls();
   });
 
   list.addEventListener("keydown", function(event){
@@ -99,25 +90,6 @@
     event.preventDefault();
     var text = (event.clipboardData || window.clipboardData).getData("text/plain").replace(/\s+/g, " ");
     document.execCommand("insertText", false, text);
-  });
-
-  copyButton.addEventListener("click", function(){
-    var text = buildApprovalText();
-    if (!text) return showToast("No changes need approval.");
-    copyText(text);
-  });
-
-  emailButton.addEventListener("click", function(){
-    var text = buildApprovalText();
-    if (!text) return showToast("No changes need approval.");
-    window.location.href = "mailto:?subject=" + encodeURIComponent("McCune intake approval needed") + "&body=" + encodeURIComponent(text);
-  });
-
-  resetWritingButton.addEventListener("click", function(){
-    textEdits = {};
-    localStorage.removeItem(textStorageKey);
-    render();
-    showToast("Writing reset to branch defaults.");
   });
 
   window.addEventListener("online", function(){
@@ -209,7 +181,6 @@
 
   function render(){
     renderActorPicker();
-    updateControls();
     renderSyncStatus();
 
     if (!items.length) {
@@ -294,32 +265,6 @@
     syncDetail.textContent = sharedState.updatedAt ? "Last update " + formatDate(sharedState.updatedAt) + "." : "No approval activity yet.";
   }
 
-  function updateControls(){
-    var approvalItems = getApprovalItems();
-    var approvedItems = items.filter(function(item){
-      var state = effectiveItemState(item.id);
-      return state.approvalNeeded && state.approvalNeeded.active && state.approved && state.approved.active;
-    });
-    var outstandingItems = approvalItems.filter(function(item){
-      var approved = effectiveItemState(item.id).approved;
-      return !(approved && approved.active);
-    });
-    totalCount.textContent = String(items.length);
-    approvalNeededCount.textContent = String(outstandingItems.length);
-    approvedCount.textContent = String(approvedItems.length);
-    pageCount.textContent = String(uniquePages(items).length);
-    if (!actor) {
-      selectionNote.textContent = "Choose Matt or Jimmy before changing approval status.";
-    } else if (outstandingItems.length || approvedItems.length) {
-      selectionNote.textContent = outstandingItems.length + " awaiting approval and " + approvedItems.length + " approved. Reviewing as " + actor + ".";
-    } else {
-      selectionNote.textContent = "No approvals pending. Reviewing as " + actor + ".";
-    }
-    copyButton.disabled = outstandingItems.length === 0;
-    emailButton.disabled = outstandingItems.length === 0;
-    resetWritingButton.disabled = !hasTextEdits();
-  }
-
   function effectiveItemState(id){
     var source = sharedState.items && sharedState.items[id] ? sharedState.items[id] : {};
     var state = {
@@ -354,39 +299,6 @@
       }
     }
     return lines.join("");
-  }
-
-  function getApprovalItems(){
-    return items.filter(function(item){
-      var approval = effectiveItemState(item.id).approvalNeeded;
-      return approval && approval.active;
-    });
-  }
-
-  function buildApprovalText(){
-    var approvalItems = getApprovalItems().filter(function(item){
-      var approved = effectiveItemState(item.id).approved;
-      return !(approved && approved.active);
-    });
-    if (!approvalItems.length) return "";
-    var lines = [
-      "McCune intake changes needing approval",
-      "Shared branch: " + (meta.branch || "main"),
-      "Colab page: " + (meta.publishUrl || window.location.href),
-      "Matt site: " + (meta.mattPublishUrl || "https://mmccune22.github.io/mccune-legal-intake-mockups/"),
-      ""
-    ];
-    approvalItems.forEach(function(item, index){
-      var state = effectiveItemState(item.id);
-      lines.push((index + 1) + ". " + getItemText(item, "title"));
-      lines.push("   Approval requested by: " + state.approvalNeeded.actor);
-      lines.push("   Status: Awaiting Matt approval");
-      if (getItemText(item, "summary")) lines.push("   " + getItemText(item, "summary"));
-      if (item.pages && item.pages.length) lines.push("   Pages: " + item.pages.join(", "));
-      if (item.commit) lines.push("   Ref: " + item.commit);
-      lines.push("");
-    });
-    return lines.join("\n").trim();
   }
 
   function editableText(item, field, tagName, className){
@@ -429,14 +341,6 @@
     localStorage.setItem(textStorageKey, JSON.stringify(textEdits));
     render();
     showToast("Writing reset for that change.");
-  }
-
-  function hasTextEdits(){ return Object.keys(textEdits).length > 0; }
-
-  function uniquePages(sourceItems){
-    var seen = {};
-    sourceItems.forEach(function(item){ (item.pages || []).forEach(function(page){ seen[page] = true; }); });
-    return Object.keys(seen);
   }
 
   function saveOutbox(){ localStorage.setItem(outboxStorageKey, JSON.stringify(outbox)); }
@@ -483,27 +387,6 @@
   }
 
   function disableAttribute(disabled){ return disabled ? ' disabled aria-disabled="true"' : ""; }
-
-  function copyText(text){
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).then(function(){ showToast("Approval list copied."); }).catch(function(){ fallbackCopy(text); });
-      return;
-    }
-    fallbackCopy(text);
-  }
-
-  function fallbackCopy(text){
-    var area = document.createElement("textarea");
-    area.value = text;
-    area.setAttribute("readonly", "");
-    area.style.position = "fixed";
-    area.style.left = "-9999px";
-    document.body.appendChild(area);
-    area.select();
-    document.execCommand("copy");
-    document.body.removeChild(area);
-    showToast("Approval list copied.");
-  }
 
   function showToast(message){
     toast.textContent = message;
