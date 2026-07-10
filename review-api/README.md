@@ -16,6 +16,7 @@ The changelog records append-only KV events for:
 - `dismissed`: Matt or Jimmy hides or restores a changelog tile for both sites.
 - `undo-requested`: Matt notifies Jimmy that a listed change may need to be undone, or clears that request.
 - `message`: Matt or Jimmy posts a Page 9 comment of up to 1,200 characters.
+- `message clear`: Matt or Jimmy clears the shared Page 9 conversation after client confirmation.
 - `request create`: Matt submits a feature request for Jimmy.
 - `request implemented`: Jimmy records whether a request has been implemented.
 

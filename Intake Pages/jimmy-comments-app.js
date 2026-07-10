@@ -9,6 +9,7 @@
   var outbox = readArray(outboxStorageKey);
   var loading = false;
   var flushing = false;
+  var clearing = false;
   var loadError = "";
   var forceScroll = true;
   var refreshTimer;
@@ -19,11 +20,12 @@
   var input = document.getElementById("messageInput");
   var sendButton = document.getElementById("sendMessage");
   var refreshButton = document.getElementById("refreshConversation");
+  var clearButton = document.getElementById("clearConversation");
   var status = document.getElementById("conversationStatus");
   var actorLabel = document.getElementById("messageActorLabel");
   var count = document.getElementById("messageCount");
 
-  if (!feed || !form || !input || !sendButton || !refreshButton || !status || !actorLabel || !count) return;
+  if (!feed || !form || !input || !sendButton || !refreshButton || !clearButton || !status || !actorLabel || !count) return;
 
   form.addEventListener("submit", function(event){
     event.preventDefault();
@@ -39,6 +41,12 @@
 
   refreshButton.addEventListener("click", function(){
     refreshMessages(true);
+  });
+
+  clearButton.addEventListener("click", function(){
+    if (!effectiveMessages().length) return;
+    if (!window.confirm("Clear all Page 9 chat messages for both Matt and Jimmy? This cannot be undone.")) return;
+    clearConversation();
   });
 
   document.querySelectorAll("[data-reviewer]").forEach(function(button){
@@ -87,6 +95,36 @@
     flushOutbox();
   }
 
+  async function clearConversation(){
+    if (clearing || loading || flushing || outbox.length || !apiUrl) return;
+    clearing = true;
+    loadError = "";
+    actor = readActor();
+    renderStatus();
+    try {
+      var response = await fetch(apiUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "clear",
+          clearId: createClearId(),
+          actor: actor,
+          queuedAt: new Date().toISOString()
+        }),
+        cache: "no-store"
+      });
+      var body = await response.json().catch(function(){ return {}; });
+      if (!response.ok || !body.ok || !Array.isArray(body.messages)) throw new Error(body.error || "Conversation clear failed.");
+      replaceMessages(body.messages);
+      forceScroll = true;
+    } catch (error) {
+      loadError = error && error.message ? error.message : "Conversation could not be cleared.";
+    } finally {
+      clearing = false;
+      renderMessages();
+    }
+  }
+
   async function flushOutbox(){
     if (flushing || !outbox.length || !apiUrl) return;
     flushing = true;
@@ -127,7 +165,7 @@
       if (!response.ok || !body.ok || !Array.isArray(body.messages)) {
         throw new Error(body.error || "Conversation failed to load.");
       }
-      mergeMessages(body.messages);
+      replaceMessages(body.messages);
       loadError = "";
     } catch (error) {
       loadError = error && error.message ? error.message : "Messages are temporarily unavailable.";
@@ -144,6 +182,12 @@
       byId[message.messageId] = message;
     });
     messages = Object.keys(byId).map(function(id){ return byId[id]; }).sort(compareMessages);
+  }
+
+  function replaceMessages(nextMessages){
+    messages = (nextMessages || []).filter(function(message){
+      return message && message.messageId && message.body;
+    }).slice().sort(compareMessages);
   }
 
   function renderMessages(){
@@ -200,10 +244,13 @@
   }
 
   function renderStatus(){
-    refreshButton.disabled = loading;
+    refreshButton.disabled = loading || clearing;
+    clearButton.disabled = loading || clearing || flushing || outbox.length || !effectiveMessages().length;
     status.classList.toggle("error", Boolean(loadError));
     if (loadError) {
       status.textContent = outbox.length ? "Message queued; reconnecting" : "Conversation unavailable; retrying";
+    } else if (clearing) {
+      status.textContent = "Clearing conversation";
     } else if (flushing || outbox.length) {
       status.textContent = "Saving message";
     } else if (loading) {
@@ -235,6 +282,11 @@
   function createMessageId(){
     if (window.crypto && typeof window.crypto.randomUUID === "function") return window.crypto.randomUUID();
     return "message-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2);
+  }
+
+  function createClearId(){
+    if (window.crypto && typeof window.crypto.randomUUID === "function") return window.crypto.randomUUID();
+    return "clear-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2);
   }
 
   function formatDate(value){

@@ -42,6 +42,8 @@ h2{margin:0;font-size:28px;line-height:1.15;letter-spacing:0}
 .sync-detail{display:block;font-size:12px;color:var(--muted);margin-top:2px}
 .conversation{border:1px solid var(--line);border-radius:var(--radius);background:#fff;margin-top:14px;overflow:hidden}
 .conversation-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 14px;border-bottom:1px solid var(--line);background:var(--soft2)}
+.conversation-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.conversation-clear{background:#fff;color:var(--danger);border-color:#d9aaaa}
 .conversation-title{margin:0;font-size:17px;line-height:1.2;letter-spacing:0}
 .conversation-status{display:block;margin-top:3px;color:var(--muted);font-size:12px}
 .conversation-status.error{color:var(--danger)}
@@ -205,7 +207,10 @@ button:disabled{opacity:.55;cursor:not-allowed}
           <h3 class="conversation-title" id="conversationTitle">Page 9 conversation</h3>
           <span class="conversation-status" id="conversationStatus" aria-live="polite">Loading messages</span>
         </div>
-        <button type="button" class="secondary" id="refreshConversation">Refresh</button>
+        <div class="conversation-actions">
+          <button type="button" class="secondary" id="refreshConversation">Refresh</button>
+          <button type="button" class="conversation-clear" id="clearConversation" disabled>Clear chat</button>
+        </div>
       </div>
       <div class="message-feed" id="messageFeed" role="log" aria-live="polite" aria-label="Messages between Matt and Jimmy">
         <p class="message-empty">Loading conversation.</p>
@@ -248,10 +253,10 @@ button:disabled{opacity:.55;cursor:not-allowed}
   </main>
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
-<script src="jimmy-changes.js?v=colab-undo-v1"></script>
+<script src="jimmy-changes.js?v=colab-clear-chat-v1"></script>
 <script src="jimmy-changes-app.js?v=colab-undo-v1"></script>
 <script src="jimmy-feature-requests-app.js?v=requests-v2"></script>
-<script src="jimmy-comments-app.js?v=chat-v3"></script>
+<script src="jimmy-comments-app.js?v=chat-clear-v1"></script>
 <script src="data-intake-best-practices.js"></script>
 </body>
 </html>

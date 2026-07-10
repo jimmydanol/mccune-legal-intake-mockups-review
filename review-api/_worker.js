@@ -216,15 +216,21 @@ async function saveMessage(request, store) {
     return jsonResponse(request, { error: "Request body must be valid JSON." }, 400);
   }
 
-  const messageId = cleanString(payload.messageId, 80);
+  const action = cleanString(payload.action, 20) || "message";
   const actor = cleanString(payload.actor, 20);
+  if (!ACTORS.has(actor)) {
+    return jsonResponse(request, { error: "Message actor must be Matt or Jimmy." }, 400);
+  }
+  if (action === "clear") return await clearMessages(request, store, payload, actor);
+  if (action !== "message") {
+    return jsonResponse(request, { error: "Message action is invalid." }, 400);
+  }
+
+  const messageId = cleanString(payload.messageId, 80);
   const body = typeof payload.body === "string" ? payload.body.trim() : "";
 
   if (!messageId || !/^[A-Za-z0-9_-]+$/.test(messageId)) {
     return jsonResponse(request, { error: "A valid messageId is required." }, 400);
-  }
-  if (!ACTORS.has(actor)) {
-    return jsonResponse(request, { error: "Message actor must be Matt or Jimmy." }, 400);
   }
   if (!body) {
     return jsonResponse(request, { error: "Message text is required." }, 400);
@@ -254,6 +260,28 @@ async function saveMessage(request, store) {
   return jsonResponse(request, { ok: true, message });
 }
 
+async function clearMessages(request, store, payload, actor) {
+  const clearId = cleanString(payload.clearId, 80);
+  if (!clearId || !/^[A-Za-z0-9_-]+$/.test(clearId)) {
+    return jsonResponse(request, { error: "A valid clearId is required." }, 400);
+  }
+
+  const state = await loadMessageState(store);
+  if (!state.recentMessageIds.includes(clearId)) {
+    const clearedAt = normalizeTimestamp(cleanString(payload.queuedAt, 40)) || new Date().toISOString();
+    state.messages = [];
+    state.clearedAt = clearedAt;
+    state.clearedBy = actor;
+    state.legacyMigrated = true;
+    state.legacyRetryAt = null;
+    rememberId(state.recentMessageIds, clearId);
+    state.revision += 1;
+    state.updatedAt = maxTimestamp(state.updatedAt, clearedAt);
+    await saveState(store, MESSAGE_STATE_KEY, state);
+  }
+  return jsonResponse(request, publicMessages(state));
+}
+
 async function readMessages(store) {
   return publicMessages(await loadMessageState(store));
 }
@@ -279,6 +307,8 @@ function normalizeMessageState(value) {
     boardId: BOARD_ID,
     revision: Number.isFinite(value?.revision) ? value.revision : 0,
     updatedAt: normalizeTimestamp(value?.updatedAt),
+    clearedAt: normalizeTimestamp(value?.clearedAt),
+    clearedBy: ACTORS.has(value?.clearedBy) ? value.clearedBy : null,
     messages: Array.isArray(value?.messages) ? value.messages.slice(-MAX_VISIBLE_MESSAGES) : [],
     recentMessageIds: Array.isArray(value?.recentMessageIds) ? value.recentMessageIds.slice(-MAX_RECENT_IDS) : [],
     legacyMigrated: Boolean(value?.legacyMigrated),
@@ -292,6 +322,8 @@ function publicMessages(state) {
     boardId: BOARD_ID,
     revision: state.revision,
     updatedAt: state.updatedAt,
+    clearedAt: state.clearedAt,
+    clearedBy: state.clearedBy,
     messages: state.messages
   };
 }

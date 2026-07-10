@@ -154,5 +154,19 @@ window.JIMMY_CHANGE_ITEMS = [
     links: [
       { label: "Open Page 9", href: "jimmy-changes.html" }
     ]
+  },
+  {
+    id: "colab-clear-chat",
+    title: "Clear the shared Page 9 chat",
+    date: "2026-07-09",
+    category: "Collaboration",
+    status: "Live on Matt and Jimmy sites",
+    commit: "colab-clear-chat-v1",
+    pages: ["Colab"],
+    summary: "The shared conversation now includes a Clear chat button for removing all messages from both Page 9 sites when the thread gets too long.",
+    mattDecision: "Matt or Jimmy can clear the conversation after confirming the permanent action. Feature requests and changelog statuses are not affected.",
+    links: [
+      { label: "Open Page 9", href: "jimmy-changes.html" }
+    ]
   }
 ];
