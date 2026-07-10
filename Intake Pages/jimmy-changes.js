@@ -126,5 +126,19 @@ window.JIMMY_CHANGE_ITEMS = [
     links: [
       { label: "Open Page 9", href: "jimmy-changes.html" }
     ]
+  },
+  {
+    id: "colab-dismiss-tiles",
+    title: "Dismiss and restore Page 9 changes",
+    date: "2026-07-09",
+    category: "Collaboration",
+    status: "Live on Matt and Jimmy sites",
+    commit: "colab-dismiss-v1",
+    pages: ["Colab"],
+    summary: "Every changelog tile now has a shared Dismiss action. Dismissed changes disappear on both sites and remain available through Show dismissed for later restoration.",
+    mattDecision: "Matt or Jimmy can dismiss or restore a tile; implementation and approval history remain attached to the change.",
+    links: [
+      { label: "Open Page 9", href: "jimmy-changes.html" }
+    ]
   }
 ];

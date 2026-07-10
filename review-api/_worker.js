@@ -13,7 +13,7 @@ const MAX_REQUEST_TITLE_LENGTH = 180;
 const MAX_REQUEST_DETAILS_LENGTH = 1200;
 const MAX_VISIBLE_REQUESTS = 200;
 const ACTORS = new Set(["Matt", "Jimmy"]);
-const ACTIONS = new Set(["implement", "implemented", "approval-needed", "approved"]);
+const ACTIONS = new Set(["implement", "implemented", "approval-needed", "approved", "dismissed"]);
 const ALLOWED_ORIGINS = new Set([
   "https://jimmydanol.github.io",
   "https://mmccune22.github.io",
@@ -391,7 +391,8 @@ function applyEvent(board, event) {
     requests: { Matt: null, Jimmy: null },
     implemented: null,
     approvalNeeded: null,
-    approved: null
+    approved: null,
+    dismissed: null
   };
   item.title = event.featureTitle || item.title;
   item.requests = item.requests || { Matt: null, Jimmy: null };
@@ -405,6 +406,7 @@ function applyEvent(board, event) {
   if (event.action === "implemented" && isNewerState(item.implemented, state)) item.implemented = state;
   if (event.action === "approval-needed" && isNewerState(item.approvalNeeded, state)) item.approvalNeeded = state;
   if (event.action === "approved" && isNewerState(item.approved, state)) item.approved = state;
+  if (event.action === "dismissed" && isNewerState(item.dismissed, state)) item.dismissed = state;
   board.items[event.featureId] = item;
   board.updatedAt = maxTimestamp(board.updatedAt, state.at);
 }

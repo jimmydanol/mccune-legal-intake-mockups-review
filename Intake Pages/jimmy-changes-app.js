@@ -12,6 +12,7 @@
   var syncMode = "loading";
   var syncError = "";
   var flushing = false;
+  var showDismissed = false;
   var refreshTimer;
   var list = document.getElementById("changeList");
   var syncStatus = document.getElementById("syncStatus");
@@ -30,7 +31,13 @@
 
   list.addEventListener("click", function(event){
     var resetButton = event.target.closest("[data-reset-writing]");
+    var dismissedVisibilityButton = event.target.closest("[data-toggle-dismissed]");
     var actionButton = event.target.closest("[data-checklist-action]");
+    if (dismissedVisibilityButton) {
+      showDismissed = !showDismissed;
+      render();
+      return;
+    }
     if (resetButton) {
       resetItemWriting(resetButton.getAttribute("data-reset-writing"));
       return;
@@ -60,7 +67,9 @@
     var active;
     if (action === "implemented") active = !Boolean(state.implemented && state.implemented.active);
     else if (action === "approval-needed") active = !Boolean(state.approvalNeeded && state.approvalNeeded.active);
-    else active = !Boolean(state.approved && state.approved.active);
+    else if (action === "approved") active = !Boolean(state.approved && state.approved.active);
+    else if (action === "dismissed") active = !Boolean(state.dismissed && state.dismissed.active);
+    else return;
     if (action === "approval-needed" && active && state.approved && state.approved.active) {
       queueAction(item, "approved", false, true);
     }
@@ -206,15 +215,26 @@
       return;
     }
 
-    list.innerHTML = newestFirst(items).map(function(item){
+    var orderedItems = newestFirst(items);
+    var dismissedCount = orderedItems.filter(function(item){
+      var state = effectiveItemState(item.id);
+      return Boolean(state.dismissed && state.dismissed.active);
+    }).length;
+    var visibleItems = showDismissed ? orderedItems : orderedItems.filter(function(item){
+      var state = effectiveItemState(item.id);
+      return !Boolean(state.dismissed && state.dismissed.active);
+    });
+    var dismissedToolbar = dismissedCount ? '<div class="change-toolbar"><button type="button" class="secondary" data-toggle-dismissed aria-pressed="' + String(showDismissed) + '">' + (showDismissed ? 'Hide dismissed' : 'Show dismissed (' + dismissedCount + ')') + '</button></div>' : '';
+    var renderedItems = visibleItems.map(function(item){
       var state = effectiveItemState(item.id);
       var isImplemented = Boolean(state.implemented && state.implemented.active);
       var approvalNeeded = Boolean(state.approvalNeeded && state.approvalNeeded.active);
       var isApproved = Boolean(approvalNeeded && state.approved && state.approved.active);
+      var isDismissed = Boolean(state.dismissed && state.dismissed.active);
       var isOutstanding = approvalNeeded && !isApproved;
       var edited = Boolean(textEdits[item.id]);
       var pending = outbox.some(function(entry){ return entry.featureId === item.id; });
-      var cardClass = "change-item" + (isOutstanding ? " needs-approval" : "") + (isApproved ? " approved" : "") + (isImplemented ? " implemented" : "");
+      var cardClass = "change-item" + (isOutstanding ? " needs-approval" : "") + (isApproved ? " approved" : "") + (isImplemented ? " implemented" : "") + (isDismissed ? " dismissed" : "");
       return '<article class="' + cardClass + '">' +
         '<div class="change-main">' +
           '<div class="tags">' +
@@ -235,10 +255,12 @@
           '<button type="button" class="approval-needed' + (approvalNeeded ? ' active' : '') + '" data-checklist-action="approval-needed" data-change-id="' + escapeAttribute(item.id) + '" aria-pressed="' + String(approvalNeeded) + '" title="Elevate this change for Matt approval"' + disableAttribute(pending || actor !== "Jimmy") + '>Approval needed</button>' +
           '<button type="button" class="approved' + (isApproved ? ' active' : '') + '" data-checklist-action="approved" data-change-id="' + escapeAttribute(item.id) + '" aria-pressed="' + String(isApproved) + '" title="Record Matt approval"' + disableAttribute(pending || actor !== "Matt" || !approvalNeeded) + '>Approved</button>' +
           '<div class="state-details">' + renderStateDetails(state) + '</div>' +
+          '<button type="button" class="ghost dismissed-toggle" data-checklist-action="dismissed" data-change-id="' + escapeAttribute(item.id) + '" aria-pressed="' + String(isDismissed) + '" title="' + (isDismissed ? 'Restore this change for both reviewers' : 'Dismiss this change for both reviewers') + '"' + disableAttribute(pending) + '>' + (isDismissed ? 'Restore' : 'Dismiss') + '</button>' +
           (edited ? '<button type="button" class="ghost reset-copy" data-reset-writing="' + escapeAttribute(item.id) + '">Reset writing</button>' : '') +
         '</div>' +
       '</article>';
     }).join("");
+    list.innerHTML = dismissedToolbar + (renderedItems || '<div class="empty">All logged changes are dismissed. Use Show dismissed to restore one.</div>');
   }
 
   function acceptSharedState(nextState){
@@ -290,7 +312,8 @@
     var state = {
       implemented: source.implemented ? copyState(source.implemented) : null,
       approvalNeeded: source.approvalNeeded ? copyState(source.approvalNeeded) : null,
-      approved: source.approved ? copyState(source.approved) : null
+      approved: source.approved ? copyState(source.approved) : null,
+      dismissed: source.dismissed ? copyState(source.dismissed) : null
     };
     outbox.forEach(function(entry){
       if (entry.featureId !== id) return;
@@ -298,6 +321,7 @@
       if (entry.action === "implemented") state.implemented = next;
       if (entry.action === "approval-needed") state.approvalNeeded = next;
       if (entry.action === "approved") state.approved = next;
+      if (entry.action === "dismissed") state.dismissed = next;
     });
     return state;
   }
@@ -324,6 +348,9 @@
       } else {
         lines.push('<span class="state-line pending-approval">Awaiting Matt approval.</span>');
       }
+    }
+    if (state.dismissed && state.dismissed.active) {
+      lines.push('<span class="state-line"><strong>Dismissed:</strong> ' + escapeHtml(state.dismissed.actor) + " " + escapeHtml(formatDate(state.dismissed.at)) + '</span>');
     }
     return lines.join("");
   }
