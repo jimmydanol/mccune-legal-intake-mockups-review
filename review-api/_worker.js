@@ -323,6 +323,9 @@ async function saveAction(request, store) {
   if (!ACTORS.has(actor) || !ACTIONS.has(action) || typeof active !== "boolean") {
     return jsonResponse(request, { error: "Actor, action, or active state is invalid." }, 400);
   }
+  if (action === "implemented" && actor !== "Jimmy") {
+    return jsonResponse(request, { error: "Only Jimmy can update implementation status." }, 400);
+  }
 
   const event = {
     eventId,

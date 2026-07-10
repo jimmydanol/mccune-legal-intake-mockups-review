@@ -49,13 +49,18 @@
       showToast("Switch to Jimmy to elevate a change.");
       return;
     }
+    if (action === "implemented" && actor !== "Jimmy") {
+      showToast("Switch to Jimmy to update implementation status.");
+      return;
+    }
     if (action === "approved" && actor !== "Matt") {
       showToast("Switch to Matt to record approval.");
       return;
     }
-    var active = action === "approval-needed"
-      ? !Boolean(state.approvalNeeded && state.approvalNeeded.active)
-      : !Boolean(state.approved && state.approved.active);
+    var active;
+    if (action === "implemented") active = !Boolean(state.implemented && state.implemented.active);
+    else if (action === "approval-needed") active = !Boolean(state.approvalNeeded && state.approvalNeeded.active);
+    else active = !Boolean(state.approved && state.approved.active);
     if (action === "approval-needed" && active && state.approved && state.approved.active) {
       queueAction(item, "approved", false, true);
     }
@@ -192,12 +197,13 @@
 
     list.innerHTML = items.map(function(item){
       var state = effectiveItemState(item.id);
+      var isImplemented = Boolean(state.implemented && state.implemented.active);
       var approvalNeeded = Boolean(state.approvalNeeded && state.approvalNeeded.active);
       var isApproved = Boolean(approvalNeeded && state.approved && state.approved.active);
       var isOutstanding = approvalNeeded && !isApproved;
       var edited = Boolean(textEdits[item.id]);
       var pending = outbox.some(function(entry){ return entry.featureId === item.id; });
-      var cardClass = "change-item" + (isOutstanding ? " needs-approval" : "") + (isApproved ? " approved" : "");
+      var cardClass = "change-item" + (isOutstanding ? " needs-approval" : "") + (isApproved ? " approved" : "") + (isImplemented ? " implemented" : "");
       return '<article class="' + cardClass + '">' +
         '<div class="change-main">' +
           '<div class="tags">' +
@@ -214,6 +220,7 @@
           renderLinks(item.links) +
         '</div>' +
         '<div class="pick-control">' +
+          '<button type="button" class="implemented' + (isImplemented ? ' active' : '') + '" data-checklist-action="implemented" data-change-id="' + escapeAttribute(item.id) + '" aria-pressed="' + String(isImplemented) + '" title="Record that Jimmy implemented this feature"' + disableAttribute(pending || actor !== "Jimmy") + '>Implemented</button>' +
           '<button type="button" class="approval-needed' + (approvalNeeded ? ' active' : '') + '" data-checklist-action="approval-needed" data-change-id="' + escapeAttribute(item.id) + '" aria-pressed="' + String(approvalNeeded) + '" title="Elevate this change for Matt approval"' + disableAttribute(pending || actor !== "Jimmy") + '>Approval needed</button>' +
           '<button type="button" class="approved' + (isApproved ? ' active' : '') + '" data-checklist-action="approved" data-change-id="' + escapeAttribute(item.id) + '" aria-pressed="' + String(isApproved) + '" title="Record Matt approval"' + disableAttribute(pending || actor !== "Matt" || !approvalNeeded) + '>Approved</button>' +
           '<div class="state-details">' + renderStateDetails(state) + '</div>' +
@@ -270,12 +277,14 @@
   function effectiveItemState(id){
     var source = sharedState.items && sharedState.items[id] ? sharedState.items[id] : {};
     var state = {
+      implemented: source.implemented ? copyState(source.implemented) : null,
       approvalNeeded: source.approvalNeeded ? copyState(source.approvalNeeded) : null,
       approved: source.approved ? copyState(source.approved) : null
     };
     outbox.forEach(function(entry){
       if (entry.featureId !== id) return;
       var next = { active: entry.active, actor: entry.actor, at: entry.queuedAt, pending: true };
+      if (entry.action === "implemented") state.implemented = next;
       if (entry.action === "approval-needed") state.approvalNeeded = next;
       if (entry.action === "approved") state.approved = next;
     });
@@ -288,6 +297,11 @@
 
   function renderStateDetails(state){
     var lines = [];
+    if (state.implemented && state.implemented.active) {
+      lines.push('<span class="state-line complete"><strong>Implemented:</strong> ' + escapeHtml(state.implemented.actor) + " " + escapeHtml(formatDate(state.implemented.at)) + '</span>');
+    } else {
+      lines.push('<span class="state-line">Not marked implemented.</span>');
+    }
     if (state.approvalNeeded && state.approvalNeeded.active) {
       lines.push('<span class="state-line"><strong>Approval requested:</strong> ' + escapeHtml(state.approvalNeeded.actor) + " " + escapeHtml(formatDate(state.approvalNeeded.at)) + '</span>');
     } else {
