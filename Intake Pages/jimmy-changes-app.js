@@ -186,6 +186,17 @@
     render();
   }
 
+  function newestFirst(sourceItems){
+    return sourceItems.map(function(item, index){
+      return { item: item, index: index, time: Date.parse(item.date || "") };
+    }).sort(function(a, b){
+      if (Number.isFinite(a.time) && Number.isFinite(b.time) && a.time !== b.time) return b.time - a.time;
+      return b.index - a.index;
+    }).map(function(entry){
+      return entry.item;
+    });
+  }
+
   function render(){
     renderActorPicker();
     renderSyncStatus();
@@ -195,7 +206,7 @@
       return;
     }
 
-    list.innerHTML = items.map(function(item){
+    list.innerHTML = newestFirst(items).map(function(item){
       var state = effectiveItemState(item.id);
       var isImplemented = Boolean(state.implemented && state.implemented.active);
       var approvalNeeded = Boolean(state.approvalNeeded && state.approvalNeeded.active);

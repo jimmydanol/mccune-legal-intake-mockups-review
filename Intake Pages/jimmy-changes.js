@@ -112,5 +112,19 @@ window.JIMMY_CHANGE_ITEMS = [
     links: [
       { label: "Open Assets", href: "assets.html" }
     ]
+  },
+  {
+    id: "colab-newest-first",
+    title: "Newest Page 9 changes appear first",
+    date: "2026-07-09",
+    category: "Design",
+    status: "Live on Matt and Jimmy sites",
+    commit: "colab-newest-first-v1",
+    pages: ["Colab"],
+    summary: "Page 9 now displays the newest feature and design changes at the top, including later changes logged on the same day.",
+    mattDecision: "This changes only the changelog display order; shared statuses, comments, feature requests, and editable writing remain unchanged.",
+    links: [
+      { label: "Open Page 9", href: "jimmy-changes.html" }
+    ]
   }
 ];
