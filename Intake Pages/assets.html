@@ -417,12 +417,12 @@ table.exp td:last-child{width:140px;}
       sp.style.cursor='pointer';
       sp.addEventListener('click', function(){ apply(sp.textContent.trim().toLowerCase()); });
     });
-    // restore from saved answer or a pre-set .on; otherwise leave UNSELECTED (no default)
+    // Restore saved or pre-set answers; unanswered asset questions default to No.
     var saved = state[PAGE][key];
     var preset = Array.prototype.find.call(spans,function(s){return s.classList.contains('on');});
     if(saved) apply(saved);
     else if(preset) apply(preset.textContent.trim().toLowerCase());
-    // else: no selection — both options stay white
+    else apply('no');
   }
 
   /* ---------- 2. Chips (multi-select tap) ---------- */
@@ -569,6 +569,37 @@ table.exp td:last-child{width:140px;}
 </script>
 <script>(function(){
   /* Generic Yes/No toggle revealing a block by id, only on Yes */
+  function isYes(tg){
+    var selected=tg && tg.querySelector('span.on');
+    return !!selected && selected.textContent.trim().toLowerCase()==='yes';
+  }
+  function syncInitialReveals(){
+    [['realEstateTg','realEstateBlock'],['vehTg','vehBlock'],['cashTg','cashBlock'],['acctTg','acctBlock']].forEach(function(pair){
+      var tg=document.getElementById(pair[0]), bl=document.getElementById(pair[1]);
+      if(tg&&bl) bl.style.display=isYes(tg)?'':'none';
+    });
+    document.querySelectorAll('.toggle.faTg[data-reveal]').forEach(function(tg){
+      var bl=document.getElementById(tg.getAttribute('data-reveal'));
+      if(bl) bl.style.display=isYes(tg)?'':'none';
+    });
+    document.querySelectorAll('.behindTg').forEach(function(tg){
+      var card=tg.closest('.reitem'), bl=card&&card.querySelector('.behind-only');
+      if(bl) bl.style.display=isYes(tg)?'':'none';
+    });
+    document.querySelectorAll('.financedTg').forEach(function(tg){
+      var card=tg.closest('.vehitem');
+      var financed=card&&card.querySelector('.financed-only');
+      var paidOff=card&&card.querySelector('.paidoff-only');
+      if(financed) financed.style.display=isYes(tg)?'':'none';
+      if(paidOff) paidOff.style.display=isYes(tg)?'none':'';
+    });
+    document.querySelectorAll('.vehBehindTg').forEach(function(tg){
+      var card=tg.closest('.vehitem'), bl=card&&card.querySelector('.vehbehind-only');
+      if(bl) bl.style.display=isYes(tg)?'':'none';
+    });
+  }
+  document.addEventListener('DOMContentLoaded', syncInitialReveals);
+
   function wireReveal(tgId, blockId){
     var tg=document.getElementById(tgId), bl=document.getElementById(blockId);
     if(!tg||!bl) return;

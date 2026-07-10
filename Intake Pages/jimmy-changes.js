@@ -98,5 +98,19 @@ window.JIMMY_CHANGE_ITEMS = [
     links: [
       { label: "Open Financial affairs", href: "financial-affairs.html" }
     ]
+  },
+  {
+    id: "assets-default-no",
+    title: "Assets questions default to No",
+    date: "2026-07-09",
+    category: "Data entry",
+    status: "Live on Matt and Jimmy sites",
+    commit: "assets-default-no-v1",
+    pages: ["Assets"],
+    summary: "Every unanswered Yes/No question on Assets now starts with No selected, while answers already saved in the current session remain unchanged.",
+    mattDecision: "Conditional asset details remain hidden until the debtor changes the related answer to Yes.",
+    links: [
+      { label: "Open Assets", href: "assets.html" }
+    ]
   }
 ];
