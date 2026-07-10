@@ -1,6 +1,6 @@
 window.JIMMY_CHANGE_META = {
   updated: "2026-07-10",
-  branch: "main - Matt + Jimmy shared",
+  branch: "Jimmy-experimental",
   publishUrl: window.location.origin + window.location.pathname,
   mattPublishUrl: "https://mmccune22.github.io/mccune-legal-intake-mockups/Intake%20Pages/",
   reviewApiUrl: "https://mccune-review-api.pages.dev/api/checklist",
@@ -9,6 +9,23 @@ window.JIMMY_CHANGE_META = {
 };
 
 window.JIMMY_CHANGE_ITEMS = [
+  {
+    id: "experimental-competitor-parity-v1",
+    title: "BK Questionnaire parity lab",
+    date: "2026-07-10",
+    category: "Experimental",
+    status: "Jimmy experimental branch only",
+    commit: "experimental-parity-v1",
+    pages: ["All intake pages", "Income", "Debts", "Login"],
+    summary: "The isolated experimental Intake adds browser resume/progress, English and Spanish section guidance, common-creditor suggestions, and simulated paystub and bank-statement assistants while preserving the existing dynamic questionnaire and document workflow.",
+    mattDecision: "No competitor code, private data, wording, or visual design was copied. Vendor-backed messaging, source connections, OCR, credit reports, exports, and cross-device storage remain explicitly integration-gated.",
+    links: [
+      { label: "Open Login", href: "login.html" },
+      { label: "Open Income", href: "income.html" },
+      { label: "Open Debts", href: "debts.html" },
+      { label: "Read parity matrix", href: "EXPERIMENTAL-PARITY.md" }
+    ]
+  },
   {
     id: "counseling-attorney-code-copy",
     title: "One-click counseling attorney code",
