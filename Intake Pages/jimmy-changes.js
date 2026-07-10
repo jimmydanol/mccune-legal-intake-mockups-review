@@ -84,5 +84,19 @@ window.JIMMY_CHANGE_ITEMS = [
     links: [
       { label: "Open Page 9", href: "jimmy-changes.html" }
     ]
+  },
+  {
+    id: "financial-affairs-simplified-labels",
+    title: "Simplified Financial affairs question labels",
+    date: "2026-07-09",
+    category: "Design",
+    status: "Live on Matt and Jimmy sites",
+    commit: "financial-affairs-labels-v1",
+    pages: ["Financial affairs"],
+    summary: "Financial affairs keeps its descriptive section headings while removing the Part 1, Part 2, and similar prefixes, separator bullets, and numbered tiles beside all 27 questions.",
+    mattDecision: "The question wording, answer controls, conditional details, and court-paperwork trigger remain unchanged.",
+    links: [
+      { label: "Open Financial affairs", href: "financial-affairs.html" }
+    ]
   }
 ];
