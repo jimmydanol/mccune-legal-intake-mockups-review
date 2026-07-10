@@ -14,6 +14,7 @@ The changelog records append-only KV events for:
 - `approval-needed`: Jimmy elevates a significant change for Matt's approval.
 - `approved`: Matt records his approval of an elevated change.
 - `dismissed`: Matt or Jimmy hides or restores a changelog tile for both sites.
+- `undo-requested`: Matt notifies Jimmy that a listed change may need to be undone, or clears that request.
 - `message`: Matt or Jimmy posts a Page 9 comment of up to 1,200 characters.
 - `request create`: Matt submits a feature request for Jimmy.
 - `request implemented`: Jimmy records whether a request has been implemented.

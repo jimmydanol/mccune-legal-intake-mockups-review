@@ -140,5 +140,19 @@ window.JIMMY_CHANGE_ITEMS = [
     links: [
       { label: "Open Page 9", href: "jimmy-changes.html" }
     ]
+  },
+  {
+    id: "colab-undo-request",
+    title: "Matt-to-Jimmy undo notifications",
+    date: "2026-07-09",
+    category: "Collaboration",
+    status: "Live on Matt and Jimmy sites",
+    commit: "colab-undo-v1",
+    pages: ["Colab"],
+    summary: "Each feature tile now gives Matt a shared Request undo toggle that notifies Jimmy without automatically changing or reverting the feature.",
+    mattDecision: "Matt can turn an undo request on or off. Jimmy sees the synchronized notification while the feature's implementation, approval, and dismissal history remain intact.",
+    links: [
+      { label: "Open Page 9", href: "jimmy-changes.html" }
+    ]
   }
 ];

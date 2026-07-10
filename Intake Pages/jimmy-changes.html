@@ -98,6 +98,7 @@ button:disabled{opacity:.55;cursor:not-allowed}
 .change-item.approved{border-color:#83c4a6;background:#f4fbf7}
 .change-item.implemented{border-color:#83c4a6;background:#f4fbf7}
 .change-item.dismissed{border-style:dashed;background:var(--soft2);opacity:.76}
+.change-item.undo-requested{border-color:#d9aaaa;background:#fff8f8}
 .change-main{min-width:0}
 .tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
 .tag{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:999px;background:var(--soft2);padding:4px 8px;font-size:12px;color:var(--muted);font-weight:700}
@@ -119,6 +120,8 @@ button:disabled{opacity:.55;cursor:not-allowed}
 .pick-control button{width:100%;min-height:42px;padding:8px}
 .pick-control .implemented{grid-column:1/-1;border-color:var(--ok);background:#fff;color:var(--ok)}
 .pick-control .implemented.active{background:var(--ok);color:#fff}
+.pick-control .undo-requested{grid-column:1/-1;border-color:var(--danger);background:#fff;color:var(--danger)}
+.pick-control .undo-requested.active{background:var(--danger);color:#fff}
 .pick-control .approval-needed{border-color:var(--warn);background:#fff;color:var(--warn)}
 .pick-control .approval-needed.active{background:var(--warn);color:#fff}
 .pick-control .approved{border-color:var(--ok);background:#fff;color:var(--ok)}
@@ -128,6 +131,7 @@ button:disabled{opacity:.55;cursor:not-allowed}
 .state-line strong{color:var(--ink)}
 .state-line.complete strong{color:var(--ok)}
 .state-line.pending-approval{color:var(--warn);font-weight:700}
+.state-line.undo,.state-line.undo strong{color:var(--danger);font-weight:700}
 .pick-control .reset-copy{grid-column:1/-1}
 .pick-control .dismissed-toggle{grid-column:1/-1;color:var(--danger);border-color:#d9aaaa}
 .change-item.dismissed .pick-control .dismissed-toggle{color:var(--accentDark);border-color:var(--accentDark)}
@@ -244,8 +248,8 @@ button:disabled{opacity:.55;cursor:not-allowed}
   </main>
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
-<script src="jimmy-changes.js?v=colab-dismiss-v1"></script>
-<script src="jimmy-changes-app.js?v=colab-dismiss-v1"></script>
+<script src="jimmy-changes.js?v=colab-undo-v1"></script>
+<script src="jimmy-changes-app.js?v=colab-undo-v1"></script>
 <script src="jimmy-feature-requests-app.js?v=requests-v2"></script>
 <script src="jimmy-comments-app.js?v=chat-v3"></script>
 <script src="data-intake-best-practices.js"></script>

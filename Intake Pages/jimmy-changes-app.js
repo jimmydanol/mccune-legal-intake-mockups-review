@@ -64,11 +64,16 @@
       showToast("Switch to Matt to record approval.");
       return;
     }
+    if (action === "undo-requested" && actor !== "Matt") {
+      showToast("Switch to Matt to request an undo.");
+      return;
+    }
     var active;
     if (action === "implemented") active = !Boolean(state.implemented && state.implemented.active);
     else if (action === "approval-needed") active = !Boolean(state.approvalNeeded && state.approvalNeeded.active);
     else if (action === "approved") active = !Boolean(state.approved && state.approved.active);
     else if (action === "dismissed") active = !Boolean(state.dismissed && state.dismissed.active);
+    else if (action === "undo-requested") active = !Boolean(state.undoRequested && state.undoRequested.active);
     else return;
     if (action === "approval-needed" && active && state.approved && state.approved.active) {
       queueAction(item, "approved", false, true);
@@ -231,10 +236,11 @@
       var approvalNeeded = Boolean(state.approvalNeeded && state.approvalNeeded.active);
       var isApproved = Boolean(approvalNeeded && state.approved && state.approved.active);
       var isDismissed = Boolean(state.dismissed && state.dismissed.active);
+      var isUndoRequested = Boolean(state.undoRequested && state.undoRequested.active);
       var isOutstanding = approvalNeeded && !isApproved;
       var edited = Boolean(textEdits[item.id]);
       var pending = outbox.some(function(entry){ return entry.featureId === item.id; });
-      var cardClass = "change-item" + (isOutstanding ? " needs-approval" : "") + (isApproved ? " approved" : "") + (isImplemented ? " implemented" : "") + (isDismissed ? " dismissed" : "");
+      var cardClass = "change-item" + (isOutstanding ? " needs-approval" : "") + (isApproved ? " approved" : "") + (isImplemented ? " implemented" : "") + (isDismissed ? " dismissed" : "") + (isUndoRequested ? " undo-requested" : "");
       return '<article class="' + cardClass + '">' +
         '<div class="change-main">' +
           '<div class="tags">' +
@@ -252,6 +258,7 @@
         '</div>' +
         '<div class="pick-control">' +
           '<button type="button" class="implemented' + (isImplemented ? ' active' : '') + '" data-checklist-action="implemented" data-change-id="' + escapeAttribute(item.id) + '" aria-pressed="' + String(isImplemented) + '" title="Record that Jimmy implemented this feature"' + disableAttribute(pending || actor !== "Jimmy") + '>Implemented</button>' +
+          '<button type="button" class="undo-requested' + (isUndoRequested ? ' active' : '') + '" data-checklist-action="undo-requested" data-change-id="' + escapeAttribute(item.id) + '" aria-pressed="' + String(isUndoRequested) + '" title="' + (isUndoRequested ? 'Clear Matt\'s undo request' : 'Notify Jimmy that Matt wants this change undone') + '"' + disableAttribute(pending || actor !== "Matt") + '>' + (isUndoRequested ? 'Undo requested' : 'Request undo') + '</button>' +
           '<button type="button" class="approval-needed' + (approvalNeeded ? ' active' : '') + '" data-checklist-action="approval-needed" data-change-id="' + escapeAttribute(item.id) + '" aria-pressed="' + String(approvalNeeded) + '" title="Elevate this change for Matt approval"' + disableAttribute(pending || actor !== "Jimmy") + '>Approval needed</button>' +
           '<button type="button" class="approved' + (isApproved ? ' active' : '') + '" data-checklist-action="approved" data-change-id="' + escapeAttribute(item.id) + '" aria-pressed="' + String(isApproved) + '" title="Record Matt approval"' + disableAttribute(pending || actor !== "Matt" || !approvalNeeded) + '>Approved</button>' +
           '<div class="state-details">' + renderStateDetails(state) + '</div>' +
@@ -313,7 +320,8 @@
       implemented: source.implemented ? copyState(source.implemented) : null,
       approvalNeeded: source.approvalNeeded ? copyState(source.approvalNeeded) : null,
       approved: source.approved ? copyState(source.approved) : null,
-      dismissed: source.dismissed ? copyState(source.dismissed) : null
+      dismissed: source.dismissed ? copyState(source.dismissed) : null,
+      undoRequested: source.undoRequested ? copyState(source.undoRequested) : null
     };
     outbox.forEach(function(entry){
       if (entry.featureId !== id) return;
@@ -322,6 +330,7 @@
       if (entry.action === "approval-needed") state.approvalNeeded = next;
       if (entry.action === "approved") state.approved = next;
       if (entry.action === "dismissed") state.dismissed = next;
+      if (entry.action === "undo-requested") state.undoRequested = next;
     });
     return state;
   }
@@ -351,6 +360,9 @@
     }
     if (state.dismissed && state.dismissed.active) {
       lines.push('<span class="state-line"><strong>Dismissed:</strong> ' + escapeHtml(state.dismissed.actor) + " " + escapeHtml(formatDate(state.dismissed.at)) + '</span>');
+    }
+    if (state.undoRequested && state.undoRequested.active) {
+      lines.push('<span class="state-line undo"><strong>Undo requested:</strong> ' + escapeHtml(state.undoRequested.actor) + " " + escapeHtml(formatDate(state.undoRequested.at)) + '</span>');
     }
     return lines.join("");
   }

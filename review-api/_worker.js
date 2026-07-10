@@ -13,7 +13,7 @@ const MAX_REQUEST_TITLE_LENGTH = 180;
 const MAX_REQUEST_DETAILS_LENGTH = 1200;
 const MAX_VISIBLE_REQUESTS = 200;
 const ACTORS = new Set(["Matt", "Jimmy"]);
-const ACTIONS = new Set(["implement", "implemented", "approval-needed", "approved", "dismissed"]);
+const ACTIONS = new Set(["implement", "implemented", "approval-needed", "approved", "dismissed", "undo-requested"]);
 const ALLOWED_ORIGINS = new Set([
   "https://jimmydanol.github.io",
   "https://mmccune22.github.io",
@@ -326,6 +326,9 @@ async function saveAction(request, store) {
   if (action === "implemented" && actor !== "Jimmy") {
     return jsonResponse(request, { error: "Only Jimmy can update implementation status." }, 400);
   }
+  if (action === "undo-requested" && actor !== "Matt") {
+    return jsonResponse(request, { error: "Only Matt can update an undo request." }, 400);
+  }
 
   const event = {
     eventId,
@@ -392,7 +395,8 @@ function applyEvent(board, event) {
     implemented: null,
     approvalNeeded: null,
     approved: null,
-    dismissed: null
+    dismissed: null,
+    undoRequested: null
   };
   item.title = event.featureTitle || item.title;
   item.requests = item.requests || { Matt: null, Jimmy: null };
@@ -407,6 +411,7 @@ function applyEvent(board, event) {
   if (event.action === "approval-needed" && isNewerState(item.approvalNeeded, state)) item.approvalNeeded = state;
   if (event.action === "approved" && isNewerState(item.approved, state)) item.approved = state;
   if (event.action === "dismissed" && isNewerState(item.dismissed, state)) item.dismissed = state;
+  if (event.action === "undo-requested" && isNewerState(item.undoRequested, state)) item.undoRequested = state;
   board.items[event.featureId] = item;
   board.updatedAt = maxTimestamp(board.updatedAt, state.at);
 }
