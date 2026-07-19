@@ -3,6 +3,9 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Expires" content="0"/>
   <title>Document Intake Testing Site</title>
 <style>
 :root{
@@ -64,6 +67,10 @@ h2{margin:0;font-size:28px;line-height:1.15}
 .ocr-text{width:100%;min-height:170px;resize:vertical;border:1px solid #b8c1cc;border-radius:6px;padding:10px 11px;line-height:1.4;background:#fff;color:var(--ink)}
 .ocr-text:focus{outline:0;border-color:var(--accent);box-shadow:0 0 0 3px rgba(47,125,140,.14)}
 .helper{margin:6px 0 0;color:var(--muted);font-size:12px}
+.progress{display:none;margin-top:12px;border:1px solid #b8dce2;border-radius:7px;background:var(--soft);padding:10px 12px;color:#315765;font-size:13px}
+.progress.visible{display:block}
+.progress-track{height:7px;margin-top:8px;border-radius:999px;background:#d9e9ec;overflow:hidden}
+.progress-bar{width:0;height:100%;background:var(--accent);transition:width .2s ease}
 .actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:15px}
 .result-state{padding:14px 16px;border-bottom:1px solid var(--line);background:#f8fafb}
 .state-line{display:flex;align-items:center;justify-content:space-between;gap:12px}
@@ -107,7 +114,7 @@ h2{margin:0;font-size:28px;line-height:1.15}
       <div class="logo" aria-hidden="true">ML</div>
       <div><h1>McCune Legal Intake</h1><small>Document-intake pilot</small></div>
     </div>
-    <div class="pilot-badge"><span class="pilot-dot" aria-hidden="true"></span><span>Fake/demo pilot · local browser only</span></div>
+    <div class="pilot-badge"><span class="pilot-dot" aria-hidden="true"></span><span>Local browser analysis · no upload</span></div>
   </header>
 
   <nav class="topnav" aria-label="Intake pages">
@@ -126,9 +133,9 @@ h2{margin:0;font-size:28px;line-height:1.15}
   <main class="content">
     <section class="page-head" aria-labelledby="pageTitle">
       <div>
-        <p class="eyebrow">Page 10 · Driver's license pilot</p>
+        <p class="eyebrow">Page 10 · Driver's license analysis</p>
         <h2 id="pageTitle">Document Intake Testing Site</h2>
-        <p class="head-copy">Start small: test one driver's license, extract only the important identity and address facts, show the evidence, and require a person to review everything before it can be used.</p>
+        <p class="head-copy">Choose a driver's license, extract only the important identity and address facts, show the evidence, and require a person to review everything before it can be used.</p>
       </div>
       <aside class="scope-panel">
         <strong>Pilot scope</strong>
@@ -140,40 +147,45 @@ h2{margin:0;font-size:28px;line-height:1.15}
     </section>
 
     <div class="notice" role="note">
-      <strong>Use a fake or fully redacted license during this pilot.</strong>
-      This standalone page does not upload, save, or transmit the file. PDF417 scanning runs in the browser when supported. If an approved AI/OCR tool supplies text, paste that text below and this page will apply the same limited field rules.
+      <strong>Uploaded documents are analyzed directly on this page.</strong>
+      The file is not uploaded, saved, or transmitted. Images and PDFs are read locally with PDF417 scanning, embedded PDF text, or browser-based OCR. The first OCR run downloads the reading engine and may take up to 30 seconds.
     </div>
 
     <div class="layout">
       <section class="card" aria-labelledby="uploadTitle">
         <div class="card-head">
-          <h3 id="uploadTitle">1. Add a test license</h3>
-          <p>A photo is best for local PDF417 scanning. PDFs can be previewed, but need approved OCR text for this standalone pilot.</p>
+          <h3 id="uploadTitle">1. Add a driver's license</h3>
+          <p>Use a clear image or PDF of the front or back. The page reads the uploaded document locally, then applies the six-field license rules.</p>
         </div>
         <div class="card-body">
           <div class="dropzone" id="dropzone">
             <strong>Drop a driver's license image here</strong>
             <p>JPG, PNG, WEBP, or PDF · nothing leaves this browser</p>
-            <label class="btn" for="licenseFile">Choose test file</label>
+            <label class="btn" for="licenseFile">Choose document</label>
             <input class="file-input" id="licenseFile" type="file" accept="image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf"/>
           </div>
 
           <div class="file-summary" id="fileSummary">
-            <img class="preview" id="imagePreview" alt="Selected test license preview"/>
+            <img class="preview" id="imagePreview" alt="Selected license preview"/>
             <div class="file-meta">
               <div class="file-name" id="fileName"></div>
               <div class="file-detail" id="fileDetail"></div>
             </div>
           </div>
 
-          <label class="field-label" for="ocrText">Approved AI/OCR text or barcode text</label>
-          <textarea class="ocr-text" id="ocrText" spellcheck="false" placeholder="Optional. Paste visible OCR text or raw PDF417 text here. The page will extract only name, date of birth, street address, city, state, and ZIP."></textarea>
+          <label class="field-label" for="ocrText">Optional: paste OCR or barcode text</label>
+          <textarea class="ocr-text" id="ocrText" spellcheck="false" placeholder="Use this only if the image is hard to read. The page will still extract only name, date of birth, street address, city, state, and ZIP."></textarea>
           <p class="helper">Document text is treated as untrusted evidence, never as instructions. Missing facts remain blank.</p>
 
+          <div class="progress" id="ocrProgress" role="status" aria-live="polite">
+            <span id="ocrProgressText">Preparing local image reading…</span>
+            <div class="progress-track" aria-hidden="true"><div class="progress-bar" id="ocrProgressBar"></div></div>
+          </div>
+
           <div class="actions">
-            <button class="btn" id="runExtraction" type="button" disabled>Run limited extraction</button>
-            <button class="btn secondary" id="loadSample" type="button">Load fake Colorado example</button>
-            <button class="btn danger" id="clearPilot" type="button">Clear test</button>
+            <button class="btn" id="runExtraction" type="button" disabled>Analyze document</button>
+            <button class="btn secondary" id="loadSample" type="button">Load sample text</button>
+            <button class="btn danger" id="clearPilot" type="button">Clear document</button>
           </div>
         </div>
       </section>
@@ -185,10 +197,10 @@ h2{margin:0;font-size:28px;line-height:1.15}
         </div>
         <div class="result-state">
           <div class="state-line">
-            <span class="state-title" id="stateTitle">Waiting for a test</span>
+            <span class="state-title" id="stateTitle">Waiting for a document</span>
             <span class="status" id="statusBadge">Not run</span>
           </div>
-          <div class="result-detail" id="stateDetail">Add a fake license or paste approved OCR text to begin.</div>
+          <div class="result-detail" id="stateDetail">Choose a license image or PDF, or paste OCR text to begin.</div>
         </div>
         <div class="empty" id="emptyResult">
           <strong>No extracted data yet</strong>
@@ -216,7 +228,7 @@ h2{margin:0;font-size:28px;line-height:1.15}
       <h3 id="rulesTitle">What the pilot is allowed to do</h3>
       <div class="rule-grid">
         <div class="rule"><strong>Extract only six facts</strong><p>Full legal name, date of birth, street address, city, state, and ZIP code.</p></div>
-        <div class="rule"><strong>Keep the evidence</strong><p>Each suggestion says whether it came from PDF417 barcode data or supplied AI/OCR text.</p></div>
+            <div class="rule"><strong>Keep the evidence</strong><p>Each suggestion says whether it came from PDF417 barcode data, local image OCR, or supplied text.</p></div>
         <div class="rule"><strong>Require human review</strong><p>The page never silently overwrites intake data. Conflicts and weak results stop for review.</p></div>
         <div class="rule"><strong>Do not guess</strong><p>No current-residence, filing-state, venue, license-validity, or unstated-middle-name assumptions.</p></div>
         <div class="rule"><strong>Ignore document instructions</strong><p>Text inside the uploaded document cannot change the extraction rules or request other actions.</p></div>
@@ -225,7 +237,7 @@ h2{margin:0;font-size:28px;line-height:1.15}
       <div class="ignored"><strong>Intentionally ignored:</strong> driver's license number, expiration date, class, height, weight, sex, restrictions, endorsements, organ-donor status, and any other non-approved field.</div>
     </section>
 
-    <p class="footer-note">Prototype boundary: this Page 10 is a standalone front-end testing surface. A production AI/OCR provider, authentication, secure storage, audit logging, and canonical Matter updates are intentionally not connected here.</p>
+    <p class="footer-note">Prototype boundary: this Page 10 analyzes the selected document only in the current browser session. Authentication, secure storage, audit logging, and canonical Matter updates are intentionally not connected here.</p>
   </main>
 </div>
 
@@ -272,9 +284,18 @@ function parseAamva(raw){
 }
 
 function firstLabeled(text,labels){
+  const lines=String(text||"").split(/\r?\n/).map(normalizeSpaces).filter(Boolean);
   const escaped=labels.map(function(label){return label.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");}).join("|");
-  const match=String(text||"").match(new RegExp("(?:^|\\n)\\s*(?:"+escaped+")\\s*[:#-]\\s*([^\\n\\r]+)","i"));
-  return match?normalizeSpaces(match[1]):"";
+  const pattern=new RegExp("^(?:\\d+\\s*)?(?:"+escaped+")\\s*(?::|#|-)?\\s*(.*)$","i");
+  for(let index=0;index<lines.length;index+=1){
+    const match=lines[index].match(pattern);
+    if(!match)continue;
+    const inline=normalizeSpaces(match[1]);
+    if(inline)return inline;
+    const next=normalizeSpaces(lines[index+1]);
+    if(next&&!next.match(pattern))return next;
+  }
+  return "";
 }
 
 function parseLabeledText(text){
@@ -298,25 +319,81 @@ function parseLabeledText(text){
   return {fields:fields,matched:Object.values(fields).filter(Boolean).length};
 }
 
-function mergeEvidence(barcodeResult,textResult){
+function firstDateNearLabel(text){
+  const lines=String(text||"").split(/\r?\n/).map(normalizeSpaces).filter(Boolean);
+  for(let index=0;index<lines.length;index+=1){
+    if(!/\b(?:date of birth|birth date|dob)\b/i.test(lines[index]))continue;
+    const nearby=lines.slice(index,index+2).join(" ");
+    const match=nearby.match(/\b(?:0?[1-9]|1[0-2])[\/.-](?:0?[1-9]|[12]\d|3[01])[\/.-](?:19|20)?\d{2}\b|\b(?:19|20)\d{2}[\/.-](?:0?[1-9]|1[0-2])[\/.-](?:0?[1-9]|[12]\d|3[01])\b/);
+    if(match)return formatDate(match[0]);
+  }
+  return "";
+}
+
+function parseLocalOcrText(text){
+  const labeled=parseLabeledText(text);
+  const fields=Object.assign({},labeled.fields);
+  const lines=String(text||"").split(/\r?\n/).map(normalizeSpaces).filter(Boolean);
+  if(!fields.dateOfBirth)fields.dateOfBirth=firstDateNearLabel(text);
+
+  let locationLine="";
+  for(const line of lines){
+    if(/\b[A-Z]{2}\s+\d{5}(?:-\d{4})?\b/i.test(line)){locationLine=line;break;}
+  }
+  if(locationLine){
+    const location=locationLine.match(/^(.*?)\s+([A-Z]{2})\s+(\d{5})(?:-\d{4})?\b/i);
+    if(location){
+      if(!fields.city)fields.city=normalizeSpaces(location[1].replace(/^(?:city\s*(?::|#|-)?\s*)/i,""));
+      if(!fields.state)fields.state=location[2].toUpperCase();
+      if(!fields.zipCode)fields.zipCode=location[3];
+    }
+  }
+
+  if(!fields.streetAddress){
+    const streetPattern=/\b\d{1,6}\s+[A-Z0-9.'# -]+\b(?:ST(?:REET)?|AVE(?:NUE)?|RD|ROAD|DR(?:IVE)?|LN|LANE|BLVD|BOULEVARD|CT|COURT|WAY|PKWY|PARKWAY|PL|PLACE|CIR|CIRCLE|TER|TERRACE|HWY|HIGHWAY)\b(?:\s+(?:APT|UNIT|#)\s*[A-Z0-9-]+)?/i;
+    const streetLine=lines.find(function(line){return streetPattern.test(line);});
+    if(streetLine){
+      const match=streetLine.match(streetPattern);
+      if(match)fields.streetAddress=normalizeSpaces(match[0]);
+    }
+  }
+
+  if(!fields.fullName){
+    const first=firstLabeled(text,["first name","given name"]);
+    const middle=firstLabeled(text,["middle name"]);
+    const last=firstLabeled(text,["last name","family name","surname"]);
+    fields.fullName=buildFullName(first,middle,last,"");
+  }
+  fields.state=normalizeSpaces(fields.state).toUpperCase().slice(0,2);
+  fields.zipCode=(String(fields.zipCode||"").match(/\d{5}/)||[])[0]||"";
+  return {fields:fields,matched:Object.values(fields).filter(Boolean).length};
+}
+
+function mergeEvidenceSources(sources){
   const keys=["fullName","dateOfBirth","streetAddress","city","state","zipCode"];
   const values={};
   const warnings=[];
   keys.forEach(function(key){
-    const barcode=normalizeSpaces(barcodeResult&&barcodeResult.fields[key]);
-    const ocr=normalizeSpaces(textResult&&textResult.fields[key]);
-    if(barcode&&ocr&&barcode.toLowerCase()!==ocr.toLowerCase()){
-      values[key]={value:barcode,confidence:"medium",source:"PDF417 barcode",evidence:barcode,conflict:ocr};
-      warnings.push(key+" conflicts with supplied AI/OCR text and needs manual review.");
-    }else if(barcode){
-      values[key]={value:barcode,confidence:"high",source:"PDF417 barcode",evidence:barcode};
-    }else if(ocr){
-      values[key]={value:ocr,confidence:"medium",source:"Approved AI/OCR text",evidence:ocr};
-    }else{
+    const candidates=sources.map(function(source){
+      return {value:normalizeSpaces(source.result&&source.result.fields[key]),source:source.source,confidence:source.confidence};
+    }).filter(function(candidate){return candidate.value;});
+    if(!candidates.length){
       values[key]={value:null,confidence:"low",source:null,evidence:null};
+      return;
     }
+    const selected=candidates[0];
+    const conflict=candidates.find(function(candidate){return candidate.value.toLowerCase()!==selected.value.toLowerCase();});
+    values[key]={value:selected.value,confidence:conflict?"medium":selected.confidence,source:selected.source,evidence:selected.value};
+    if(conflict)warnings.push(key+" conflicts between "+selected.source+" and "+conflict.source+" and needs manual review.");
   });
   return {values:values,warnings:warnings};
+}
+
+function mergeEvidence(barcodeResult,textResult){
+  return mergeEvidenceSources([
+    {result:barcodeResult,source:"PDF417 barcode",confidence:"high"},
+    {result:textResult,source:"Supplied OCR text",confidence:"medium"}
+  ]);
 }
 /* PURE PILOT RULES END */
 
@@ -344,9 +421,15 @@ function mergeEvidence(barcodeResult,textResult){
   const copyJson=document.getElementById("copyJson");
   const jsonWrap=document.getElementById("jsonWrap");
   const jsonOutput=document.getElementById("jsonOutput");
+  const ocrProgress=document.getElementById("ocrProgress");
+  const ocrProgressText=document.getElementById("ocrProgressText");
+  const ocrProgressBar=document.getElementById("ocrProgressBar");
   let selectedFile=null;
   let objectUrl=null;
   let latestResult=null;
+  let ocrLibraryPromise=null;
+  let ocrWorkerPromise=null;
+  let pdfLibraryPromise=null;
 
   function fileSize(bytes){
     if(bytes<1024)return bytes+" bytes";
@@ -354,8 +437,27 @@ function mergeEvidence(barcodeResult,textResult){
     return (bytes/1048576).toFixed(1)+" MB";
   }
 
+  function isImageFile(file){
+    return Boolean(file&&(String(file.type||"").startsWith("image/")||/\.(?:jpe?g|png|webp)$/i.test(file.name||"")));
+  }
+
+  function isPdfFile(file){
+    return Boolean(file&&(file.type==="application/pdf"||/\.pdf$/i.test(file.name||"")));
+  }
+
   function updateRunState(){
     runButton.disabled=!selectedFile&&!normalizeSpaces(ocrText.value);
+  }
+
+  function setProgress(message,progress){
+    ocrProgress.classList.add("visible");
+    ocrProgressText.textContent=message;
+    ocrProgressBar.style.width=Math.max(0,Math.min(100,Math.round((progress||0)*100)))+"%";
+  }
+
+  function hideProgress(){
+    ocrProgress.classList.remove("visible");
+    ocrProgressBar.style.width="0%";
   }
 
   function setFile(file){
@@ -373,7 +475,7 @@ function mergeEvidence(barcodeResult,textResult){
     fileSummary.classList.add("visible");
     fileName.textContent=file.name;
     fileDetail.textContent=(file.type||"Unknown file type")+" · "+fileSize(file.size);
-    if(file.type.startsWith("image/")){
+    if(isImageFile(file)){
       objectUrl=URL.createObjectURL(file);
       imagePreview.src=objectUrl;
       imagePreview.classList.add("visible");
@@ -381,20 +483,156 @@ function mergeEvidence(barcodeResult,textResult){
     updateRunState();
   }
 
+  function loadOcrLibrary(){
+    if(window.Tesseract)return Promise.resolve(window.Tesseract);
+    if(ocrLibraryPromise)return ocrLibraryPromise;
+    setProgress("Loading the local OCR engine…",.03);
+    ocrLibraryPromise=new Promise(function(resolve,reject){
+      const script=document.createElement("script");
+      script.src="https://cdn.jsdelivr.net/npm/tesseract.js@7.0.0/dist/tesseract.min.js";
+      script.crossOrigin="anonymous";
+      script.onload=function(){
+        if(window.Tesseract)resolve(window.Tesseract);
+        else reject(new Error("OCR library did not initialize"));
+      };
+      script.onerror=function(){reject(new Error("OCR library could not be downloaded"));};
+      document.head.append(script);
+    });
+    return ocrLibraryPromise;
+  }
+
+  async function getOcrWorker(){
+    if(ocrWorkerPromise)return ocrWorkerPromise;
+    ocrWorkerPromise=loadOcrLibrary().then(function(Tesseract){
+      return Tesseract.createWorker("eng",1,{
+        workerPath:"https://cdn.jsdelivr.net/npm/tesseract.js@7.0.0/dist/worker.min.js",
+        corePath:"https://cdn.jsdelivr.net/npm/tesseract.js-core@7.0.0",
+        langPath:"https://cdn.jsdelivr.net/npm/@tesseract.js-data/eng/4.0.0_best_int",
+        logger:function(message){
+          if(message.status==="loading tesseract core")setProgress("Loading the local OCR engine…",.08);
+          else if(message.status==="initializing tesseract")setProgress("Starting local OCR…",.14);
+          else if(message.status==="loading language traineddata")setProgress("Loading English recognition data…",.2+(.2*(message.progress||0)));
+          else if(message.status==="initializing api")setProgress("Preparing image recognition…",.42);
+          else if(message.status==="recognizing text")setProgress("Reading text from the image…",.45+(.5*(message.progress||0)));
+        }
+      });
+    }).catch(function(error){ocrWorkerPromise=null;throw error;});
+    return ocrWorkerPromise;
+  }
+
+  async function prepareImageForOcr(file){
+    const bitmap=await createImageBitmap(file);
+    const maxDimension=2600;
+    const scale=Math.min(1,maxDimension/Math.max(bitmap.width,bitmap.height));
+    const canvas=document.createElement("canvas");
+    canvas.width=Math.max(1,Math.round(bitmap.width*scale));
+    canvas.height=Math.max(1,Math.round(bitmap.height*scale));
+    const context=canvas.getContext("2d",{alpha:false});
+    context.fillStyle="#fff";
+    context.fillRect(0,0,canvas.width,canvas.height);
+    context.filter="grayscale(1) contrast(1.28)";
+    context.drawImage(bitmap,0,0,canvas.width,canvas.height);
+    bitmap.close();
+    return canvas;
+  }
+
+  async function recognizeImageText(){
+    if(!isImageFile(selectedFile))return {raw:"",warning:""};
+    try{
+      const worker=await getOcrWorker();
+      const image=await prepareImageForOcr(selectedFile);
+      const response=await worker.recognize(image,{rotateAuto:true});
+      const raw=String(response&&response.data&&response.data.text||"").trim();
+      if(!raw)return {raw:"",warning:"Local OCR could not read text from this image. Try a clearer, tightly cropped photo."};
+      setProgress("Local image reading complete.",1);
+      return {raw:raw,warning:""};
+    }catch(error){
+      ocrWorkerPromise=null;
+      return {raw:"",warning:"Local OCR could not start or read this image. Check the connection once so the browser can download the OCR engine, then try again."};
+    }
+  }
+
+  function loadPdfLibrary(){
+    if(pdfLibraryPromise)return pdfLibraryPromise;
+    setProgress("Loading the local PDF reader…",.03);
+    pdfLibraryPromise=import("https://cdn.jsdelivr.net/npm/pdfjs-dist@6.1.200/build/pdf.min.mjs").then(function(pdfjsLib){
+      pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdn.jsdelivr.net/npm/pdfjs-dist@6.1.200/build/pdf.worker.min.mjs";
+      return pdfjsLib;
+    }).catch(function(error){pdfLibraryPromise=null;throw error;});
+    return pdfLibraryPromise;
+  }
+
+  async function recognizePdfText(){
+    if(!isPdfFile(selectedFile))return {raw:"",warning:""};
+    try{
+      const pdfjsLib=await loadPdfLibrary();
+      const bytes=new Uint8Array(await selectedFile.arrayBuffer());
+      const pdf=await pdfjsLib.getDocument({data:bytes}).promise;
+      const pageLimit=Math.min(pdf.numPages,6);
+      const embeddedParts=[];
+      for(let pageNumber=1;pageNumber<=pageLimit;pageNumber+=1){
+        setProgress("Reading PDF page "+pageNumber+" of "+pageLimit+"…",.08+(.2*(pageNumber/pageLimit)));
+        const page=await pdf.getPage(pageNumber);
+        const content=await page.getTextContent();
+        embeddedParts.push(content.items.map(function(item){return String(item.str||"")+(item.hasEOL?"\n":" ");}).join(""));
+      }
+      const embeddedText=embeddedParts.join("\n").trim();
+      if(parseLocalOcrText(embeddedText).matched===6){
+        return {raw:embeddedText,warning:pdf.numPages>pageLimit?"Only the first "+pageLimit+" PDF pages were analyzed.":"",source:"Local PDF text"};
+      }
+
+      const worker=await getOcrWorker();
+      const ocrParts=[];
+      for(let pageNumber=1;pageNumber<=pageLimit;pageNumber+=1){
+        const page=await pdf.getPage(pageNumber);
+        const baseViewport=page.getViewport({scale:1});
+        const scale=Math.min(2.25,2400/Math.max(baseViewport.width,baseViewport.height));
+        const viewport=page.getViewport({scale:scale});
+        const canvas=document.createElement("canvas");
+        canvas.width=Math.max(1,Math.round(viewport.width));
+        canvas.height=Math.max(1,Math.round(viewport.height));
+        const context=canvas.getContext("2d",{alpha:false});
+        context.fillStyle="#fff";
+        context.fillRect(0,0,canvas.width,canvas.height);
+        setProgress("Reading PDF page "+pageNumber+" of "+pageLimit+" with local OCR…",.3+(.65*((pageNumber-1)/pageLimit)));
+        await page.render({canvasContext:context,viewport:viewport}).promise;
+        const response=await worker.recognize(canvas,{rotateAuto:true});
+        ocrParts.push(String(response&&response.data&&response.data.text||""));
+      }
+      const raw=[embeddedText,ocrParts.join("\n")].filter(Boolean).join("\n").trim();
+      if(!raw)return {raw:"",warning:"Local PDF analysis could not read text from this document.",source:"Local PDF OCR"};
+      setProgress("Local PDF analysis complete.",1);
+      return {raw:raw,warning:pdf.numPages>pageLimit?"Only the first "+pageLimit+" PDF pages were analyzed.":"",source:"Local PDF OCR"};
+    }catch(error){
+      return {raw:"",warning:"Local PDF analysis could not open or read this document. Try a clearer PDF or image.",source:"Local PDF OCR"};
+    }
+  }
+
+  async function recognizeSelectedDocument(){
+    if(!selectedFile)return {raw:"",warning:"",source:"Local document OCR"};
+    if(isImageFile(selectedFile)){
+      const result=await recognizeImageText();
+      result.source="Local image OCR";
+      return result;
+    }
+    if(isPdfFile(selectedFile))return recognizePdfText();
+    return {raw:"",warning:"This file type is not supported for local document analysis.",source:"Local document OCR"};
+  }
+
   async function detectPdf417(){
-    if(!selectedFile||!selectedFile.type.startsWith("image/"))return {raw:"",warning:selectedFile?"PDF417 scanning is available for images only in this standalone pilot.":"No image was selected for PDF417 scanning."};
-    if(!("BarcodeDetector" in window))return {raw:"",warning:"This browser does not provide local PDF417 scanning. Paste approved AI/OCR text instead."};
+    if(!isImageFile(selectedFile))return {raw:"",warning:selectedFile?"PDF417 scanning is available for images only.":"No image was selected for PDF417 scanning."};
+    if(!("BarcodeDetector" in window))return {raw:"",warning:"This browser does not provide native PDF417 scanning."};
     try{
       const supported=await BarcodeDetector.getSupportedFormats();
-      if(!supported.includes("pdf417"))return {raw:"",warning:"This browser's barcode scanner does not support PDF417. Paste approved AI/OCR text instead."};
+      if(!supported.includes("pdf417"))return {raw:"",warning:"This browser's native barcode scanner does not support PDF417."};
       const bitmap=await createImageBitmap(selectedFile);
       const detector=new BarcodeDetector({formats:["pdf417"]});
       const codes=await detector.detect(bitmap);
       bitmap.close();
-      if(!codes.length)return {raw:"",warning:"No readable PDF417 barcode was found. Try a clear image of the back or paste approved AI/OCR text."};
+      if(!codes.length)return {raw:"",warning:"No readable PDF417 barcode was found."};
       return {raw:codes[0].rawValue||"",warning:""};
     }catch(error){
-      return {raw:"",warning:"Local PDF417 scanning could not read this image. Paste approved AI/OCR text or send it for manual review."};
+      return {raw:"",warning:"Native PDF417 scanning could not read this image."};
     }
   }
 
@@ -443,18 +681,29 @@ function mergeEvidence(barcodeResult,textResult){
 
   async function run(){
     runButton.disabled=true;
-    runButton.textContent="Checking evidence…";
+    runButton.textContent="Analyzing document…";
     stateTitle.textContent="Reading approved evidence";
     statusBadge.textContent="Running";
     statusBadge.className="status";
-    stateDetail.textContent="Trying local PDF417 first, then supplied AI/OCR text.";
+    stateDetail.textContent="Trying the barcode first, then local document text and OCR.";
     const barcode=await detectPdf417();
     const barcodeParsed=parseAamva(barcode.raw);
-    const textParsed=parseLabeledText(ocrText.value);
-    const merged=mergeEvidence(barcodeParsed,textParsed);
+    let localDocument={raw:"",warning:"",source:"Local document OCR"};
+    let localDocumentParsed={fields:{},matched:0};
+    if(selectedFile&&barcodeParsed.matched<6){
+      localDocument=await recognizeSelectedDocument();
+      localDocumentParsed=parseLocalOcrText(localDocument.raw);
+    }
+    const suppliedTextParsed=parseLocalOcrText(ocrText.value);
+    const merged=mergeEvidenceSources([
+      {result:barcodeParsed,source:"PDF417 barcode",confidence:"high"},
+      {result:localDocumentParsed,source:localDocument.source,confidence:"medium"},
+      {result:suppliedTextParsed,source:"Supplied OCR text",confidence:"medium"}
+    ]);
     const warnings=merged.warnings.slice();
-    if(barcode.warning)warnings.push(barcode.warning);
     const foundCount=Object.values(merged.values).filter(function(field){return field.value!==null;}).length;
+    if(localDocument.warning)warnings.push(localDocument.warning);
+    if(barcode.warning&&!barcodeParsed.matched&&!localDocumentParsed.matched&&!suppliedTextParsed.matched)warnings.push(barcode.warning);
     if(!foundCount)warnings.push("No approved fields were supported by readable evidence. Nothing was extracted.");
     const missingRequired=["fullName","dateOfBirth"].filter(function(key){return merged.values[key].value===null;});
     if(missingRequired.length)warnings.push("Required identity evidence is missing: "+missingRequired.map(function(key){return labels[key];}).join(", ")+".");
@@ -477,8 +726,9 @@ function mergeEvidence(barcodeResult,textResult){
       humanReviewRequired:true,
       appliedToIntake:false
     });
-    runButton.textContent="Run limited extraction";
+    runButton.textContent="Analyze document";
     updateRunState();
+    setTimeout(hideProgress,900);
   }
 
   function clear(){
@@ -493,12 +743,13 @@ function mergeEvidence(barcodeResult,textResult){
     warningList.innerHTML="";
     resultActions.hidden=true;
     jsonWrap.classList.remove("visible");
+    hideProgress();
     toggleJson.textContent="Show review JSON";
     jsonOutput.value="";
-    stateTitle.textContent="Waiting for a test";
+    stateTitle.textContent="Waiting for a document";
     statusBadge.textContent="Not run";
     statusBadge.className="status";
-    stateDetail.textContent="Add a fake license or paste approved OCR text to begin.";
+    stateDetail.textContent="Choose a license image or PDF, or paste OCR text to begin.";
     updateRunState();
   }
 
@@ -521,7 +772,7 @@ function mergeEvidence(barcodeResult,textResult){
     catch(error){jsonWrap.classList.add("visible");toggleJson.textContent="Hide review JSON";jsonOutput.select();}
   });
 
-  window.__documentIntakeLicensePilot={parseAamva:parseAamva,parseLabeledText:parseLabeledText,mergeEvidence:mergeEvidence};
+  window.__documentIntakeLicensePilot={parseAamva:parseAamva,parseLabeledText:parseLabeledText,parseLocalOcrText:parseLocalOcrText,mergeEvidence:mergeEvidence,mergeEvidenceSources:mergeEvidenceSources};
   updateRunState();
 })();
 </script>
