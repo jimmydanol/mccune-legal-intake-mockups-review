@@ -9,7 +9,7 @@ const pageFiles = (await readdir(pagesDir))
   .filter((file) => file.endsWith('.html') && file !== 'index.html')
   .sort();
 
-assert.equal(pageFiles.length, 11, 'Expected all 11 Intake workflow pages');
+assert.equal(pageFiles.length, 12, 'Expected all 12 Intake workflow pages');
 
 for (const file of pageFiles) {
   const html = await readFile(path.join(pagesDir, file), 'utf8');
