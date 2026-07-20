@@ -327,7 +327,45 @@ function firstDateNearLabel(text){
     const match=nearby.match(/\b(?:0?[1-9]|1[0-2])[\/.-](?:0?[1-9]|[12]\d|3[01])[\/.-](?:19|20)?\d{2}\b|\b(?:19|20)\d{2}[\/.-](?:0?[1-9]|1[0-2])[\/.-](?:0?[1-9]|[12]\d|3[01])\b/);
     if(match)return formatDate(match[0]);
   }
+  const candidates=Array.from(String(text||"").matchAll(/\b(?:0?[1-9]|1[0-2])[\/.-](?:0?[1-9]|[12]\d|3[01])[\/.-](?:19|20)\d{2}\b/g)).map(function(match){return formatDate(match[0]);}).filter(function(value){return /^\d{4}-\d{2}-\d{2}$/.test(value);});
+  if(candidates.length&&/\bDOB\b/i.test(text)){
+    return candidates.slice().sort(function(left,right){return left.localeCompare(right);})[0];
+  }
   return "";
+}
+
+function normalizeStateToken(value){
+  const states=new Set(["AL","AK","AZ","AR","CA","CO","CT","DE","DC","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"]);
+  const token=normalizeSpaces(value).toUpperCase().replace(/0/g,"O").replace(/1/g,"I").replace(/5/g,"S").replace(/[^A-Z]/g,"").slice(0,2);
+  return states.has(token)?token:"";
+}
+
+function cleanVisualNameLine(line){
+  return normalizeSpaces(String(line||"").replace(/^[^A-Za-z]+/,"").replace(/[^A-Za-z' -]/g," "));
+}
+
+function looksLikeVisualName(line){
+  const value=cleanVisualNameLine(line);
+  if(!value||value.length<3||value.length>45)return false;
+  const words=value.split(/\s+/).filter(Boolean);
+  if(words.length<1||words.length>4||words.some(function(word){return word.length<2;}))return false;
+  const compact=value.replace(/[^A-Za-z]/g,"").toUpperCase();
+  const excluded=new Set(["COLORADO","DRIVERLICENSE","DRIVERLICENCE","IDENTIFICATIONCARD","DOB","EXP","ISS","CLASS","SEX","EYE","HEIGHT","RESTRICTIONS","ENDORSEMENTS"]);
+  return !excluded.has(compact);
+}
+
+function nameFromVisualOrder(lines,streetPattern){
+  let streetIndex=-1;
+  for(let index=lines.length-1;index>=0;index-=1){
+    if(streetPattern.test(lines[index])){streetIndex=index;break;}
+  }
+  if(streetIndex<0)return "";
+  const candidates=[];
+  for(let index=streetIndex-1;index>=Math.max(0,streetIndex-12)&&candidates.length<2;index-=1){
+    if(looksLikeVisualName(lines[index]))candidates.push(cleanVisualNameLine(lines[index]));
+  }
+  if(candidates.length<2)return "";
+  return normalizeSpaces(candidates[0]+" "+candidates[1]);
 }
 
 function parseLocalOcrText(text){
@@ -338,20 +376,20 @@ function parseLocalOcrText(text){
 
   let locationLine="";
   for(const line of lines){
-    if(/\b[A-Z]{2}\s+\d{5}(?:-\d{4})?\b/i.test(line)){locationLine=line;break;}
+    if(/\b[A-Z0-9]{2}\s+\d{5}(?:-\d{4})?\b/i.test(line)){locationLine=line;break;}
   }
   if(locationLine){
-    const location=locationLine.match(/^(.*?)\s+([A-Z]{2})\s+(\d{5})(?:-\d{4})?\b/i);
+    const location=locationLine.match(/^(.*?)[,\s]+([A-Z0-9]{2})\s+(\d{5})(?:-\d{4})?\b/i);
     if(location){
-      if(!fields.city)fields.city=normalizeSpaces(location[1].replace(/^(?:city\s*(?::|#|-)?\s*)/i,""));
-      if(!fields.state)fields.state=location[2].toUpperCase();
+      if(!fields.city)fields.city=normalizeSpaces(location[1].replace(/^(?:city\s*(?::|#|-)?\s*)/i,"").replace(/^[^A-Za-z]+/,"").replace(/[,;:]+$/,""));
+      if(!fields.state)fields.state=normalizeStateToken(location[2]);
       if(!fields.zipCode)fields.zipCode=location[3];
     }
   }
 
+  const streetPattern=/\b\d{1,6}\s+[A-Z0-9.'# -]+\b(?:ST(?:REET)?|AVE(?:NUE)?|RD|ROAD|DR(?:IVE)?|LN|LANE|BLVD|BOULEVARD|CT|COURT|WAY|PKWY|PARKWAY|PL|PLACE|CIR|CIRCLE|TER|TERRACE|HWY|HIGHWAY)\b(?:\s+(?:APT|UNIT|#)\s*[A-Z0-9-]+)?/i;
   if(!fields.streetAddress){
-    const streetPattern=/\b\d{1,6}\s+[A-Z0-9.'# -]+\b(?:ST(?:REET)?|AVE(?:NUE)?|RD|ROAD|DR(?:IVE)?|LN|LANE|BLVD|BOULEVARD|CT|COURT|WAY|PKWY|PARKWAY|PL|PLACE|CIR|CIRCLE|TER|TERRACE|HWY|HIGHWAY)\b(?:\s+(?:APT|UNIT|#)\s*[A-Z0-9-]+)?/i;
-    const streetLine=lines.find(function(line){return streetPattern.test(line);});
+    const streetLine=lines.slice().reverse().find(function(line){return streetPattern.test(line);});
     if(streetLine){
       const match=streetLine.match(streetPattern);
       if(match)fields.streetAddress=normalizeSpaces(match[0]);
@@ -364,7 +402,8 @@ function parseLocalOcrText(text){
     const last=firstLabeled(text,["last name","family name","surname"]);
     fields.fullName=buildFullName(first,middle,last,"");
   }
-  fields.state=normalizeSpaces(fields.state).toUpperCase().slice(0,2);
+  if(!fields.fullName)fields.fullName=nameFromVisualOrder(lines,streetPattern);
+  fields.state=normalizeStateToken(fields.state);
   fields.zipCode=(String(fields.zipCode||"").match(/\d{5}/)||[])[0]||"";
   return {fields:fields,matched:Object.values(fields).filter(Boolean).length};
 }
@@ -430,6 +469,9 @@ function mergeEvidence(barcodeResult,textResult){
   let ocrLibraryPromise=null;
   let ocrWorkerPromise=null;
   let pdfLibraryPromise=null;
+  let ocrPassIndex=0;
+  let ocrPassCount=1;
+  let ocrPassLabel="Reading text from the image…";
 
   function fileSize(bytes){
     if(bytes<1024)return bytes+" bytes";
@@ -513,36 +555,64 @@ function mergeEvidence(barcodeResult,textResult){
           else if(message.status==="initializing tesseract")setProgress("Starting local OCR…",.14);
           else if(message.status==="loading language traineddata")setProgress("Loading English recognition data…",.2+(.2*(message.progress||0)));
           else if(message.status==="initializing api")setProgress("Preparing image recognition…",.42);
-          else if(message.status==="recognizing text")setProgress("Reading text from the image…",.45+(.5*(message.progress||0)));
+          else if(message.status==="recognizing text")setProgress(ocrPassLabel,.45+(.5*((ocrPassIndex+(message.progress||0))/ocrPassCount)));
         }
       });
     }).catch(function(error){ocrWorkerPromise=null;throw error;});
     return ocrWorkerPromise;
   }
 
-  async function prepareImageForOcr(file){
-    const bitmap=await createImageBitmap(file);
-    const maxDimension=2600;
-    const scale=Math.min(1,maxDimension/Math.max(bitmap.width,bitmap.height));
+  function buildOcrCanvas(bitmap,region,maxDimension,maxScale){
+    const source={
+      x:Math.max(0,Math.round(bitmap.width*region.x)),
+      y:Math.max(0,Math.round(bitmap.height*region.y)),
+      width:Math.max(1,Math.round(bitmap.width*region.width)),
+      height:Math.max(1,Math.round(bitmap.height*region.height))
+    };
+    source.width=Math.min(source.width,bitmap.width-source.x);
+    source.height=Math.min(source.height,bitmap.height-source.y);
+    const scale=Math.min(maxScale,maxDimension/Math.max(source.width,source.height));
     const canvas=document.createElement("canvas");
-    canvas.width=Math.max(1,Math.round(bitmap.width*scale));
-    canvas.height=Math.max(1,Math.round(bitmap.height*scale));
+    canvas.width=Math.max(1,Math.round(source.width*scale));
+    canvas.height=Math.max(1,Math.round(source.height*scale));
     const context=canvas.getContext("2d",{alpha:false});
     context.fillStyle="#fff";
     context.fillRect(0,0,canvas.width,canvas.height);
-    context.filter="grayscale(1) contrast(1.28)";
-    context.drawImage(bitmap,0,0,canvas.width,canvas.height);
-    bitmap.close();
+    context.imageSmoothingEnabled=true;
+    context.imageSmoothingQuality="high";
+    context.drawImage(bitmap,source.x,source.y,source.width,source.height,0,0,canvas.width,canvas.height);
     return canvas;
+  }
+
+  async function prepareImageVariantsForOcr(file){
+    const bitmap=await createImageBitmap(file);
+    const variants=[
+      {label:"Reading the full license…",pageSegMode:"6",canvas:buildOcrCanvas(bitmap,{x:0,y:0,width:1,height:1},2600,2)},
+      {label:"Reading the name and address area…",pageSegMode:"11",canvas:buildOcrCanvas(bitmap,{x:.26,y:.18,width:.73,height:.68},2500,2.4)},
+      {label:"Reading the date area…",pageSegMode:"6",canvas:buildOcrCanvas(bitmap,{x:.62,y:.18,width:.37,height:.42},1800,3)}
+    ];
+    bitmap.close();
+    return variants;
   }
 
   async function recognizeImageText(){
     if(!isImageFile(selectedFile))return {raw:"",warning:""};
     try{
       const worker=await getOcrWorker();
-      const image=await prepareImageForOcr(selectedFile);
-      const response=await worker.recognize(image,{rotateAuto:true});
-      const raw=String(response&&response.data&&response.data.text||"").trim();
+      const variants=await prepareImageVariantsForOcr(selectedFile);
+      const rawParts=[];
+      ocrPassCount=variants.length;
+      for(let index=0;index<variants.length;index+=1){
+        const variant=variants[index];
+        ocrPassIndex=index;
+        ocrPassLabel=variant.label;
+        await worker.setParameters({tessedit_pageseg_mode:variant.pageSegMode,preserve_interword_spaces:"1"});
+        const response=await worker.recognize(variant.canvas,{rotateAuto:index===0});
+        const text=String(response&&response.data&&response.data.text||"").trim();
+        if(text)rawParts.push(text);
+        if(parseLocalOcrText(rawParts.join("\n")).matched===6)break;
+      }
+      const raw=rawParts.join("\n").trim();
       if(!raw)return {raw:"",warning:"Local OCR could not read text from this image. Try a clearer, tightly cropped photo."};
       setProgress("Local image reading complete.",1);
       return {raw:raw,warning:""};
@@ -638,44 +708,52 @@ function mergeEvidence(barcodeResult,textResult){
 
   function render(result){
     latestResult=result;
-    emptyResult.hidden=true;
-    resultFields.hidden=false;
-    resultActions.hidden=false;
+    const noFields=result.foundCount===0;
+    emptyResult.hidden=!noFields;
+    resultFields.hidden=noFields;
+    resultActions.hidden=noFields;
     resultFields.innerHTML="";
-    Object.keys(labels).forEach(function(key){
-      const field=result.fields[key];
-      const item=document.createElement("div");
-      item.className="field";
-      const top=document.createElement("div");
-      top.className="field-top";
-      const valueWrap=document.createElement("div");
-      const name=document.createElement("div");
-      name.className="field-name";
-      name.textContent=labels[key];
-      const value=document.createElement("div");
-      value.className="field-value";
-      value.textContent=field.value===null?"Not found":field.value;
-      valueWrap.append(name,value);
-      const confidence=document.createElement("span");
-      confidence.className="confidence "+(field.confidence==="high"?"":"medium");
-      confidence.textContent=field.value===null?"Missing":field.confidence;
-      top.append(valueWrap,confidence);
-      item.append(top);
-      if(field.value!==null){
-        const evidence=document.createElement("div");
-        evidence.className="evidence";
-        evidence.textContent="Evidence: "+field.source+" · “"+field.evidence+"”";
-        item.append(evidence);
-      }
-      resultFields.append(item);
-    });
+    if(noFields){
+      emptyResult.innerHTML="";
+      const emptyTitle=document.createElement("strong");
+      emptyTitle.textContent="We couldn’t read the license details.";
+      emptyResult.append(emptyTitle,"Retake the photo so the card fills the frame, is flat, and has no glare, then try again.");
+    }else{
+      Object.keys(labels).forEach(function(key){
+        const field=result.fields[key];
+        const item=document.createElement("div");
+        item.className="field";
+        const top=document.createElement("div");
+        top.className="field-top";
+        const valueWrap=document.createElement("div");
+        const name=document.createElement("div");
+        name.className="field-name";
+        name.textContent=labels[key];
+        const value=document.createElement("div");
+        value.className="field-value";
+        value.textContent=field.value===null?"Not found":field.value;
+        valueWrap.append(name,value);
+        const confidence=document.createElement("span");
+        confidence.className="confidence "+(field.confidence==="high"?"":"medium");
+        confidence.textContent=field.value===null?"Missing":field.confidence;
+        top.append(valueWrap,confidence);
+        item.append(top);
+        if(field.value!==null){
+          const evidence=document.createElement("div");
+          evidence.className="evidence";
+          evidence.textContent="Evidence: "+field.source+" · “"+field.evidence+"”";
+          item.append(evidence);
+        }
+        resultFields.append(item);
+      });
+    }
     warningList.innerHTML="";
     result.warnings.forEach(function(warning){const li=document.createElement("li");li.textContent=warning;warningList.append(li);});
     warningBox.hidden=!result.warnings.length;
-    stateTitle.textContent=result.status==="ready_to_review"?"Suggestions ready for review":"Manual review required";
-    statusBadge.textContent=result.status==="ready_to_review"?"Review required":"Stopped safely";
+    stateTitle.textContent=noFields?"License details could not be read":result.status==="ready_to_review"?"Suggestions ready for review":"Manual review required";
+    statusBadge.textContent=noFields?"Try another photo":"Review required";
     statusBadge.className="status "+(result.status==="ready_to_review"?"review":"blocked");
-    stateDetail.textContent=result.foundCount+" of 6 approved fields found · no intake data changed";
+    stateDetail.textContent=noFields?"No license details found · no intake data changed":result.foundCount+" of 6 approved fields found · no intake data changed";
     jsonOutput.value=JSON.stringify(result,null,2);
   }
 
@@ -703,10 +781,11 @@ function mergeEvidence(barcodeResult,textResult){
     const warnings=merged.warnings.slice();
     const foundCount=Object.values(merged.values).filter(function(field){return field.value!==null;}).length;
     if(localDocument.warning)warnings.push(localDocument.warning);
-    if(barcode.warning&&!barcodeParsed.matched&&!localDocumentParsed.matched&&!suppliedTextParsed.matched)warnings.push(barcode.warning);
-    if(!foundCount)warnings.push("No approved fields were supported by readable evidence. Nothing was extracted.");
+    if(!foundCount&&localDocument.raw)warnings.push("Text was detected, but this license layout could not be mapped to the six approved fields. Try a tighter, glare-free photo.");
+    if(!foundCount&&!localDocument.raw&&!localDocument.warning)warnings.push("The license details could not be read. Retake the photo so the card fills the frame, is flat, and has no glare.");
+    if(foundCount>0&&foundCount<6&&selectedFile)warnings.push("Some approved fields could not be read. Retake the photo so the card fills the frame and has no glare.");
     const missingRequired=["fullName","dateOfBirth"].filter(function(key){return merged.values[key].value===null;});
-    if(missingRequired.length)warnings.push("Required identity evidence is missing: "+missingRequired.map(function(key){return labels[key];}).join(", ")+".");
+    if(foundCount>0&&missingRequired.length)warnings.push("Required identity evidence is missing: "+missingRequired.map(function(key){return labels[key];}).join(", ")+".");
     const status=foundCount>0&&!missingRequired.length&&!merged.warnings.length?"ready_to_review":"needs_manual_review";
     const outputFields={};
     Object.keys(merged.values).forEach(function(key){
