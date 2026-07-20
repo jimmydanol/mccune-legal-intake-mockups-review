@@ -408,6 +408,60 @@ function parseLocalOcrText(text){
   return {fields:fields,matched:Object.values(fields).filter(Boolean).length};
 }
 
+function regionalUppercaseWords(text,limit){
+  const excluded=new Set(["COLORADO","DRIVER","LICENSE","DOB","DL","EXP","ISS","SEX","HT","EYES","CLASS","REST","NONE","USA"]);
+  const words=String(text||"").match(/\b[A-Z][A-Z'-]{1,20}\b/g)||[];
+  return words.filter(function(word){return !excluded.has(word);}).slice(0,limit);
+}
+
+function tokenEditDistance(left,right){
+  const previous=Array.from({length:right.length+1},function(_,index){return index;});
+  for(let leftIndex=1;leftIndex<=left.length;leftIndex+=1){
+    const current=[leftIndex];
+    for(let rightIndex=1;rightIndex<=right.length;rightIndex+=1){
+      current[rightIndex]=Math.min(
+        current[rightIndex-1]+1,
+        previous[rightIndex]+1,
+        previous[rightIndex-1]+(left[leftIndex-1]===right[rightIndex-1]?0:1)
+      );
+    }
+    for(let index=0;index<current.length;index+=1)previous[index]=current[index];
+  }
+  return previous[right.length];
+}
+
+function parseRegionalLicenseFields(regions){
+  const family=regionalUppercaseWords(regions&&regions.family,2);
+  const familyInitial=regionalUppercaseWords(regions&&regions.familyInitial,1);
+  if(family.length&&familyInitial.length&&family[0].length>=3&&familyInitial[0].length>=3&&tokenEditDistance(family[0],familyInitial[0])<=2){
+    family[0]=familyInitial[0][0]+family[0].slice(1);
+  }
+  const given=regionalUppercaseWords(regions&&regions.given,3);
+  const streetText=normalizeSpaces(regions&&regions.street).toUpperCase();
+  const locationText=normalizeSpaces(regions&&regions.location).toUpperCase();
+  const dateText=normalizeSpaces(regions&&regions.dateOfBirth);
+  const streetMatch=streetText.match(/\b\d{1,6}\s*[A-Z][A-Z0-9.'# -]*?\s*(?:ST(?:REET)?|AVE(?:NUE)?|RD|ROAD|DR(?:IVE)?|LN|LANE|BLVD|BOULEVARD|CT|COURT|WAY|PKWY|PARKWAY|PL|PLACE|CIR|CIRCLE|TER|TERRACE|HWY|HIGHWAY)\b(?:\s+(?:APT|UNIT|#)\s*[A-Z0-9-]+)?/i);
+  const locationMatch=locationText.match(/(?:^|[^A-Z])([A-Z][A-Z .'-]{1,30}?)[,\s]+([A-Z0-9]{2})\s+(\d{5})\b/);
+  const dateMatch=dateText.match(/\b(?:0?[1-9]|1[0-2])[\/.-](?:0?[1-9]|[12]\d|3[01])[\/.-](?:19|20)\d{2}\b/);
+  const state=locationMatch?normalizeStateToken(locationMatch[2]):"";
+  const fields={
+    fullName:given.length&&family.length?normalizeSpaces(given.join(" ")+" "+family.join(" ")):"",
+    dateOfBirth:dateMatch?formatDate(dateMatch[0]):"",
+    streetAddress:streetMatch?normalizeSpaces(streetMatch[0]):"",
+    city:locationMatch&&state?normalizeSpaces(locationMatch[1].replace(/^[^A-Z]+|[,;:]+$/g,"")):"",
+    state:state,
+    zipCode:locationMatch&&state?locationMatch[3]:""
+  };
+  return {fields:fields,matched:Object.values(fields).filter(Boolean).length};
+}
+
+function mergeOcrParses(primary,fallback){
+  const keys=["fullName","dateOfBirth","streetAddress","city","state","zipCode"];
+  const fields={};
+  keys.forEach(function(key){fields[key]=normalizeSpaces(primary&&primary.fields[key])||normalizeSpaces(fallback&&fallback.fields[key])||"";});
+  return {fields:fields,matched:Object.values(fields).filter(Boolean).length};
+}
+
 function mergeEvidenceSources(sources){
   const keys=["fullName","dateOfBirth","streetAddress","city","state","zipCode"];
   const values={};
@@ -584,24 +638,168 @@ function mergeEvidence(barcodeResult,textResult){
     return canvas;
   }
 
+  function composeRegion(base,region){
+    return {
+      x:base.x+(base.width*region.x),
+      y:base.y+(base.height*region.y),
+      width:base.width*region.width,
+      height:base.height*region.height
+    };
+  }
+
+  function longestBrightRowRun(values,threshold){
+    let best=null;
+    let start=-1;
+    for(let index=0;index<=values.length;index+=1){
+      if(index<values.length&&values[index]>=threshold){if(start<0)start=index;continue;}
+      if(start>=0&&index-start>=4&&(!best||index-start>best.end-best.start)){best={start:start,end:index};}
+      start=-1;
+    }
+    return best;
+  }
+
+  function detectDocumentRegion(bitmap){
+    const sample=document.createElement("canvas");
+    sample.width=Math.max(1,Math.min(240,bitmap.width));
+    sample.height=Math.max(1,Math.round(bitmap.height*(sample.width/bitmap.width)));
+    const context=sample.getContext("2d",{alpha:false,willReadFrequently:true});
+    context.fillStyle="#000";
+    context.fillRect(0,0,sample.width,sample.height);
+    context.drawImage(bitmap,0,0,sample.width,sample.height);
+    const pixels=context.getImageData(0,0,sample.width,sample.height).data;
+    const ratios=[];
+    for(let y=0;y<sample.height;y+=1){
+      let bright=0;
+      for(let x=0;x<sample.width;x+=1){
+        const offset=((y*sample.width)+x)*4;
+        const luma=(.2126*pixels[offset])+(.7152*pixels[offset+1])+(.0722*pixels[offset+2]);
+        if(luma>42)bright+=1;
+      }
+      ratios.push(bright/sample.width);
+    }
+    const run=longestBrightRowRun(ratios,.45);
+    if(!run)return {region:{x:0,y:0,width:1,height:1},cropped:false};
+    const height=(run.end-run.start)/sample.height;
+    if(height<.18||height>.88)return {region:{x:0,y:0,width:1,height:1},cropped:false};
+    const top=Math.max(0,(run.start/sample.height)-.012);
+    const bottom=Math.min(1,(run.end/sample.height)+.012);
+    return {region:{x:0,y:top,width:1,height:bottom-top},cropped:true};
+  }
+
+  function buildAdaptiveLineCanvas(bitmap,base,region,thresholdDelta){
+    const line=buildOcrCanvas(bitmap,composeRegion(base,region),2600,4);
+    const context=line.getContext("2d",{alpha:false,willReadFrequently:true});
+    const image=context.getImageData(0,0,line.width,line.height);
+    const pixels=image.data;
+    const width=line.width;
+    const height=line.height;
+    const luma=new Uint8Array(width*height);
+    const integral=new Float64Array((width+1)*(height+1));
+    const stride=width+1;
+    for(let y=0;y<height;y+=1){
+      let rowSum=0;
+      for(let x=0;x<width;x+=1){
+        const pixel=(y*width)+x;
+        const offset=pixel*4;
+        const value=Math.round((.2126*pixels[offset])+(.7152*pixels[offset+1])+(.0722*pixels[offset+2]));
+        luma[pixel]=value;
+        rowSum+=value;
+        integral[((y+1)*stride)+(x+1)]=integral[(y*stride)+(x+1)]+rowSum;
+      }
+    }
+    const binary=new Uint8Array(width*height);
+    binary.fill(255);
+    const radius=24;
+    for(let y=0;y<height;y+=1){
+      const top=Math.max(0,y-radius);
+      const bottom=Math.min(height-1,y+radius);
+      for(let x=0;x<width;x+=1){
+        const left=Math.max(0,x-radius);
+        const right=Math.min(width-1,x+radius);
+        const area=(right-left+1)*(bottom-top+1);
+        const sum=integral[((bottom+1)*stride)+(right+1)]-integral[(top*stride)+(right+1)]-integral[((bottom+1)*stride)+left]+integral[(top*stride)+left];
+        const pixel=(y*width)+x;
+        binary[pixel]=luma[pixel]<(sum/area)-thresholdDelta?0:255;
+      }
+    }
+    const seen=new Uint8Array(width*height);
+    const minimumHeight=Math.max(12,Math.round(height*.22));
+    for(let start=0;start<binary.length;start+=1){
+      if(seen[start]||binary[start]!==0)continue;
+      const stack=[start];
+      const component=[];
+      seen[start]=1;
+      let minY=height;
+      let maxY=0;
+      while(stack.length){
+        const current=stack.pop();
+        component.push(current);
+        const y=Math.floor(current/width);
+        const x=current-(y*width);
+        minY=Math.min(minY,y);
+        maxY=Math.max(maxY,y);
+        for(let dy=-1;dy<=1;dy+=1){
+          for(let dx=-1;dx<=1;dx+=1){
+            if(!dx&&!dy)continue;
+            const nextX=x+dx;
+            const nextY=y+dy;
+            if(nextX<0||nextX>=width||nextY<0||nextY>=height)continue;
+            const next=(nextY*width)+nextX;
+            if(!seen[next]&&binary[next]===0){seen[next]=1;stack.push(next);}
+          }
+        }
+      }
+      if(maxY-minY+1<minimumHeight||component.length<45){component.forEach(function(pixel){binary[pixel]=255;});}
+    }
+    for(let pixel=0;pixel<binary.length;pixel+=1){
+      const offset=pixel*4;
+      pixels[offset]=binary[pixel];
+      pixels[offset+1]=binary[pixel];
+      pixels[offset+2]=binary[pixel];
+      pixels[offset+3]=255;
+    }
+    context.putImageData(image,0,0);
+    const padding=24;
+    const padded=document.createElement("canvas");
+    padded.width=width+(padding*2);
+    padded.height=height+(padding*2);
+    const paddedContext=padded.getContext("2d",{alpha:false});
+    paddedContext.fillStyle="#fff";
+    paddedContext.fillRect(0,0,padded.width,padded.height);
+    paddedContext.drawImage(line,padding,padding);
+    return padded;
+  }
+
   async function prepareImageVariantsForOcr(file){
     const bitmap=await createImageBitmap(file);
+    const detected=detectDocumentRegion(bitmap);
+    const base=detected.region;
     const variants=[
-      {label:"Reading the full license…",pageSegMode:"6",canvas:buildOcrCanvas(bitmap,{x:0,y:0,width:1,height:1},2600,2)},
-      {label:"Reading the name and address area…",pageSegMode:"11",canvas:buildOcrCanvas(bitmap,{x:.26,y:.18,width:.73,height:.68},2500,2.4)},
-      {label:"Reading the date area…",pageSegMode:"6",canvas:buildOcrCanvas(bitmap,{x:.62,y:.18,width:.37,height:.42},1800,3)}
+      {label:"Reading the full license…",pageSegMode:"6",canvas:buildOcrCanvas(bitmap,base,2600,2)},
+      {label:"Reading the name and address area…",pageSegMode:"11",canvas:buildOcrCanvas(bitmap,composeRegion(base,{x:.26,y:.18,width:.73,height:.68}),2500,2.4)},
+      {label:"Reading the date area…",pageSegMode:"6",canvas:buildOcrCanvas(bitmap,composeRegion(base,{x:.62,y:.18,width:.37,height:.42}),1800,3)}
+    ];
+    const regional=[
+      {key:"family",label:"Reading the family name…",pageSegMode:"6",canvas:buildAdaptiveLineCanvas(bitmap,base,{x:.31,y:.425,width:.22,height:.055},24)},
+      {key:"familyInitial",label:"Checking the family-name lettering…",pageSegMode:"10",canvas:buildAdaptiveLineCanvas(bitmap,base,{x:.31,y:.425,width:.075,height:.055},28)},
+      {key:"given",label:"Reading the given names…",pageSegMode:"6",canvas:buildAdaptiveLineCanvas(bitmap,base,{x:.31,y:.485,width:.34,height:.06},16)},
+      {key:"street",label:"Reading the street address…",pageSegMode:"6",canvas:buildAdaptiveLineCanvas(bitmap,base,{x:.31,y:.545,width:.40,height:.055},24)},
+      {key:"location",label:"Reading the city, state, and ZIP…",pageSegMode:"6",canvas:buildAdaptiveLineCanvas(bitmap,base,{x:.31,y:.595,width:.42,height:.06},16)},
+      {key:"dateOfBirth",label:"Reading the birth date…",pageSegMode:"6",canvas:buildAdaptiveLineCanvas(bitmap,base,{x:.73,y:.27,width:.24,height:.06},16)}
     ];
     bitmap.close();
-    return variants;
+    return {variants:variants,regional:regional,cropped:detected.cropped};
   }
 
   async function recognizeImageText(){
     if(!isImageFile(selectedFile))return {raw:"",warning:""};
     try{
       const worker=await getOcrWorker();
-      const variants=await prepareImageVariantsForOcr(selectedFile);
+      const prepared=await prepareImageVariantsForOcr(selectedFile);
+      const variants=prepared.variants;
       const rawParts=[];
-      ocrPassCount=variants.length;
+      const regionalText={};
+      ocrPassCount=variants.length+prepared.regional.length;
       for(let index=0;index<variants.length;index+=1){
         const variant=variants[index];
         ocrPassIndex=index;
@@ -614,8 +812,27 @@ function mergeEvidence(barcodeResult,textResult){
       }
       const raw=rawParts.join("\n").trim();
       if(!raw)return {raw:"",warning:"Local OCR could not read text from this image. Try a clearer, tightly cropped photo."};
+      const genericParsed=parseLocalOcrText(raw);
+      let regionalParsed={fields:{},matched:0};
+      if(genericParsed.matched<6){
+        for(let index=0;index<prepared.regional.length;index+=1){
+          const variant=prepared.regional[index];
+          ocrPassIndex=variants.length+index;
+          ocrPassLabel=variant.label;
+          await worker.setParameters({tessedit_pageseg_mode:variant.pageSegMode,preserve_interword_spaces:"1",user_defined_dpi:"300"});
+          const response=await worker.recognize(variant.canvas);
+          regionalText[variant.key]=String(response&&response.data&&response.data.text||"").trim();
+        }
+        const candidate=parseRegionalLicenseFields(regionalText);
+        if(candidate.fields.state==="CO"||/\bCOLORADO\b/i.test(raw))regionalParsed=candidate;
+      }
+      const parsed=mergeOcrParses(genericParsed,regionalParsed);
       setProgress("Local image reading complete.",1);
-      return {raw:raw,warning:""};
+      return {
+        raw:raw,
+        parsed:parsed,
+        warning:regionalParsed.matched&&prepared.cropped?"The license was found inside the screenshot and analyzed locally. Check every suggested character against the image before using it.":""
+      };
     }catch(error){
       ocrWorkerPromise=null;
       return {raw:"",warning:"Local OCR could not start or read this image. Check the connection once so the browser can download the OCR engine, then try again."};
@@ -770,7 +987,7 @@ function mergeEvidence(barcodeResult,textResult){
     let localDocumentParsed={fields:{},matched:0};
     if(selectedFile&&barcodeParsed.matched<6){
       localDocument=await recognizeSelectedDocument();
-      localDocumentParsed=parseLocalOcrText(localDocument.raw);
+      localDocumentParsed=localDocument.parsed||parseLocalOcrText(localDocument.raw);
     }
     const suppliedTextParsed=parseLocalOcrText(ocrText.value);
     const merged=mergeEvidenceSources([
