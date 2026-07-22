@@ -50,6 +50,14 @@ h2{margin:0;font-size:28px;line-height:1.15}
 .dropzone.drag{border-color:var(--accent);background:var(--soft)}
 .dropzone strong{display:block;font-size:17px;margin-bottom:5px}
 .dropzone p{margin:0 0 14px;color:var(--muted);font-size:13px}
+.capture-options{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:430px;margin:0 auto}
+.capture-options .btn{width:100%}
+.capture-note{display:block;margin-top:7px;color:var(--muted);font-size:11px;line-height:1.35}
+.photo-guide{margin-top:14px;border:1px solid #b8dce2;border-radius:8px;background:var(--soft);padding:12px 14px;text-align:left}
+.photo-guide summary{cursor:pointer;color:#244f5b;font-size:13px;font-weight:800}
+.photo-tips{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0 0;padding:0;list-style:none}
+.photo-tips li{position:relative;padding-left:24px;color:#315765;font-size:12px}
+.photo-tips li::before{content:"✓";position:absolute;left:0;top:0;width:17px;height:17px;border-radius:50%;background:#d7ecef;color:#155565;text-align:center;font-weight:900;line-height:17px}
 .file-input{position:absolute;inline-size:1px;block-size:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .btn{border:1px solid var(--accentDark);background:var(--accent);color:#fff;border-radius:6px;padding:9px 12px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:40px}
 .btn.secondary{background:#fff;color:var(--accentDark)}
@@ -63,6 +71,11 @@ h2{margin:0;font-size:28px;line-height:1.15}
 .file-meta{min-width:0;flex:1}
 .file-name{font-weight:700;overflow-wrap:anywhere}
 .file-detail{font-size:12px;color:var(--muted);margin-top:3px}
+.photo-quality{display:none;margin-top:10px;border:1px solid #83c4a6;border-radius:7px;background:#edf8f2;padding:10px 12px;color:#285d47;font-size:12px}
+.photo-quality.visible{display:block}
+.photo-quality.review{border-color:#d6b16d;background:#fff8eb;color:#6f4a16}
+.photo-quality strong{display:block;margin-bottom:3px;font-size:13px}
+.photo-quality ul{margin:5px 0 0;padding-left:18px}
 .field-label{display:block;font-size:13px;font-weight:700;margin:17px 0 6px}
 .ocr-text{width:100%;min-height:170px;resize:vertical;border:1px solid #b8c1cc;border-radius:6px;padding:10px 11px;line-height:1.4;background:#fff;color:var(--ink)}
 .ocr-text:focus{outline:0;border-color:var(--accent);box-shadow:0 0 0 3px rgba(47,125,140,.14)}
@@ -104,7 +117,7 @@ h2{margin:0;font-size:28px;line-height:1.15}
 .json-output{width:100%;min-height:150px;border:1px solid var(--line);border-radius:6px;background:#14212b;color:#e5f3f6;padding:11px;font:12px/1.45 Consolas,Monaco,monospace;resize:vertical}
 .footer-note{margin-top:20px;border-top:1px solid var(--line);padding-top:14px;color:var(--muted);font-size:12px}
 @media(max-width:900px){.layout{grid-template-columns:1fr}.rule-grid{grid-template-columns:1fr}.scope-panel{min-width:0}}
-@media(max-width:760px){.app{margin:0;border-left:0;border-right:0}.hdr,.page-head{align-items:flex-start;flex-direction:column}.content{padding:20px 16px}.pilot-badge{white-space:normal}.actions .btn{flex:1 1 180px}}
+@media(max-width:760px){.app{margin:0;border-left:0;border-right:0}.hdr,.page-head{align-items:flex-start;flex-direction:column}.content{padding:20px 16px}.pilot-badge{white-space:normal}.actions .btn{flex:1 1 180px}.dropzone{padding:18px 14px}.capture-options{grid-template-columns:1fr}.photo-tips{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -135,7 +148,7 @@ h2{margin:0;font-size:28px;line-height:1.15}
       <div>
         <p class="eyebrow">Page 10 · Driver's license analysis</p>
         <h2 id="pageTitle">Document Intake Testing Site</h2>
-        <p class="head-copy">Choose a driver's license, extract only the important identity and address facts, show the evidence, and require a person to review everything before it can be used.</p>
+        <p class="head-copy">Take or choose a driver's license photo, extract only the important identity and address facts, show the evidence, and require a person to review everything before it can be used.</p>
       </div>
       <aside class="scope-panel">
         <strong>Pilot scope</strong>
@@ -147,7 +160,7 @@ h2{margin:0;font-size:28px;line-height:1.15}
     </section>
 
     <div class="notice" role="note">
-      <strong>Uploaded documents are analyzed directly on this page.</strong>
+      <strong>Selected documents are analyzed directly on this page.</strong>
       The file is not uploaded, saved, or transmitted. Images and PDFs are read locally with PDF417 scanning, embedded PDF text, or browser-based OCR. The first OCR run downloads the reading engine and may take up to 30 seconds.
     </div>
 
@@ -155,14 +168,33 @@ h2{margin:0;font-size:28px;line-height:1.15}
       <section class="card" aria-labelledby="uploadTitle">
         <div class="card-head">
           <h3 id="uploadTitle">1. Add a driver's license</h3>
-          <p>Use a clear image or PDF of the front or back. The page reads the uploaded document locally, then applies the six-field license rules.</p>
+          <p>Take a photo of the physical license now, or choose an image or PDF already saved on the device.</p>
         </div>
         <div class="card-body">
           <div class="dropzone" id="dropzone">
-            <strong>Drop a driver's license image here</strong>
-            <p>JPG, PNG, WEBP, or PDF · nothing leaves this browser</p>
-            <label class="btn" for="licenseFile">Choose document</label>
+            <strong>Add the driver's license</strong>
+            <p>Take a new photo or use a saved file · nothing leaves this browser</p>
+            <div class="capture-options">
+              <div>
+                <label class="btn" for="licenseCamera">Take license photo</label>
+                <span class="capture-note">Requests the phone's rear camera.</span>
+                <input class="file-input" id="licenseCamera" type="file" accept="image/*" capture="environment"/>
+              </div>
+              <div>
+                <label class="btn secondary" for="licenseFile">Choose existing file</label>
+                <span class="capture-note">JPG, PNG, WEBP, or PDF.</span>
+              </div>
+            </div>
             <input class="file-input" id="licenseFile" type="file" accept="image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf"/>
+            <details class="photo-guide" open>
+              <summary>How to take a readable photo</summary>
+              <ul class="photo-tips">
+                <li>Remove the license from the wallet and lay it flat.</li>
+                <li>Use bright, even light without flash glare.</li>
+                <li>Hold the phone directly above the card and stay still.</li>
+                <li>Show all four corners; keep fingers and shadows off it.</li>
+              </ul>
+            </details>
           </div>
 
           <div class="file-summary" id="fileSummary">
@@ -171,6 +203,10 @@ h2{margin:0;font-size:28px;line-height:1.15}
               <div class="file-name" id="fileName"></div>
               <div class="file-detail" id="fileDetail"></div>
             </div>
+          </div>
+          <div class="photo-quality" id="photoQuality" role="status" aria-live="polite">
+            <strong id="photoQualityTitle"></strong>
+            <ul id="photoQualityList"></ul>
           </div>
 
           <label class="field-label" for="ocrText">Optional: paste OCR or barcode text</label>
@@ -200,7 +236,7 @@ h2{margin:0;font-size:28px;line-height:1.15}
             <span class="state-title" id="stateTitle">Waiting for a document</span>
             <span class="status" id="statusBadge">Not run</span>
           </div>
-          <div class="result-detail" id="stateDetail">Choose a license image or PDF, or paste OCR text to begin.</div>
+          <div class="result-detail" id="stateDetail">Take a license photo, choose an existing image or PDF, or paste OCR text to begin.</div>
         </div>
         <div class="empty" id="emptyResult">
           <strong>No extracted data yet</strong>
@@ -520,10 +556,14 @@ function mergeEvidence(barcodeResult,textResult){
   const labels={fullName:"Full legal name",dateOfBirth:"Date of birth",streetAddress:"Street address",city:"City",state:"State",zipCode:"ZIP code"};
   const dropzone=document.getElementById("dropzone");
   const fileInput=document.getElementById("licenseFile");
+  const cameraInput=document.getElementById("licenseCamera");
   const fileSummary=document.getElementById("fileSummary");
   const imagePreview=document.getElementById("imagePreview");
   const fileName=document.getElementById("fileName");
   const fileDetail=document.getElementById("fileDetail");
+  const photoQuality=document.getElementById("photoQuality");
+  const photoQualityTitle=document.getElementById("photoQualityTitle");
+  const photoQualityList=document.getElementById("photoQualityList");
   const ocrText=document.getElementById("ocrText");
   const runButton=document.getElementById("runExtraction");
   const loadSample=document.getElementById("loadSample");
@@ -551,6 +591,7 @@ function mergeEvidence(barcodeResult,textResult){
   let pdfLibraryPromise=null;
   let ocrPassIndex=0;
   let ocrPassCount=1;
+  let qualityCheckId=0;
   let ocrPassLabel="Reading text from the image…";
 
   function fileSize(bytes){
@@ -582,7 +623,75 @@ function mergeEvidence(barcodeResult,textResult){
     ocrProgressBar.style.width="0%";
   }
 
+  function resetPhotoQuality(){
+    photoQuality.className="photo-quality";
+    photoQualityTitle.textContent="";
+    photoQualityList.innerHTML="";
+  }
+
+  function showPhotoQuality(title,issues){
+    photoQuality.className="photo-quality visible"+(issues&&issues.length?" review":"");
+    photoQualityTitle.textContent=title;
+    photoQualityList.innerHTML="";
+    (issues||[]).forEach(function(issue){const item=document.createElement("li");item.textContent=issue;photoQualityList.append(item);});
+  }
+
+  function photoQualityIssues(metrics){
+    const issues=[];
+    if(Math.min(metrics.width,metrics.height)<720||metrics.width*metrics.height<800000)issues.push("Move closer so the license uses more of the picture.");
+    if(metrics.averageLight<48)issues.push("The photo looks dark. Add bright, even light and try again.");
+    else if(metrics.averageLight>230)issues.push("The photo looks overexposed. Reduce direct light and try again.");
+    if(metrics.glareRatio>.20)issues.push("Strong glare may hide text. Tilt the light or turn off the flash.");
+    if(metrics.edgeEnergy<7)issues.push("The photo may be blurry. Hold the phone still and tap the license to focus.");
+    return issues;
+  }
+
+  async function assessPhotoQuality(file,checkId){
+    let bitmap=null;
+    try{
+      bitmap=await createImageBitmap(file);
+      if(checkId!==qualityCheckId){bitmap.close();return;}
+      const width=bitmap.width;
+      const height=bitmap.height;
+      const sample=document.createElement("canvas");
+      sample.width=Math.min(180,width);
+      sample.height=Math.max(1,Math.round(height*(sample.width/width)));
+      const context=sample.getContext("2d",{alpha:false,willReadFrequently:true});
+      context.drawImage(bitmap,0,0,sample.width,sample.height);
+      const pixels=context.getImageData(0,0,sample.width,sample.height).data;
+      const luma=new Uint8Array(sample.width*sample.height);
+      let lightTotal=0;
+      let glarePixels=0;
+      for(let pixel=0;pixel<luma.length;pixel+=1){
+        const offset=pixel*4;
+        const value=Math.round((.2126*pixels[offset])+(.7152*pixels[offset+1])+(.0722*pixels[offset+2]));
+        luma[pixel]=value;
+        lightTotal+=value;
+        if(value>246)glarePixels+=1;
+      }
+      let edgeTotal=0;
+      let edgeCount=0;
+      for(let y=1;y<sample.height;y+=1){
+        for(let x=1;x<sample.width;x+=1){
+          const index=(y*sample.width)+x;
+          edgeTotal+=Math.abs(luma[index]-luma[index-1])+Math.abs(luma[index]-luma[index-sample.width]);
+          edgeCount+=2;
+        }
+      }
+      const metrics={width:width,height:height,averageLight:lightTotal/luma.length,glareRatio:glarePixels/luma.length,edgeEnergy:edgeCount?edgeTotal/edgeCount:0};
+      const issues=photoQualityIssues(metrics);
+      fileDetail.textContent=(file.type||"Image file")+" · "+fileSize(file.size)+" · "+width+"×"+height;
+      showPhotoQuality(issues.length?"A retake may improve the results":"Photo looks ready to analyze",issues);
+      bitmap.close();
+    }catch(error){
+      if(bitmap)bitmap.close();
+      if(checkId!==qualityCheckId)return;
+      showPhotoQuality("Check the photo before analyzing",["The browser could not measure this image. Make sure the license is sharp and all four corners are visible."]);
+    }
+  }
+
   function setFile(file){
+    const checkId=++qualityCheckId;
     selectedFile=file||null;
     if(objectUrl){URL.revokeObjectURL(objectUrl);objectUrl=null;}
     imagePreview.classList.remove("visible");
@@ -591,6 +700,7 @@ function mergeEvidence(barcodeResult,textResult){
       fileSummary.classList.remove("visible");
       fileName.textContent="";
       fileDetail.textContent="";
+      resetPhotoQuality();
       updateRunState();
       return;
     }
@@ -601,6 +711,10 @@ function mergeEvidence(barcodeResult,textResult){
       objectUrl=URL.createObjectURL(file);
       imagePreview.src=objectUrl;
       imagePreview.classList.add("visible");
+      showPhotoQuality("Checking photo quality…",[]);
+      assessPhotoQuality(file,checkId);
+    }else{
+      resetPhotoQuality();
     }
     updateRunState();
   }
@@ -1143,6 +1257,7 @@ function mergeEvidence(barcodeResult,textResult){
   function clear(){
     setFile(null);
     fileInput.value="";
+    cameraInput.value="";
     ocrText.value="";
     latestResult=null;
     emptyResult.hidden=false;
@@ -1158,7 +1273,7 @@ function mergeEvidence(barcodeResult,textResult){
     stateTitle.textContent="Waiting for a document";
     statusBadge.textContent="Not run";
     statusBadge.className="status";
-    stateDetail.textContent="Choose a license image or PDF, or paste OCR text to begin.";
+    stateDetail.textContent="Take a license photo, choose an existing image or PDF, or paste OCR text to begin.";
     updateRunState();
   }
 
@@ -1166,6 +1281,7 @@ function mergeEvidence(barcodeResult,textResult){
   ["dragleave","drop"].forEach(function(eventName){dropzone.addEventListener(eventName,function(event){event.preventDefault();dropzone.classList.remove("drag");});});
   dropzone.addEventListener("drop",function(event){const file=event.dataTransfer.files&&event.dataTransfer.files[0];if(file)setFile(file);});
   fileInput.addEventListener("change",function(){setFile(fileInput.files&&fileInput.files[0]);});
+  cameraInput.addEventListener("change",function(){setFile(cameraInput.files&&cameraInput.files[0]);});
   ocrText.addEventListener("input",updateRunState);
   runButton.addEventListener("click",run);
   clearButton.addEventListener("click",clear);
