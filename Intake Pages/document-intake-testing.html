@@ -436,7 +436,8 @@ function parseRegionalLicenseFields(regions){
   if(family.length&&familyInitial.length&&family[0].length>=3&&familyInitial[0].length>=3&&tokenEditDistance(family[0],familyInitial[0])<=2){
     family[0]=familyInitial[0][0]+family[0].slice(1);
   }
-  const given=regionalUppercaseWords(regions&&regions.given,3);
+  const segmentedGiven=Object.keys(regions||{}).filter(function(key){return /^givenWord\d+$/.test(key);}).map(function(key){return regionalUppercaseWords(regions[key],3);}).sort(function(left,right){return (right.length-left.length)||(right.join("").length-left.join("").length);})[0]||[];
+  const given=segmentedGiven.length>=2?segmentedGiven.slice(0,3):regionalUppercaseWords(regions&&(regions.givenLine||regions.given),3);
   const streetText=normalizeSpaces(regions&&regions.street).toUpperCase();
   const locationText=normalizeSpaces(regions&&regions.location).toUpperCase();
   const dateText=normalizeSpaces(regions&&regions.dateOfBirth);
@@ -770,16 +771,74 @@ function mergeEvidence(barcodeResult,textResult){
     return padded;
   }
 
+  function splitLineCanvasAtWordGaps(canvas){
+    // Security artwork can make Tesseract merge adjacent given and middle names.
+    // Isolate the primary ink run so a single-word-line pass can recover the spaces.
+    const context=canvas.getContext("2d",{alpha:false,willReadFrequently:true});
+    const pixels=context.getImageData(0,0,canvas.width,canvas.height).data;
+    const ink=new Uint16Array(canvas.width);
+    for(let x=0;x<canvas.width;x+=1){
+      let count=0;
+      for(let y=0;y<canvas.height;y+=1){
+        const offset=((y*canvas.width)+x)*4;
+        if(pixels[offset]<96&&pixels[offset+1]<96&&pixels[offset+2]<96)count+=1;
+      }
+      ink[x]=count;
+    }
+    let left=0;
+    let right=canvas.width-1;
+    while(left<right&&ink[left]===0)left+=1;
+    while(right>left&&ink[right]===0)right-=1;
+    const gaps=[];
+    let start=-1;
+    for(let x=left;x<=right+1;x+=1){
+      if(x<=right&&ink[x]===0){if(start<0)start=x;continue;}
+      if(start>=0)gaps.push({start:start,end:x,width:x-start});
+      start=-1;
+    }
+    if(!gaps.length)return [];
+    const ordered=gaps.map(function(gap){return gap.width;}).sort(function(a,b){return a-b;});
+    const median=ordered[Math.floor(ordered.length/2)]||1;
+    const minimumWordWidth=Math.max(22,Math.round(canvas.height*.28));
+    const minimumGap=Math.max(9,Math.round(canvas.height*.09),Math.round(median*2.4));
+    const candidates=gaps.filter(function(gap){return gap.width>=minimumGap;}).sort(function(a,b){return b.width-a.width;});
+    const boundaries=[];
+    candidates.forEach(function(gap){
+      const boundary=Math.round((gap.start+gap.end)/2);
+      const prior=boundaries.length?boundaries[boundaries.length-1]:left;
+      if(boundary-prior>=minimumWordWidth&&right-boundary>=minimumWordWidth)boundaries.push(boundary);
+    });
+    boundaries.sort(function(a,b){return a-b;});
+    if(!boundaries.length)return [];
+    const edges=[left].concat(boundaries,[right+1]);
+    const padding=24;
+    return edges.slice(0,-1).map(function(edge,index){
+      const next=edges[index+1];
+      const output=document.createElement("canvas");
+      output.width=(next-edge)+(padding*2);
+      output.height=canvas.height+(padding*2);
+      const outputContext=output.getContext("2d",{alpha:false});
+      outputContext.fillStyle="#fff";
+      outputContext.fillRect(0,0,output.width,output.height);
+      outputContext.drawImage(canvas,edge,0,next-edge,canvas.height,padding,padding,next-edge,canvas.height);
+      return output;
+    }).filter(function(segment){return segment.width>=minimumWordWidth+(padding*2);}).slice(0,3);
+  }
+
   async function prepareImageVariantsForOcr(file){
     const bitmap=await createImageBitmap(file);
     const detected=detectDocumentRegion(bitmap);
     const base=detected.region;
+    const givenLineCanvas=buildAdaptiveLineCanvas(bitmap,base,{x:.31,y:.485,width:.34,height:.06},16);
+    const givenWordCanvases=splitLineCanvasAtWordGaps(givenLineCanvas);
     const variants=[
       {label:"Reading the full license…",pageSegMode:"6",canvas:buildOcrCanvas(bitmap,base,2600,2)},
       {label:"Reading the name and address area…",pageSegMode:"11",canvas:buildOcrCanvas(bitmap,composeRegion(base,{x:.26,y:.18,width:.73,height:.68}),2500,2.4)},
       {label:"Reading the date area…",pageSegMode:"6",canvas:buildOcrCanvas(bitmap,composeRegion(base,{x:.62,y:.18,width:.37,height:.42}),1800,3)}
     ];
     const regional=[
+      ...givenWordCanvases.slice(0,1).map(function(canvas,index){return {key:"givenWord"+index,label:"Separating the given names...",pageSegMode:"8",canvas:canvas};}),
+      {key:"givenLine",label:"Checking given-name spacing...",pageSegMode:"7",canvas:givenLineCanvas},
       {key:"family",label:"Reading the family name…",pageSegMode:"6",canvas:buildAdaptiveLineCanvas(bitmap,base,{x:.31,y:.425,width:.22,height:.055},24)},
       {key:"familyInitial",label:"Checking the family-name lettering…",pageSegMode:"10",canvas:buildAdaptiveLineCanvas(bitmap,base,{x:.31,y:.425,width:.075,height:.055},28)},
       {key:"given",label:"Reading the given names…",pageSegMode:"6",canvas:buildAdaptiveLineCanvas(bitmap,base,{x:.31,y:.485,width:.34,height:.06},16)},
@@ -808,7 +867,8 @@ function mergeEvidence(barcodeResult,textResult){
         const response=await worker.recognize(variant.canvas,{rotateAuto:index===0});
         const text=String(response&&response.data&&response.data.text||"").trim();
         if(text)rawParts.push(text);
-        if(parseLocalOcrText(rawParts.join("\n")).matched===6)break;
+        const accumulatedText=rawParts.join("\n");
+        if(parseLocalOcrText(accumulatedText).matched===6||(index===0&&/\bCOLORADO\b/i.test(accumulatedText)))break;
       }
       const raw=rawParts.join("\n").trim();
       if(!raw)return {raw:"",warning:"Local OCR could not read text from this image. Try a clearer, tightly cropped photo."};
@@ -817,6 +877,8 @@ function mergeEvidence(barcodeResult,textResult){
       if(genericParsed.matched<6){
         for(let index=0;index<prepared.regional.length;index+=1){
           const variant=prepared.regional[index];
+          const hasSeparatedGiven=Object.keys(regionalText).filter(function(key){return /^givenWord\d+$/.test(key);}).some(function(key){return regionalUppercaseWords(regionalText[key],3).length>=2;});
+          if(hasSeparatedGiven&&(variant.key==="givenLine"||variant.key==="given"))continue;
           ocrPassIndex=variants.length+index;
           ocrPassLabel=variant.label;
           await worker.setParameters({tessedit_pageseg_mode:variant.pageSegMode,preserve_interword_spaces:"1",user_defined_dpi:"300"});
