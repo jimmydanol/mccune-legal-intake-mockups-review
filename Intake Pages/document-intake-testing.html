@@ -339,10 +339,10 @@ function fieldSpec(id,label,valueType,options){
 
 const RUNTIME_ARTIFACT={
   artifactId:"page10_document_review_blueprints",
-  version:"2026-07-22.review-v5",
-  rollbackVersion:"2026-07-22.review-v4",
+  version:"2026-07-22.review-v6",
+  rollbackVersion:"2026-07-22.review-v5",
   approvalState:"review_only",
-  checksum:"sha256:971e130958f90c6564666e053b2178346d065bf68a35ff0ba80275e0f12af14b",
+  checksum:"sha256:e7fa69e426216140f29b8c3118ff33b460e18cdb4e65943ad4436031154ae4a3",
   definitions:{
     "driver-license":{label:"Driver's license or photo ID",ruleset:"driver_license_review_v3",attorneyReviewRequired:false,minimumSignals:1,pageLimit:2,classificationSignals:[{pattern:"driver'?s license|identification card",label:"license label"},{pattern:"date of birth|\\bdob\\b|restrictions|endorsements",label:"license fields"},{pattern:"(?:^|[\\s._-])(?:license|driver[-_ ]?id|dl)(?:[\\s._-]|$)",label:"license file name"},{pattern:"(?:^|[\\r\\n])(?:DL|ID)?(?:DCS|DAC|DBB|DAG)",label:"AAMVA barcode fields"}],ignored:"license number, expiration date, class, physical descriptors, restrictions, endorsements, donor status",fields:[fieldSpec("fullName","Full legal name","string",{required:true,aliases:["full legal name","full name","name"]}),fieldSpec("dateOfBirth","Date of birth","date",{required:true,aliases:["date of birth","birth date","dob"]}),fieldSpec("streetAddress","Street address","string",{aliases:["street address","residence address","address"]}),fieldSpec("city","City","string"),fieldSpec("state","State","string",{normalizer:"state"}),fieldSpec("zipCode","ZIP code","string",{normalizer:"zip",aliases:["zip code","postal code","zip"]})]},
     "social-security-card":{label:"Social Security card",ruleset:"social_security_card_review_v1",attorneyReviewRequired:true,minimumSignals:2,pageLimit:1,classificationSignals:[{pattern:"social security administration",label:"SSA issuer"},{pattern:"social security card|social security number",label:"card label"},{pattern:"valid for work|signature",label:"card language"}],ignored:"the full Social Security number after verification, signatures, card-control markings",fields:[fieldSpec("fullName","Name on card","string",{required:true,aliases:["name on card","name"]}),fieldSpec("ssnLast4","SSN last four","string",{required:true,normalizer:"last4",sensitive:"ssn",aliases:["social security number","ssn","number"]})]},
@@ -364,6 +364,25 @@ const RUNTIME_ARTIFACT={
     "other-document":{label:"Other intake document",ruleset:"other_document_review_v1",attorneyReviewRequired:true,minimumSignals:99,pageLimit:12,classificationSignals:[{pattern:"document title",label:"explicit generic title"}],ignored:"legal conclusions and every value outside the limited catch-all fields",fields:[fieldSpec("documentTitle","Document title","string",{required:true,aliases:["document title"]}),fieldSpec("issuerName","Issuer or sender","string",{aliases:["issuer name","sender name"]}),fieldSpec("personName","Person named","string",{aliases:["person name","customer name","client name","recipient name"]}),fieldSpec("documentDate","Document date","date",{aliases:["document date","statement date","letter date"]}),fieldSpec("amount","Primary amount","currency",{aliases:["primary amount","amount due"]}),fieldSpec("referenceLast4","Reference last four","string",{normalizer:"last4",sensitive:"account",aliases:["reference number","account number","case number"]})]}
   }
 };
+
+Object.assign(RUNTIME_ARTIFACT.definitions["social-security-card"],{ruleset:"social_security_card_review_v2",classificationSignals:[{pattern:"social security administration|social security",label:"SSA issuer"},{pattern:"social security card|social security number|\\b\\d{3}[- ]\\d{2}[- ]\\d{4}\\b",label:"card label"},{pattern:"valid for work|signature|u\\.s\\. citizen",label:"card language"}]});
+RUNTIME_ARTIFACT.definitions["social-security-card"].classificationSignals=[{pattern:"social security administration|social security|social[-_ ]?(?:security[-_ ]?)?card|\\bssn\\b",label:"SSA issuer"},{pattern:"social security card|social security number|\\b\\d{3}[- ]\\d{2}[- ]\\d{4}\\b|\\d[\\d -]{7,}",label:"card label"},{pattern:"valid for work|signature|u\\.?s\\.?[,\\s]+citizen",label:"card language"}];
+Object.assign(RUNTIME_ARTIFACT.definitions["other-income-proof"],{ruleset:"other_income_review_v2",classificationSignals:[{pattern:"benefit statement|award letter|benefits? verification|benefit verification letter",label:"benefit document"},{pattern:"social security benefit|unemployment|pension|retirement benefit|disability",label:"income type"},{pattern:"monthly benefit|monthly social security|gross amount|payment amount",label:"benefit amount"}]});
+Object.assign(RUNTIME_ARTIFACT.definitions["tax-return"],{ruleset:"tax_return_review_v3"});
+Object.assign(RUNTIME_ARTIFACT.definitions.w2,{ruleset:"w2_review_v3"});
+RUNTIME_ARTIFACT.definitions.w2.classificationSignals[0]={pattern:"\\bform\\s*w\\s*-?\\s*2\\b",label:"Form W-2"};
+Object.assign(RUNTIME_ARTIFACT.definitions["1099"],{ruleset:"form_1099_review_v3"});
+Object.assign(RUNTIME_ARTIFACT.definitions["property-valuation"],{ruleset:"property_valuation_review_v2",classificationSignals:[{pattern:"zestimate|zillow|property valuation|notice of valuation|estimated market value",label:"property valuation"},{pattern:"county assessor|tax assessment|parcel number",label:"assessment record"},{pattern:"assessed value|actual value|market value|property value|property address",label:"valuation fields"}]});
+Object.assign(RUNTIME_ARTIFACT.definitions["vehicle-valuation"],{ruleset:"vehicle_valuation_review_v2"});
+fieldById(RUNTIME_ARTIFACT.definitions["vehicle-valuation"],"vinLast4").normalizer="vinLast4";
+Object.assign(RUNTIME_ARTIFACT.definitions["investment-statement"],{ruleset:"investment_statement_review_v2",classificationSignals:[{pattern:"investment statement|investment report|retirement statement|brokerage statement",label:"investment statement"},{pattern:"401\\s*\\(?k\\)?|\\bira\\b|pension|annuity|mutual fund|brokerage",label:"account type"},{pattern:"ending value|account value|vested balance|portfolio value",label:"account value"}]});
+Object.assign(RUNTIME_ARTIFACT.definitions["debt-notice"],{ruleset:"debt_statement_review_v3"});
+Object.assign(RUNTIME_ARTIFACT.definitions["mortgage-statement"],{ruleset:"mortgage_statement_review_v3",classificationSignals:[{pattern:"\\bform 1098\\b|mortgage interest statement",label:"mortgage form"},{pattern:"mortgage statement|loan servicer|escrow",label:"mortgage statement language"},{pattern:"outstanding principal|principal balance|payment due date|payment due|property address",label:"mortgage fields"}]});
+Object.assign(RUNTIME_ARTIFACT.definitions["foreclosure-repossession"],{ruleset:"foreclosure_repossession_review_v2"});
+Object.assign(RUNTIME_ARTIFACT.definitions["vehicle-title"],{ruleset:"vehicle_title_review_v3",classificationSignals:[{pattern:"certificate of title|vehicle title|(?:^|[\\s._-])(?:vehicle[-_ ]?)?title(?:[\\s._-]|$)",label:"vehicle title label"},{pattern:"\\bvin\\b|vehicle identification number",label:"VIN"},{pattern:"lienholder|odometer|vehicle make|vehicle model|actual mileage",label:"vehicle fields"}]});
+Object.assign(RUNTIME_ARTIFACT.definitions["court-document"],{ruleset:"court_document_review_v2",classificationSignals:[{pattern:"district court|district of|county court|bankruptcy co(?:urt)?|court of",label:"court name"},{pattern:"case no|case number|docket number|civil action|\\bxx[-#x]{3,}",label:"case identifier"},{pattern:"summons|complaint|judgment|support order|garnishment|hearing|motion for relief|automatic stay",label:"court document type"}]});
+Object.assign(RUNTIME_ARTIFACT.definitions["counseling-certificate"],{ruleset:"counseling_certificate_review_v2"});
+Object.assign(RUNTIME_ARTIFACT.definitions["other-document"],{ruleset:"other_document_review_v2"});
 
 function stableStringify(value){
   if(Array.isArray(value))return "["+value.map(stableStringify).join(",")+"]";
@@ -436,6 +455,10 @@ function normalizeFieldValue(value,field){
   if(field.normalizer==="last4"){
     const digits=raw.replace(/\D/g,"");
     return digits.length>=4?digits.slice(-4):null;
+  }
+  if(field.normalizer==="vinLast4"){
+    const characters=raw.toUpperCase().replace(/[^A-HJ-NPR-Z0-9]/g,"");
+    return characters.length>=4?characters.slice(-4):null;
   }
   if(field.normalizer==="percent"){
     const match=raw.match(/-?\d+(?:\.\d+)?/);
@@ -599,9 +622,23 @@ function currencyCandidatesNearLabels(lines,pattern,start,end){
 function applyDocumentLayout(definition,text,fields,sourceLabel){
   const lines=normalizedDocumentLines(text),ruleset=definition.ruleset;
   if(ruleset.startsWith("social_security_card")){
-    const number=firstMatchingLine(lines,/\b(\d{3})[- ]?(\d{2})[- ]?(\d{4})\b/),person=number&&firstMatchingLine(lines,/^(?!.*(?:social|security|administration|signature|valid|work|number))[A-Z][A-Z.'-]+(?:\s+[A-Z][A-Z.'-]+){1,3}$/i,number.index+1,Math.min(lines.length,number.index+5));
+    const number=firstMatchingLine(lines,/\b(\d{3})[- ]?(\d{2})[- ]?(\d{4})\b/)||firstMatchingLine(lines,/\d[\d -]{7,}/),initialPerson=firstMatchingLine(lines,/^[A-Z][A-Z.'-]+\s+[A-Z]\.?\s+[A-Z][A-Z.'-]+$/),person=initialPerson||lines.map(function(line,index){const match=line.clean.match(/^([A-Z][A-Z.'-]+(?:\s+[A-Z][A-Z.'-]+){1,3})$/),words=match&&match[1].split(/\s+/);return match&&{line:line,match:match,index:index,score:words.length};}).filter(function(item){return item&&!/(?:social|security|administration|signature|valid|work|number|citizen)/i.test(item.line.clean);}).sort(function(a,b){return b.score-a.score||b.index-a.index;})[0];
     if(number)setFieldFromEvidence(definition,fields,"ssnLast4",{rawValue:number.match[0],sourceLines:[number.line.raw],lineNumbers:[number.line.lineNumber]},sourceLabel,"high",true);
     if(person)setFieldFromEvidence(definition,fields,"fullName",{rawValue:person.line.clean,sourceLines:[person.line.raw],lineNumbers:[person.line.lineNumber]},sourceLabel,"high",true);
+  }
+  if(ruleset.startsWith("other_income")){
+    const issuer=firstMatchingLine(lines,/social security administration/i);
+    if(issuer)setFieldFromEvidence(definition,fields,"sourceName",{rawValue:"Social Security Administration",sourceLines:[issuer.line.raw],lineNumbers:[issuer.line.lineNumber]},sourceLabel,"high",true);
+    const date=firstMatchingLine(lines,/^date\s*:\s*([A-Z]+\s+\d{1,2},?\s*\d{4})$/i);
+    if(date)setFieldFromEvidence(definition,fields,"statementDate",{rawValue:date.match[1],sourceLines:[date.line.raw],lineNumbers:[date.line.lineNumber]},sourceLabel,"high",true);
+    const claim=firstMatchingLine(lines,/claim number\b/i),person=claim&&firstMatchingLine(lines,/^(?!.*(?:claim|address|avenue|street|road|social|security|information))[A-Z][A-Z.'-]+(?:\s+[A-Z][A-Z.'-]+){1,3}$/i,claim.index+1,Math.min(lines.length,claim.index+6));
+    if(person)setFieldFromEvidence(definition,fields,"recipientName",{rawValue:person.line.clean,sourceLines:[person.line.raw],lineNumbers:[person.line.lineNumber]},sourceLabel,"high",true);
+    const monthly=firstMatchingLine(lines,/full monthly social security benefit before any deductions is\s*\$\s*([\d,]+(?:\.\d{1,2})?)/i);
+    if(monthly)setFieldFromEvidence(definition,fields,"grossAmount",{rawValue:monthly.match[1],sourceLines:[monthly.line.raw],lineNumbers:[monthly.line.lineNumber]},sourceLabel,"high",true);
+    const retirement=firstMatchingLine(lines,/entitled to monthly\s+(.+?benefits?)\.?$/i);
+    if(retirement)setFieldFromEvidence(definition,fields,"incomeType",{rawValue:retirement.match[1],sourceLines:[retirement.line.raw],lineNumbers:[retirement.line.lineNumber]},sourceLabel,"high",true);
+    if(monthly)setFieldFromEvidence(definition,fields,"frequency",{rawValue:"Monthly",sourceLines:[monthly.line.raw],lineNumbers:[monthly.line.lineNumber]},sourceLabel,"high",true);
+    else {const monthlyPayment=firstMatchingLine(lines,/regular m(?:onthly|amibly) social security payment/i);if(monthlyPayment)setFieldFromEvidence(definition,fields,"frequency",{rawValue:"Monthly",sourceLines:[monthlyPayment.line.raw],lineNumbers:[monthlyPayment.line.lineNumber]},sourceLabel,"medium",true);}
   }
   if(ruleset.startsWith("pay_stub")){
     const employeeMarker=firstMatchingLine(lines,/^employee(?:\s+name)?$/i),incomeMarker=firstMatchingLine(lines,/^(?:income|earnings)$/i,employeeMarker?employeeMarker.index+1:0);
@@ -702,62 +739,157 @@ function applyDocumentLayout(definition,text,fields,sourceLabel){
     if(totalDebt)setFieldFromEvidence(definition,fields,"balanceOwed",{rawValue:totalDebt.match[1],sourceLines:[totalDebt.line.raw],lineNumbers:[totalDebt.line.lineNumber]},sourceLabel,"high",true);
     const totalDebtLabel=firstMatchingLine(lines,/^total amount of the debt now\s*:?$/i),totalDebtAmount=totalDebtLabel&&currencyLines(lines,totalDebtLabel.index+1,Math.min(lines.length,totalDebtLabel.index+5))[0];
     if(totalDebtAmount)setFieldFromEvidence(definition,fields,"balanceOwed",totalDebtAmount,sourceLabel,"high",true);
+    const account=firstMatchingLine(lines,/account number\s+([\d -]{5,})/i);
+    if(account)setFieldFromEvidence(definition,fields,"accountNumberLast4",{rawValue:account.match[1],sourceLines:[account.line.raw],lineNumbers:[account.line.lineNumber]},sourceLabel,"high",true);
   }
   if(ruleset.startsWith("form_1099")){
-    const exampleStart=firstMatchingLine(lines,/^(?:illustrated example\.|form 1099)/i),company=firstMatchingLine(lines,/\b(?:llc|inc\.?|corp\.?|company|co\.?|builders|services|bank|group)\b/i,exampleStart?exampleStart.index:0);
-    if(company)setFieldFromEvidence(definition,fields,"payerName",{rawValue:company.line.clean,sourceLines:[company.line.raw],lineNumbers:[company.line.lineNumber]},sourceLabel,"medium");
-    const dba=firstMatchingLine(lines,/^(?!.*(?:street|avenue|road|lane|instructions|income|tax|form))[A-Z][A-Za-z.'-]+(?:\s+[A-Z][A-Za-z.'-]+){1,3}$/i,company?company.index+1:0);
-    if(dba)setFieldFromEvidence(definition,fields,"recipientName",{rawValue:dba.line.clean,sourceLines:[dba.line.raw],lineNumbers:[dba.line.lineNumber]},sourceLabel,"medium");
-    const year=firstMatchingLine(lines,/\b((?:19|20)\d{2})\b/,0,Math.min(lines.length,8));
-    if(year)setFieldFromEvidence(definition,fields,"taxYear",{rawValue:year.match[1],sourceLines:[year.line.raw],lineNumbers:[year.line.lineNumber]},sourceLabel,"high",true);
+    const narrative=firstMatchingLine(lines,/completed form 1099.*?example\.\s+(.+?)\s+is a contractor/i),payerLabel=firstMatchingLine(lines,/^payer['\u2019]?s name\b/i),payerInline=payerLabel&&normalizeSpaces(payerLabel.line.clean.replace(/^payer['\u2019]?s name\s*/i,"")),payer=payerLabel&&!payerInline&&firstMatchingLine(lines,/^(?!.*(?:payer|street address|corrected|void|rents|omb))[A-Z][A-Za-z0-9&.'-]+(?:\s+[A-Z][A-Za-z0-9&.'-]+){0,5}$/i,payerLabel.index+1,Math.min(lines.length,payerLabel.index+8));
+    if(narrative)setFieldFromEvidence(definition,fields,"payerName",{rawValue:narrative.match[1],sourceLines:[narrative.line.raw],lineNumbers:[narrative.line.lineNumber]},sourceLabel,"high",true);
+    else if(payerInline)setFieldFromEvidence(definition,fields,"payerName",{rawValue:payerInline,sourceLines:[payerLabel.line.raw],lineNumbers:[payerLabel.line.lineNumber]},sourceLabel,"high",true);
+    else if(payer)setFieldFromEvidence(definition,fields,"payerName",{rawValue:payer.line.clean,sourceLines:[payer.line.raw],lineNumbers:[payer.line.lineNumber]},sourceLabel,"high",true);
+    const recipientNarrative=firstMatchingLine(lines,/^([A-Z][A-Za-z.'-]+\s+[A-Z][A-Za-z.'-]+),?\s+a sole proprietor/i),recipientLabel=firstMatchingLine(lines,/^recipient['\u2019]?s name/i),recipientInline=recipientLabel&&normalizeSpaces(recipientLabel.line.clean.replace(/^recipient['\u2019]?s name\s*/i,"")),recipient=recipientLabel&&!recipientInline&&firstMatchingLine(lines,/^(?!.*(?:recipient|nonemployee|street address|payments|privacy|reduction))[A-Z][A-Za-z.'-]+(?:\s+[A-Z][A-Za-z.'-]+){1,3}$/i,recipientLabel.index+1,Math.min(lines.length,recipientLabel.index+8));
+    if(recipientNarrative)setFieldFromEvidence(definition,fields,"recipientName",{rawValue:recipientNarrative.match[1],sourceLines:[recipientNarrative.line.raw],lineNumbers:[recipientNarrative.line.lineNumber]},sourceLabel,"high",true);
+    else if(recipientInline)setFieldFromEvidence(definition,fields,"recipientName",{rawValue:recipientInline,sourceLines:[recipientLabel.line.raw],lineNumbers:[recipientLabel.line.lineNumber]},sourceLabel,"high",true);
+    else if(recipient)setFieldFromEvidence(definition,fields,"recipientName",{rawValue:recipient.line.clean,sourceLines:[recipient.line.raw],lineNumbers:[recipient.line.lineNumber]},sourceLabel,"high",true);
+    const tin=firstMatchingLine(lines,/\b\d{2}[- ]?\d{7}\s+(\d{3}[- ]?\d{2}[- ]?\d{4})\b/);
+    if(tin)setFieldFromEvidence(definition,fields,"recipientTinLast4",{rawValue:tin.match[1],sourceLines:[tin.line.raw],lineNumbers:[tin.line.lineNumber]},sourceLabel,"high",true);
+    const paid=firstMatchingLine(lines,/pays?\s+(?:mr\.?\s+)?[A-Z][A-Za-z.'-]+\s+\$\s*([\d,]+(?:\.\d{1,2})?)/i),compensationLabel=firstMatchingLine(lines,/nonemployee compensation/i),compensation=compensationLabel&&(currenciesInLine(compensationLabel.line)[0]||currencyLines(lines,compensationLabel.index+1,Math.min(lines.length,compensationLabel.index+8))[0]);
+    if(paid)setFieldFromEvidence(definition,fields,"nonemployeeCompensation",{rawValue:paid.match[1],sourceLines:[paid.line.raw],lineNumbers:[paid.line.lineNumber]},sourceLabel,"high",true);
+    else if(compensation)setFieldFromEvidence(definition,fields,"nonemployeeCompensation",compensation,sourceLabel,"high",true);
+    const year=firstMatchingLine(lines,/form 1099[^\r\n]*?\b((?:19|20)\d{2})\b|\b((?:19|20)\d{2})\s+miscellaneous\s+income\b|miscellaneous\s+income\s+((?:19|20)\d{2})/i);
+    if(year)setFieldFromEvidence(definition,fields,"taxYear",{rawValue:year.match[1]||year.match[2]||year.match[3],sourceLines:[year.line.raw],lineNumbers:[year.line.lineNumber]},sourceLabel,"high",true);
     const instructionOnly=/\binstructions for form 1099\b/i.test(text)&&!/\bcompleted form 1099\b/i.test(text);
     if(instructionOnly)definition.fields.forEach(function(spec){if(spec.id!=="taxYear")fields[spec.id]=emptyField(spec);});
   }
   if(ruleset.startsWith("tax_return")){
-    const year=firstMatchingLine(lines,/\b((?:19|20)\d{2})\b/,0,Math.min(lines.length,8));
-    if(year)setFieldFromEvidence(definition,fields,"taxYear",{rawValue:year.match[1],sourceLines:[year.line.raw],lineNumbers:[year.line.lineNumber]},sourceLabel,"high",true);
-    const firstName=firstMatchingLine(lines,/^your first name and (?:middle )?initial\s+(.+)$/i),lastName=firstName&&firstMatchingLine(lines,/^last name\s+(.+)$/i,firstName.index+1,Math.min(lines.length,firstName.index+4));
-    if(firstName){const name=normalizeSpaces(firstName.match[1]+" "+(lastName?lastName.match[1]:"")),sourceLines=[firstName.line.raw].concat(lastName?[lastName.line.raw]:[]),lineNumbers=[firstName.line.lineNumber].concat(lastName?[lastName.line.lineNumber]:[]);setFieldFromEvidence(definition,fields,"taxpayerName",{rawValue:name,sourceLines:sourceLines,lineNumbers:lineNumbers},sourceLabel,"high",true);}
+    const year=firstMatchingLine(lines,/form\s*1040\s*\(?((?:19|20)\d{2})\)?|individual income tax return\s+((?:19|20)\d{2})/i);
+    if(year)setFieldFromEvidence(definition,fields,"taxYear",{rawValue:year.match[1]||year.match[2],sourceLines:[year.line.raw],lineNumbers:[year.line.lineNumber]},sourceLabel,"high",true);
+    const firstName=firstMatchingLine(lines,/^your first name and (?:middle )?initial\b/i),inlineFirst=firstName&&normalizeSpaces(firstName.line.clean.replace(/^your first name and (?:middle )?initial\s*/i,"")),lastName=inlineFirst&&!/\blast name\b/i.test(inlineFirst)&&firstMatchingLine(lines,/^last name\s+(.+)$/i,firstName.index+1,Math.min(lines.length,firstName.index+4)),nameLine=firstName&&/\blast name\b/i.test(inlineFirst||"")&&firstMatchingLine(lines,/^([A-Z][A-Z.'-]+(?:\s+[A-Z][A-Z.'-]+){1,3})\s+(?:X|\*|\d)/i,firstName.index+1,Math.min(lines.length,firstName.index+5));
+    if(inlineFirst&&!/\blast name\b/i.test(inlineFirst))setFieldFromEvidence(definition,fields,"taxpayerName",{rawValue:normalizeSpaces(inlineFirst+" "+(lastName?lastName.match[1]:"")),sourceLines:[firstName.line.raw].concat(lastName?[lastName.line.raw]:[]),lineNumbers:[firstName.line.lineNumber].concat(lastName?[lastName.line.lineNumber]:[])},sourceLabel,"high",true);
+    else if(nameLine)setFieldFromEvidence(definition,fields,"taxpayerName",{rawValue:nameLine.match[1],sourceLines:[nameLine.line.raw],lineNumbers:[nameLine.line.lineNumber]},sourceLabel,"high",true);
+    const spouseHeader=firstMatchingLine(lines,/^if joint return, spouse['\u2019]?s first name/i),spouseLine=spouseHeader&&firstMatchingLine(lines,/^([A-Z][A-Z.'-]+(?:\s+[A-Z][A-Z.'-]+){1,3})\s+(?:X|\*|\d)/i,spouseHeader.index+1,Math.min(lines.length,spouseHeader.index+5));
+    if(spouseLine)setFieldFromEvidence(definition,fields,"spouseName",{rawValue:spouseLine.match[1],sourceLines:[spouseLine.line.raw],lineNumbers:[spouseLine.line.lineNumber]},sourceLabel,"high",true);
+    if(!fields.taxpayerName||fields.taxpayerName.value===null){const names=lines.slice(0,35).map(function(line,index){const match=line.clean.match(/^([A-Z][A-Z.'-]+(?:\s+[A-Z][A-Z.'-]+){1,3})\s+(?:X|\*|\d)/);return match&&{line:line,match:match,index:index};}).filter(Boolean),cleanName=function(item){return item.match[1].replace(/(?:\s+X+)+$/,"");};if(names[0])setFieldFromEvidence(definition,fields,"taxpayerName",{rawValue:cleanName(names[0]),sourceLines:[names[0].line.raw],lineNumbers:[names[0].line.lineNumber]},sourceLabel,"high",true);if(names[1]&&(!fields.spouseName||fields.spouseName.value===null))setFieldFromEvidence(definition,fields,"spouseName",{rawValue:cleanName(names[1]),sourceLines:[names[1].line.raw],lineNumbers:[names[1].line.lineNumber]},sourceLabel,"high",true);}
     if(fields.filingStatus&&fields.filingStatus.evidence&&fields.filingStatus.evidence.sourceLines.length>1)fields.filingStatus=emptyField(fieldById(definition,"filingStatus"));
     const address=firstMatchingLine(lines,/^home address(?:\s*\([^)]*\))?\.?\s+(.+)$/i);
     if(address&&!/^(?:if|see|instructions?)\b/i.test(address.match[1]))setFieldFromEvidence(definition,fields,"address",{rawValue:address.match[1],sourceLines:[address.line.raw],lineNumbers:[address.line.lineNumber]},sourceLabel,"high",true);
     else if(fields.address&&fields.address.value&&/\b(?:if you|see instructions)\b/i.test(String(fields.address.value)))fields.address=emptyField(fieldById(definition,"address"));
     if(fields.address&&/^(?:apt\.?\s*no\.?|city,? town|foreign country|presidential election)\b/i.test(String(fields.address.value||"")))fields.address=emptyField(fieldById(definition,"address"));
-    const wages=firstMatchingLine(lines,/^1z?\s+wages,?\s+salaries,?\s+tips\s+\$?\s*([\d,]+(?:\.\d{1,2})?)/i);
+    const wages=firstMatchingLine(lines,/(?:\b1[az]\b.*(?:total amount from form|wages,?\s+salaries,?\s+tips).*?\b1[az]?\s*\|?\s*|^1z?\s+wages,?\s+salaries,?\s+tips\s+)([\d,]+(?:\.\d{1,2})?)\s*$/i),totalIncome=firstMatchingLine(lines,/\b9\b.*this is your total income.*?([\d,]+(?:\.\d{1,2})?)\s*$/i),agi=firstMatchingLine(lines,/(?:adjusted gross\s*income|amount from line 11a \{?adjusted gross income\}?).*?([\d,]+(?:\.\d{1,3})?)\s*$/i),taxable=firstMatchingLine(lines,/this is your taxable income.*?([\d,]+(?:\.\d{1,3})?)\s*$/i);
     if(wages)setFieldFromEvidence(definition,fields,"wages",{rawValue:wages.match[1],sourceLines:[wages.line.raw],lineNumbers:[wages.line.lineNumber]},sourceLabel,"high",true);
+    if(totalIncome)setFieldFromEvidence(definition,fields,"totalIncome",{rawValue:totalIncome.match[1],sourceLines:[totalIncome.line.raw],lineNumbers:[totalIncome.line.lineNumber]},sourceLabel,"high",true);
+    if(agi)setFieldFromEvidence(definition,fields,"adjustedGrossIncome",{rawValue:/^\d{1,3}\.\d{3}$/.test(agi.match[1])?agi.match[1].replace(".",","):agi.match[1],sourceLines:[agi.line.raw],lineNumbers:[agi.line.lineNumber]},sourceLabel,"high",true);
+    if(taxable)setFieldFromEvidence(definition,fields,"taxableIncome",{rawValue:/^\d{1,3}\.\d{3}$/.test(taxable.match[1])?taxable.match[1].replace(".",","):taxable.match[1],sourceLines:[taxable.line.raw],lineNumbers:[taxable.line.lineNumber]},sourceLabel,"high",true);
   }
   if(ruleset.startsWith("w2_review")){
-    const year=firstMatchingLine(lines,/\b((?:19|20)\d{2})\b/,0,Math.min(lines.length,8));
+    const formLine=firstMatchingLine(lines,/form\s+w\s*-?\s*2/i),year=firstMatchingLine(lines,/form\s+w\s*-?\s*2.*?\b((?:19|20)\d{2})\b/i)||(formLine&&firstMatchingLine(lines,/^((?:19|20)\d{2})$/));
     if(year)setFieldFromEvidence(definition,fields,"taxYear",{rawValue:year.match[1],sourceLines:[year.line.raw],lineNumbers:[year.line.lineNumber]},sourceLabel,"high",true);
-    const firstName=firstMatchingLine(lines,/^(?:e\s+)?employee['\u2019]?s first name and initial\s+(.+)$/i),lastName=firstName&&firstMatchingLine(lines,/^last name\s+(.+)$/i,firstName.index+1,Math.min(lines.length,firstName.index+4));
-    if(firstName){const value=normalizeSpaces(firstName.match[1]+" "+(lastName?lastName.match[1]:"")),sourceLines=[firstName.line.raw].concat(lastName?[lastName.line.raw]:[]),lineNumbers=[firstName.line.lineNumber].concat(lastName?[lastName.line.lineNumber]:[]);setFieldFromEvidence(definition,fields,"employeeName",{rawValue:value,sourceLines:sourceLines,lineNumbers:lineNumbers},sourceLabel,"high",true);}
-    const employer=firstMatchingLine(lines,/^(?:c\s+)?employer['\u2019]?s name\s+(.+)$/i);
-    if(employer)setFieldFromEvidence(definition,fields,"employerName",{rawValue:employer.match[1],sourceLines:[employer.line.raw],lineNumbers:[employer.line.lineNumber]},sourceLabel,"high",true);
+    const employeeHeader=firstMatchingLine(lines,/employee['\u2019]?s first name and initial/i),employeeInline=employeeHeader&&normalizeSpaces(employeeHeader.line.clean.replace(/^(?:e\s+)?employee['\u2019]?s first name and initial\s*/i,"")),employeeLast=employeeInline&&!/\blast name\b/i.test(employeeInline)&&firstMatchingLine(lines,/^last name\s+(.+)$/i,employeeHeader.index+1,Math.min(lines.length,employeeHeader.index+4)),employee=employeeHeader&&/\blast name\b/i.test(employeeInline||"")&&firstMatchingLine(lines,/^([A-Z][A-Za-z.'-]+(?:\s+[A-Z][A-Za-z.'-]+){1,3})(?:\s+\d+\s+|\s*$)/i,employeeHeader.index+1,Math.min(lines.length,employeeHeader.index+18));
+    if(employeeInline&&!/\blast name\b/i.test(employeeInline))setFieldFromEvidence(definition,fields,"employeeName",{rawValue:normalizeSpaces(employeeInline+" "+(employeeLast?employeeLast.match[1]:"")),sourceLines:[employeeHeader.line.raw].concat(employeeLast?[employeeLast.line.raw]:[]),lineNumbers:[employeeHeader.line.lineNumber].concat(employeeLast?[employeeLast.line.lineNumber]:[])},sourceLabel,"high",true);
+    else if(employee)setFieldFromEvidence(definition,fields,"employeeName",{rawValue:employee.match[1],sourceLines:[employee.line.raw],lineNumbers:[employee.line.lineNumber]},sourceLabel,"high",true);
+    const employerHeader=firstMatchingLine(lines,/^(?:c\s+)?employer['\u2019]?s name(?:,? address.*)?/i),employerInline=employerHeader&&normalizeSpaces(employerHeader.line.clean.replace(/^(?:c\s+)?employer['\u2019]?s name(?:,? address(?:,? and zip code)?)?\s*/i,"")),employer=employerHeader&&!employerInline&&firstMatchingLine(lines,/^(?!.*(?:employer|medicare|social security|street|road|avenue))[A-Z][A-Za-z0-9&.'-]+(?:\s+[A-Z][A-Za-z0-9&.'-]+){1,5}(?=\s|$)/i,employerHeader.index+1,Math.min(lines.length,employerHeader.index+8));
+    if(employerInline&&!/\bsocial security wages\b/i.test(employerInline))setFieldFromEvidence(definition,fields,"employerName",{rawValue:employerInline,sourceLines:[employerHeader.line.raw],lineNumbers:[employerHeader.line.lineNumber]},sourceLabel,"high",true);
+    else if(employer){const clean=employer.line.clean.replace(/\s+\d[\d,]*\.\d{2}.*$/,"");setFieldFromEvidence(definition,fields,"employerName",{rawValue:clean,sourceLines:[employer.line.raw],lineNumbers:[employer.line.lineNumber]},sourceLabel,"high",true);}
     [{id:"wages",pattern:/^1\s+wages,?\s+tips,?\s+other compensation\s+(.+)$/i},{id:"federalTaxWithheld",pattern:/^2\s+federal income tax withheld\s+(.+)$/i},{id:"socialSecurityWages",pattern:/^3\s+social security wages\s+(.+)$/i},{id:"socialSecurityTaxWithheld",pattern:/^4\s+social security tax withheld\s+(.+)$/i},{id:"medicareWages",pattern:/^5\s+medicare wages and tips\s+(.+)$/i},{id:"medicareTaxWithheld",pattern:/^6\s+medicare tax withheld\s+(.+)$/i}].forEach(function(item){const found=firstMatchingLine(lines,item.pattern);if(found)setFieldFromEvidence(definition,fields,item.id,{rawValue:found.match[1],sourceLines:[found.line.raw],lineNumbers:[found.line.lineNumber]},sourceLabel,"high",true);});
+    const pairs=[];
+    lines.forEach(function(line){const amounts=currenciesInLine(line).filter(function(item){return Math.abs(normalizeCurrency(item.rawValue)||0)>=100;});if(amounts.length>=2)pairs.push({line:line,amounts:amounts});});
+    if(pairs[1]){const company=normalizeSpaces(pairs[1].line.clean.slice(0,pairs[1].amounts[0].characterIndex));if(/^[A-Z][A-Za-z&.'-]+(?:\s+[A-Z][A-Za-z&.'-]+){1,5}$/.test(company))setFieldFromEvidence(definition,fields,"employerName",{rawValue:company,sourceLines:[pairs[1].line.raw],lineNumbers:[pairs[1].line.lineNumber]},sourceLabel,"high",true);}
+    const printedName=employeeHeader&&lines.slice(employeeHeader.index+1,Math.min(lines.length,employeeHeader.index+35)).map(function(line,index){const match=line.clean.match(/^([A-Z][a-z]+(?:\s+[A-Z][a-z]+){1,3})(?:\s+\d+|\s+[a-z].*|\s*$)/);return match&&{line:line,match:match,index:index};}).filter(function(item){return item&&!/^(?:Statutory|Retirement|Nonqualified|Dependent|Social Security)/.test(item.match[1]);})[0];
+    if(printedName)setFieldFromEvidence(definition,fields,"employeeName",{rawValue:printedName.match[1],sourceLines:[printedName.line.raw],lineNumbers:[printedName.line.lineNumber]},sourceLabel,"high",true);
+    [{pair:0,first:"wages",second:"federalTaxWithheld"},{pair:1,first:"socialSecurityWages",second:"socialSecurityTaxWithheld"},{pair:2,first:"medicareWages",second:"medicareTaxWithheld"}].forEach(function(mapping){const pair=pairs[mapping.pair];if(!pair)return;setFieldFromEvidence(definition,fields,mapping.first,pair.amounts[0],sourceLabel,"high",true);setFieldFromEvidence(definition,fields,mapping.second,pair.amounts[1],sourceLabel,"high",true);});
   }
   if(ruleset.startsWith("property_valuation")){
-    const address=firstMatchingLine(lines,/^(?:property\s+)?address\s*:?\s*(.+)$/i);
-    if(address)setFieldFromEvidence(definition,fields,"propertyAddress",{rawValue:address.match[1],sourceLines:[address.line.raw],lineNumbers:[address.line.lineNumber]},sourceLabel,"high",true);
+    const address=firstMatchingLine(lines,/^(?:property\s+)?address\s*:?\s*(.+)$/i)||firstMatchingLine(lines,/^(?!20\d{2}\s+(?:notice|form|tax))\d{1,6}\s+[A-Z0-9.'-]+(?:\s+[A-Z0-9.'-]+){1,5}$/i);
+    if(address)setFieldFromEvidence(definition,fields,"propertyAddress",{rawValue:address.match[1]||address.line.clean,sourceLines:[address.line.raw],lineNumbers:[address.line.lineNumber]},sourceLabel,"high",true);
+    const assessor=firstMatchingLine(lines,/boulder county assessor/i);
+    if(assessor)setFieldFromEvidence(definition,fields,"sourceName",{rawValue:"Boulder County Assessor",sourceLines:[assessor.line.raw],lineNumbers:[assessor.line.lineNumber]},sourceLabel,"high",true);
+    const owner=address&&firstMatchingLine(lines,/^(?!.*(?:account|address|office|boulder|location|property|assessor))[A-Z][A-Z.'-]+(?:\s+[A-Z][A-Z.'-]+){1,3}$/i,Math.max(0,address.index-2),address.index);
+    if(owner)setFieldFromEvidence(definition,fields,"ownerName",{rawValue:owner.line.clean,sourceLines:[owner.line.raw],lineNumbers:[owner.line.lineNumber]},sourceLabel,"high",false);
+    const valueLine=firstMatchingLine(lines,/^residential\s+\$?[\d,]+(?:\.\d{1,2})?\s+\$?([\d,]+(?:\.\d{1,2})?)/i),currentLabel=!valueLine&&firstMatchingLine(lines,/^current$/i),currentValue=currentLabel&&currencyLines(lines,currentLabel.index+1,Math.min(lines.length,currentLabel.index+8))[0];
+    if(valueLine)setFieldFromEvidence(definition,fields,"estimatedValue",{rawValue:valueLine.match[1],sourceLines:[valueLine.line.raw],lineNumbers:[valueLine.line.lineNumber]},sourceLabel,"high",true);
+    else if(currentValue)setFieldFromEvidence(definition,fields,"estimatedValue",currentValue,sourceLabel,"high",true);
+    const year=firstMatchingLine(lines,/\b((?:19|20)\d{2})\s+notice of valuation\b/i);
+    if(year)setFieldFromEvidence(definition,fields,"assessmentYear",{rawValue:year.match[1],sourceLines:[year.line.raw],lineNumbers:[year.line.lineNumber]},sourceLabel,"high",true);
+    const parcel=firstMatchingLine(lines,/parcel number\s*:\s*([A-Z0-9-]{6,})/i);
+    if(parcel)setFieldFromEvidence(definition,fields,"parcelNumber",{rawValue:parcel.match[1],sourceLines:[parcel.line.raw],lineNumbers:[parcel.line.lineNumber]},sourceLabel,"high",true);
   }
   if(ruleset.startsWith("vehicle_valuation")){
-    const condition=firstMatchingLine(lines,/^(?:vehicle\s+)?condition\s*:?\s*(.+)$/i),date=firstMatchingLine(lines,/^(?:valuation\s+date|as of date|date)\s*:?\s*(.+)$/i);
+    const vehicle=firstMatchingLine(lines,/^(?:vehicle\s*:\s*)?((?:19|20)\d{2})\s+([A-Z][A-Za-z-]+)\s+([A-Z][A-Za-z0-9 -]+?)(?:\s+Sedan|\s+Style:|$)/i),condition=firstMatchingLine(lines,/^(?:vehicle\s+)?condition\s*:?\s*(.+)$/i),date=firstMatchingLine(lines,/^(?:valuation\s+date|as of date|date)\s*:?\s*(\d{1,2}[\/.]\d{1,2}[\/.]\d{2,4})/i),validThrough=firstMatchingLine(lines,/valid for .*? through\s+(\d{1,2}[\/.]\d{1,2}[\/.]\d{2,4})/i);
+    if(vehicle){setFieldFromEvidence(definition,fields,"year",{rawValue:vehicle.match[1],sourceLines:[vehicle.line.raw],lineNumbers:[vehicle.line.lineNumber]},sourceLabel,"high",true);setFieldFromEvidence(definition,fields,"make",{rawValue:vehicle.match[2],sourceLines:[vehicle.line.raw],lineNumbers:[vehicle.line.lineNumber]},sourceLabel,"high",true);setFieldFromEvidence(definition,fields,"model",{rawValue:vehicle.match[3].replace(/\s+Sell to Private Party.*$/i,""),sourceLines:[vehicle.line.raw],lineNumbers:[vehicle.line.lineNumber]},sourceLabel,"high",true);}
+    const vin=firstMatchingLine(lines,/\bvin\s*#?\s*:?\s*([A-HJ-NPR-Z0-9]{11,17})\b/i),mileage=firstMatchingLine(lines,/\bmileage\s*:\s*([\d,]{2,})/i);
+    if(vin)setFieldFromEvidence(definition,fields,"vinLast4",{rawValue:vin.match[1],sourceLines:[vin.line.raw],lineNumbers:[vin.line.lineNumber]},sourceLabel,"high",true);
+    if(mileage)setFieldFromEvidence(definition,fields,"mileage",{rawValue:mileage.match[1],sourceLines:[mileage.line.raw],lineNumbers:[mileage.line.lineNumber]},sourceLabel,"high",true);
     if(condition)setFieldFromEvidence(definition,fields,"condition",{rawValue:condition.match[1],sourceLines:[condition.line.raw],lineNumbers:[condition.line.lineNumber]},sourceLabel,"high",true);
     if(date)setFieldFromEvidence(definition,fields,"valuationDate",{rawValue:date.match[1],sourceLines:[date.line.raw],lineNumbers:[date.line.lineNumber]},sourceLabel,"medium",true);
+    else if(validThrough)setFieldFromEvidence(definition,fields,"valuationDate",{rawValue:validThrough.match[1],sourceLines:[validThrough.line.raw],lineNumbers:[validThrough.line.lineNumber]},sourceLabel,"high",true);
+    const dvac=firstMatchingLine(lines,/\bdvac\b/i),kbb=firstMatchingLine(lines,/kelley blue book/i);
+    if(dvac)setFieldFromEvidence(definition,fields,"sourceName",{rawValue:"DVAC",sourceLines:[dvac.line.raw],lineNumbers:[dvac.line.lineNumber]},sourceLabel,"high",true);
+    else if(kbb)setFieldFromEvidence(definition,fields,"sourceName",{rawValue:"Kelley Blue Book",sourceLines:[kbb.line.raw],lineNumbers:[kbb.line.lineNumber]},sourceLabel,"high",true);
+    const totalLoss=firstMatchingLine(lines,/total loss value amount\s*:\s*\$?\s*([\d,]+(?:\.\d{1,2})?)/i),totalLossLabel=!totalLoss&&firstMatchingLine(lines,/total loss value amount/i),totalLossNearby=totalLossLabel&&lines.slice(totalLossLabel.index+1,totalLossLabel.index+6).flatMap(currenciesInLine)[0],privateLabels=lines.map(function(line,index){return /^private party value$/i.test(line.clean)?index:-1;}).filter(function(index){return index>=0;}),privateValues=privateLabels.flatMap(function(index){return lines.slice(index+1,index+10).flatMap(function(line){const found=[];let match,pattern=/\$\s*([\d,]{4,})/g;while((match=pattern.exec(line.clean)))found.push({rawValue:match[1],sourceLines:[line.raw],lineNumbers:[line.lineNumber],characterIndex:match.index});return found;});}),uniquePrivate=Array.from(new Map(privateValues.map(function(item){return [normalizeCurrency(item.rawValue),item];})).values()).filter(function(item){const value=normalizeCurrency(item.rawValue);return value>=1000&&value<=1000000;}).sort(function(a,b){return normalizeCurrency(a.rawValue)-normalizeCurrency(b.rawValue);}),privatePoint=uniquePrivate[Math.floor(uniquePrivate.length/2)],nearValue=totalLossNearby||privatePoint;
+    if(totalLoss)setFieldFromEvidence(definition,fields,"estimatedValue",{rawValue:totalLoss.match[1],sourceLines:[totalLoss.line.raw],lineNumbers:[totalLoss.line.lineNumber]},sourceLabel,"high",true);
+    else if(nearValue)setFieldFromEvidence(definition,fields,"estimatedValue",nearValue,sourceLabel,"high",true);
   }
   if(ruleset.startsWith("investment_statement")){
     const inlineInstitution=firstMatchingLine(lines,/^financial institution\s*:?\s*(.+)$/i);
     if(inlineInstitution)setFieldFromEvidence(definition,fields,"institutionName",{rawValue:inlineInstitution.match[1],sourceLines:[inlineInstitution.line.raw],lineNumbers:[inlineInstitution.line.lineNumber]},sourceLabel,"high",true);
     const title=firstMatchingLine(lines,/^(?:investment|retirement|brokerage) statement$/i),institution=title&&firstMatchingLine(lines,/^(?!.*(?:participant|account|period|value|balance|financial institution))[A-Z][A-Za-z.'-]+(?:\s+[A-Z][A-Za-z.'()-]+){1,5}$/i,title.index+1,Math.min(lines.length,title.index+5));
     if(institution)setFieldFromEvidence(definition,fields,"institutionName",{rawValue:institution.line.clean,sourceLines:[institution.line.raw],lineNumbers:[institution.line.lineNumber]},sourceLabel,"high",true);
+    const fidelity=firstMatchingLine(lines,/\bfidelity\b/i);
+    if(fidelity)setFieldFromEvidence(definition,fields,"institutionName",{rawValue:"Fidelity",sourceLines:[fidelity.line.raw],lineNumbers:[fidelity.line.lineNumber]},sourceLabel,"high",true);
+    const owner=fidelity&&firstMatchingLine(lines,/^(?!.*(?:fidelity|investment|statement|informational|envelope|main st|boston|value by account))[A-Z][A-Za-z.'-]+(?:\s+[A-Z][A-Za-z.'-]+){1,3}$/i,0,Math.min(lines.length,20));
+    if(owner)setFieldFromEvidence(definition,fields,"accountOwner",{rawValue:owner.line.clean,sourceLines:[owner.line.raw],lineNumbers:[owner.line.lineNumber]},sourceLabel,"high",true);
+    const period=firstMatchingLine(lines,/([A-Z]+\s+\d{1,2})(?:,\s*((?:19|20)\d{2}))?\s*[-=â€“â€”]\s*([A-Z]+\s+\d{1,2}),?\s*((?:19|20)\d{2})/i);
+    if(period){const year=period.match[2]||period.match[4];setFieldFromEvidence(definition,fields,"statementStartDate",{rawValue:period.match[1]+" "+year,sourceLines:[period.line.raw],lineNumbers:[period.line.lineNumber]},sourceLabel,"high",true);setFieldFromEvidence(definition,fields,"statementEndDate",{rawValue:period.match[3]+" "+period.match[4],sourceLines:[period.line.raw],lineNumbers:[period.line.lineNumber]},sourceLabel,"high",true);}
+    const ending=firstMatchingLine(lines,/^ending value as of .*?\$\s*([\d,]+(?:\.\d{1,2})?)/i)||firstMatchingLine(lines,/^(?:ending (?:portfolio )?value(?:\*\*|\*â„¢)?|your portfolio value)\s*:?[^0-9]*\$?\s*([\d,]+(?:\.\d{1,2})?)/i);
+    if(ending)setFieldFromEvidence(definition,fields,"endingValue",{rawValue:ending.match[1],sourceLines:[ending.line.raw],lineNumbers:[ending.line.lineNumber]},sourceLabel,"high",true);
   }
   if(ruleset.startsWith("mortgage_statement")){
-    const principal=firstMatchingLine(lines,/^(?:outstanding\s+)?principal balance\s*:?\s*\$?\s*([\d,]+(?:\.\d{1,2})?)/i);
+    const servicer=firstMatchingLine(lines,/^(.+? mortgage)(?:\s+mortgage statement)?$/i,0,Math.min(lines.length,15));
+    if(servicer)setFieldFromEvidence(definition,fields,"servicerName",{rawValue:servicer.match[1],sourceLines:[servicer.line.raw],lineNumbers:[servicer.line.lineNumber]},sourceLabel,"high",false);
+    const borrower=firstMatchingLine(lines,/^([A-Z][A-Za-z.'-]+\s+and\s+[A-Z][A-Za-z.'-]+\s+[A-Z][A-Za-z.'-]+)(?:\s+payment due date.*)?$/i,0,Math.min(lines.length,40));
+    if(borrower)setFieldFromEvidence(definition,fields,"borrowerName",{rawValue:borrower.match[1],sourceLines:[borrower.line.raw],lineNumbers:[borrower.line.lineNumber]},sourceLabel,"high",true);
+    const address=borrower&&firstMatchingLine(lines,/^\d{1,6}\s+[A-Z][A-Za-z0-9.'-]+(?:\s+[A-Z][A-Za-z0-9.'-]+){1,5}$/i,borrower.index+1,Math.min(lines.length,borrower.index+5));
+    if(address)setFieldFromEvidence(definition,fields,"propertyAddress",{rawValue:address.line.clean,sourceLines:[address.line.raw],lineNumbers:[address.line.lineNumber]},sourceLabel,"high",true);
+    const principal=firstMatchingLine(lines,/(?:outstanding\s+)?principal(?: balance)?\s*:?\s*\$?\s*([\d,]+(?:\.\d{1,2})?)/i);
     if(principal)setFieldFromEvidence(definition,fields,"principalBalance",{rawValue:principal.match[1],sourceLines:[principal.line.raw],lineNumbers:[principal.line.lineNumber]},sourceLabel,"high",true);
-    const pastDue=firstMatchingLine(lines,/^past[- ]due amount\s*:?\s*\$?\s*([\d,]+(?:\.\d{1,2})?)/i);
+    const monthly=firstMatchingLine(lines,/r[eo]gular monthly payment\s*:?\s*\$?\s*([\d,]+(?:\.\d{1,2})?)/i);
+    if(monthly)setFieldFromEvidence(definition,fields,"monthlyPayment",{rawValue:monthly.match[1],sourceLines:[monthly.line.raw],lineNumbers:[monthly.line.lineNumber]},sourceLabel,"high",true);
+    const pastDue=firstMatchingLine(lines,/^(?:past[- ]due amount|overdue payment)\s*:?\s*\$?\s*([\d,]+(?:\.\d{1,2})?)/i);
     if(pastDue)setFieldFromEvidence(definition,fields,"pastDueAmount",{rawValue:pastDue.match[1],sourceLines:[pastDue.line.raw],lineNumbers:[pastDue.line.lineNumber]},sourceLabel,"high",true);
+  }
+  if(ruleset.startsWith("foreclosure_repossession")){
+    const cure=firstMatchingLine(lines,/^notice of default\s*&\s*right to cure$/i),sale=firstMatchingLine(lines,/^notice of our plan to sell property$/i);
+    if(cure)setFieldFromEvidence(definition,fields,"actionType",{rawValue:cure.line.clean,sourceLines:[cure.line.raw],lineNumbers:[cure.line.lineNumber]},sourceLabel,"high",true);
+    else if(sale)setFieldFromEvidence(definition,fields,"actionType",{rawValue:sale.line.clean,sourceLines:[sale.line.raw],lineNumbers:[sale.line.lineNumber]},sourceLabel,"high",true);
+    const blankTemplate=Boolean(firstMatchingLine(lines,/^\(name and address of secured party\)$/i)||firstMatchingLine(lines,/^lender name$/i));
+    if(blankTemplate)["creditorName","debtorName","collateral","noticeDate","responseDeadline","scheduledSaleDate","amountToCure","balanceOwed","caseNumber"].forEach(function(id){fields[id]=emptyField(fieldById(definition,id));});
   }
   if(ruleset.startsWith("vehicle_title")){
     [{id:"year",pattern:/^(?:vehicle\s+)?year\s*:?\s*((?:19|20)\d{2})$/i},{id:"make",pattern:/^(?:vehicle\s+)?make\s*:?\s*([A-Za-z0-9].*)$/i},{id:"model",pattern:/^(?:vehicle\s+)?model\s*:?\s*([A-Za-z0-9].*)$/i}].forEach(function(item){const found=firstMatchingLine(lines,item.pattern);if(found)setFieldFromEvidence(definition,fields,item.id,{rawValue:found.match[1],sourceLines:[found.line.raw],lineNumbers:[found.line.lineNumber]},sourceLabel,"high",true);});
+    const compact=firstMatchingLine(lines,/\b((?:19|20)\d{2})\s+(HYUN|CHVR|FORD|TOYT|HOND|CHEV)\b/i);
+    if(compact){setFieldFromEvidence(definition,fields,"year",{rawValue:compact.match[1],sourceLines:[compact.line.raw],lineNumbers:[compact.line.lineNumber]},sourceLabel,"high",true);setFieldFromEvidence(definition,fields,"make",{rawValue:compact.match[2],sourceLines:[compact.line.raw],lineNumbers:[compact.line.lineNumber]},sourceLabel,"high",true);}
+    const yearMake=firstMatchingLine(lines,/\b((?:19|20)\d{2})\s*\|?\s*(CHEVR|CHVR|HYUN|FORD|TOYT|HOND|CHEV)\b/i),titleRows=lines.map(function(line,index){const match=line.clean.match(/\b((?:19|20)\d{2})\s*\|?\s*(CHEVR|CHVR|HYUN|FORD|TOYT|HOND|CHEV)\s*\|\s*([A-Z0-9!]{1,5})(?:\s*\||$)/i);return match&&{line:line,match:match,index:index};}).filter(Boolean),titleRow=titleRows.find(function(item){return /[I!J]VT$/i.test(item.match[3]);})||titleRows[0];
+    if(yearMake){setFieldFromEvidence(definition,fields,"year",{rawValue:yearMake.match[1],sourceLines:[yearMake.line.raw],lineNumbers:[yearMake.line.lineNumber]},sourceLabel,"high",true);setFieldFromEvidence(definition,fields,"make",{rawValue:/^CHEVR$/i.test(yearMake.match[2])?"CHVR":yearMake.match[2],sourceLines:[yearMake.line.raw],lineNumbers:[yearMake.line.lineNumber]},sourceLabel,"high",true);}
+    else {const printedYear=firstMatchingLine(lines,/\b((?:19|20)\d{2})\s*\|/);if(printedYear)setFieldFromEvidence(definition,fields,"year",{rawValue:printedYear.match[1],sourceLines:[printedYear.line.raw],lineNumbers:[printedYear.line.lineNumber]},sourceLabel,"medium",true);}
+    if(titleRow&&/[I!J]VT$/i.test(titleRow.match[3]))setFieldFromEvidence(definition,fields,"model",{rawValue:titleRow.match[3].replace(/^[I!](?=VT$)/i,"J"),sourceLines:[titleRow.line.raw],lineNumbers:[titleRow.line.lineNumber]},sourceLabel,"medium",true);
+    const owner=firstMatchingLine(lines,/^[^A-Z]*([A-Z][A-Z.'-]+,\s*[A-Z][A-Z.'-]+)(?:\s+\d.*)?$/i);
+    if(owner)setFieldFromEvidence(definition,fields,"ownerName",{rawValue:owner.match[1],sourceLines:[owner.line.raw],lineNumbers:[owner.line.lineNumber]},sourceLabel,"high",true);
+    if(firstMatchingLine(lines,/certificate of title/i)&&firstMatchingLine(lines,/exhibit\s*b/i)){["ownerName","vin"].forEach(function(id){if(fields[id]&&/^(?:exhibit|certificate|automobile|actual|mileage)/i.test(String(fields[id].value||"")))fields[id]=emptyField(fieldById(definition,id));});}
+  }
+  if(ruleset.startsWith("court_document")){
+    const court=firstMatchingLine(lines,/united states bankruptcy co(?:urt)?/i);
+    if(court)setFieldFromEvidence(definition,fields,"courtName",{rawValue:"United States Bankruptcy Court",sourceLines:[court.line.raw],lineNumbers:[court.line.lineNumber]},sourceLabel,"high",true);
+    const caseLine=firstMatchingLine(lines,/\bcase no\.?\s*:?\s*([A-Z0-9#X-]{4,})/i)||firstMatchingLine(lines,/^([X0]{2}-[X0#-]{4,}(?:-[A-Z]{1,3})?)$/i);
+    if(caseLine)setFieldFromEvidence(definition,fields,"caseNumber",{rawValue:caseLine.match[1],sourceLines:[caseLine.line.raw],lineNumbers:[caseLine.line.lineNumber]},sourceLabel,"high",true);
+    const motion=firstMatchingLine(lines,/motion for relief from automatic stay/i),notice=firstMatchingLine(lines,/hearing on motion for relief/i),takeNotice=notice&&firstMatchingLine(lines,/please take notice/i,notice.index,Math.min(lines.length,notice.index+15));
+    if(motion)setFieldFromEvidence(definition,fields,"documentTitle",{rawValue:"Motion for Relief from Automatic Stay",sourceLines:[motion.line.raw],lineNumbers:[motion.line.lineNumber]},sourceLabel,"high",true);
+    else if(notice&&takeNotice)setFieldFromEvidence(definition,fields,"documentTitle",{rawValue:"Notice of Hearing",sourceLines:[notice.line.raw,takeNotice.line.raw],lineNumbers:[notice.line.lineNumber,takeNotice.line.lineNumber]},sourceLabel,"high",true);
+  }
+  if(ruleset.startsWith("counseling_certificate")){
+    const briefing=firstMatchingLine(lines,/^bankruptcy briefing certificate$/i);
+    if(briefing)setFieldFromEvidence(definition,fields,"courseType",{rawValue:"Bankruptcy Briefing",sourceLines:[briefing.line.raw],lineNumbers:[briefing.line.lineNumber]},sourceLabel,"high",true);
+    const visiblyBlank=/\bI CERTIFY that on\s*[\[|I\s]+.*received from\s+[A-Z_\u2014]{3,}/i.test(text);
+    if(visiblyBlank)["debtorName","providerName","completionDate","certificateNumber"].forEach(function(id){fields[id]=emptyField(fieldById(definition,id));});
   }
   if(ruleset.startsWith("other_document")){
     const explicitTitle=firstMatchingLine(lines,/^title\s*:?\s*(.+)$/i),explicitFrom=firstMatchingLine(lines,/^from\s*:?\s*(.+)$/i);
@@ -772,6 +904,15 @@ function applyDocumentLayout(definition,text,fields,sourceLabel){
         if(!rawValue)return;
         setFieldFromEvidence(definition,fields,item.id,{rawValue:rawValue,sourceLines:inline?[label.line.raw]:currency?[label.line.raw].concat(currency.sourceLines):[label.line.raw,next.raw],lineNumbers:inline?[label.line.lineNumber]:currency?[label.line.lineNumber].concat(currency.lineNumbers):[label.line.lineNumber,next.lineNumber]},sourceLabel,"high",true);
       });
+      const combined=firstMatchingLine(lines,/^date issued\s+(.+?)\s+borrower\s+(.+?)\s+loan term\b/i),lenderLine=firstMatchingLine(lines,/\blender\s+(.+?)\s+loan\s*id\s*#?\s*([A-Z0-9-]+)/i),loanId=firstMatchingLine(lines,/loan\s*id\s*#?\s*([A-Z0-9-]{4,})/i);
+      if(combined){setFieldFromEvidence(definition,fields,"documentDate",{rawValue:combined.match[1],sourceLines:[combined.line.raw],lineNumbers:[combined.line.lineNumber]},sourceLabel,"high",true);setFieldFromEvidence(definition,fields,"personName",{rawValue:combined.match[2],sourceLines:[combined.line.raw],lineNumbers:[combined.line.lineNumber]},sourceLabel,"high",true);}
+      if(lenderLine)setFieldFromEvidence(definition,fields,"issuerName",{rawValue:lenderLine.match[1],sourceLines:[lenderLine.line.raw],lineNumbers:[lenderLine.line.lineNumber]},sourceLabel,"high",true);
+      if(loanId)setFieldFromEvidence(definition,fields,"referenceLast4",{rawValue:loanId.match[1],sourceLines:[loanId.line.raw],lineNumbers:[loanId.line.lineNumber]},sourceLabel,"high",true);
+      const lenderOnly=firstMatchingLine(lines,/\blender\s+([A-Z][A-Za-z&.'-]+(?:\s+[A-Z][A-Za-z&.'-]+){1,5})(?:\s+loan\b|\s*$)/i),jointName=firstMatchingLine(lines,/^([A-Z][A-Za-z.'-]+\s+[A-Z][A-Za-z.'-]+\s+and\s+[A-Z][A-Za-z.'-]+\s+[A-Z][A-Za-z.'-]+)$/i,0,Math.min(lines.length,35));
+      if(lenderOnly)setFieldFromEvidence(definition,fields,"issuerName",{rawValue:lenderOnly.match[1],sourceLines:[lenderOnly.line.raw],lineNumbers:[lenderOnly.line.lineNumber]},sourceLabel,"high",true);
+      if(jointName)setFieldFromEvidence(definition,fields,"personName",{rawValue:jointName.match[1],sourceLines:[jointName.line.raw],lineNumbers:[jointName.line.lineNumber]},sourceLabel,"high",true);
+      const cashLabels=lines.map(function(line,index){return /^cash to close$/i.test(line.clean)?index:-1;}).filter(function(index){return index>=0;}),cashEvidence=cashLabels.map(function(index){for(let next=index;next<Math.min(lines.length,index+6);next+=1){const amount=currenciesInLine(lines[next])[0];if(amount)return amount;}return null;}).filter(Boolean)[0];
+      if(cashEvidence)setFieldFromEvidence(definition,fields,"amount",cashEvidence,sourceLabel,"high",true);
     }
   }
   return fields;
@@ -1514,17 +1655,24 @@ globalThis.__documentIntakeTestingRules=page10Rules;
     return lines.join("\n");
   }
 
-  async function recognizeGenericImage(file){
+  async function recognizeGenericImage(file,kind){
     if(!isImageFile(file))return {raw:"",warning:"",source:"Local image OCR"};
     let bitmap=null;
     try{
       bitmap=await createImageBitmap(file);
       const variants=[{label:"Reading the full document…",pageSegMode:"3",canvas:createReadingVariant(bitmap,"color")},{label:"Checking faint and high-contrast text…",pageSegMode:"6",canvas:createReadingVariant(bitmap,"contrast")},{label:"Checking boxed fields and columns…",pageSegMode:"11",canvas:createReadingVariant(bitmap,"threshold")}];
+      if(kind==="social-security-card"){
+        const base={x:0,y:0,width:1,height:1};
+        variants.push({label:"Reading the card number…",pageSegMode:"7",whitelist:"0123456789-",canvas:buildAdaptiveLineCanvas(bitmap,base,{x:.25,y:.37,width:.51,height:.14},10)});
+        variants.push({label:"Cross-checking the card number…",pageSegMode:"13",whitelist:"0123456789-",canvas:buildAdaptiveLineCanvas(bitmap,base,{x:.25,y:.37,width:.51,height:.14},4)});
+        variants.push({label:"Reading the name on the card…",pageSegMode:"7",whitelist:"ABCDEFGHIJKLMNOPQRSTUVWXYZ .'-",canvas:buildAdaptiveLineCanvas(bitmap,base,{x:.23,y:.53,width:.56,height:.13},14)});
+        variants.push({label:"Cross-checking the name on the card…",pageSegMode:"13",whitelist:"ABCDEFGHIJKLMNOPQRSTUVWXYZ .'-",canvas:buildAdaptiveLineCanvas(bitmap,base,{x:.23,y:.53,width:.56,height:.13},6)});
+      }
       bitmap.close();bitmap=null;
       const worker=await getOcrWorker(),parts=[];ocrPassCount=variants.length;
       for(let index=0;index<variants.length;index+=1){
         const variant=variants[index];ocrPassIndex=index;ocrPassLabel=variant.label;
-        await worker.setParameters({tessedit_pageseg_mode:variant.pageSegMode,preserve_interword_spaces:"1",tessedit_char_whitelist:""});
+        await worker.setParameters({tessedit_pageseg_mode:variant.pageSegMode,preserve_interword_spaces:"1",tessedit_char_whitelist:variant.whitelist||""});
         const response=await worker.recognize(variant.canvas,{rotateAuto:index===0});
         const value=String(response&&response.data&&response.data.text||"").trim();if(value)parts.push(value);
       }
@@ -1639,7 +1787,7 @@ globalThis.__documentIntakeTestingRules=page10Rules;
       const definition=kind&&RUNTIME_ARTIFACT.definitions[kind],result=await recognizePdf(selectedFile,definition?definition.pageLimit:6);
       result.structured=null;result.barcode={raw:"",method:null,warning:""};return result;
     }
-    if(isImageFile(selectedFile)){const result=await recognizeGenericImage(selectedFile);result.structured=null;result.barcode={raw:"",method:null,warning:""};return result;}
+    if(isImageFile(selectedFile)){const result=await recognizeGenericImage(selectedFile,kind);result.structured=null;result.barcode={raw:"",method:null,warning:""};return result;}
     return {raw:"",warning:"This file type is not supported. Choose JPG, PNG, WEBP, PDF, or TXT.",source:"Local document reader",structured:null,barcode:{raw:"",method:null,warning:""}};
   }
 
@@ -1763,7 +1911,7 @@ globalThis.__documentIntakeTestingRules=page10Rules;
       ];
       const uniqueWarnings=Array.from(new Set(warnings));
       render({
-        pipelineVersion:"page10_local_document_pipeline_v5",runAt:new Date().toISOString(),sourceFile:{name:selectedFile?selectedFile.name:"pasted-document.txt",type:selectedFile?selectedFile.type:"pasted-text",size:selectedFile?selectedFile.size:null},licenseBackFile:selectedLicenseBackFile?{name:selectedLicenseBackFile.name,type:selectedLicenseBackFile.type,size:selectedLicenseBackFile.size}:null,barcodeEvidence:{found:Boolean(read.barcode&&read.barcode.raw),method:read.barcode&&read.barcode.method||null,rawValueStored:false},evidenceTextSha256:await sha256Value(combinedText),classification:classification,selectedDocumentKind:selectedKind||null,documentKind:definition?resolution.kind:null,documentLabel:definition?definition.label:null,
+        pipelineVersion:"page10_local_document_pipeline_v6",runAt:new Date().toISOString(),sourceFile:{name:selectedFile?selectedFile.name:"pasted-document.txt",type:selectedFile?selectedFile.type:"pasted-text",size:selectedFile?selectedFile.size:null},licenseBackFile:selectedLicenseBackFile?{name:selectedLicenseBackFile.name,type:selectedLicenseBackFile.type,size:selectedLicenseBackFile.size}:null,barcodeEvidence:{found:Boolean(read.barcode&&read.barcode.raw),method:read.barcode&&read.barcode.method||null,rawValueStored:false},evidenceTextSha256:await sha256Value(combinedText),classification:classification,selectedDocumentKind:selectedKind||null,documentKind:definition?resolution.kind:null,documentLabel:definition?definition.label:null,
         runtimeArtifact:{artifactId:RUNTIME_ARTIFACT.artifactId,version:RUNTIME_ARTIFACT.version,rollbackVersion:RUNTIME_ARTIFACT.rollbackVersion,approvalState:RUNTIME_ARTIFACT.approvalState,expectedChecksum:RUNTIME_ARTIFACT.checksum,actualChecksum:artifactCheck.actual,verified:artifactCheck.verified,liveSheetRead:false},
         selectedBlueprint:definition?{ruleset:definition.ruleset,fieldIds:definition.fields.map(function(field){return field.id;}),reviewOnly:true}:null,fields:fields,foundCount:foundCount,fieldCount:definition?definition.fields.length:0,validation:validation,baseWarnings:uniqueWarnings,warnings:uniqueWarnings.slice(),status:foundCount?"ready_for_human_review":"needs_clearer_document",route:attorneyReviewRequired?"attorney_review":"document_review",review:{documentReviewRequired:true,attorneyReviewRequired:attorneyReviewRequired,correctionCount:0,corrections:{},correctionsRequireStaffVerification:false,approvalDecision:null,approvedBy:null,approvedAt:null},pipeline:pipelineStages,canonicalWriteAllowed:false,appliedToIntake:false,documentStored:false,documentTransmitted:false
       });
