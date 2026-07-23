@@ -339,10 +339,10 @@ function fieldSpec(id,label,valueType,options){
 
 const RUNTIME_ARTIFACT={
   artifactId:"page10_document_review_blueprints",
-  version:"2026-07-22.review-v12",
-  rollbackVersion:"2026-07-22.review-v11",
+  version:"2026-07-22.review-v13",
+  rollbackVersion:"2026-07-22.review-v12",
   approvalState:"review_only",
-  checksum:"sha256:5d2870080af4365619ea8e720d668ca67690075fd6e9bba3c99bd0d2e97f01b7",
+  checksum:"sha256:ac6ce73a16f814cfab081920eda57f0c964fa396b29c1422ce8f12c2884f4a77",
   definitions:{
     "driver-license":{label:"Driver's license or photo ID",ruleset:"driver_license_review_v3",attorneyReviewRequired:false,minimumSignals:1,pageLimit:2,classificationSignals:[{pattern:"driver'?s license|identification card",label:"license label"},{pattern:"date of birth|\\bdob\\b|restrictions|endorsements",label:"license fields"},{pattern:"(?:^|[\\s._-])(?:license|driver[-_ ]?id|dl)(?:[\\s._-]|$)",label:"license file name"},{pattern:"(?:^|[\\r\\n])(?:DL|ID)?(?:DCS|DAC|DBB|DAG)",label:"AAMVA barcode fields"}],ignored:"license number, expiration date, class, physical descriptors, restrictions, endorsements, donor status",fields:[fieldSpec("fullName","Full legal name","string",{required:true,aliases:["full legal name","full name","name"]}),fieldSpec("dateOfBirth","Date of birth","date",{required:true,aliases:["date of birth","birth date","dob"]}),fieldSpec("streetAddress","Street address","string",{aliases:["street address","residence address","address"]}),fieldSpec("city","City","string"),fieldSpec("state","State","string",{normalizer:"state"}),fieldSpec("zipCode","ZIP code","string",{normalizer:"zip",aliases:["zip code","postal code","zip"]})]},
     "social-security-card":{label:"Social Security card",ruleset:"social_security_card_review_v1",attorneyReviewRequired:true,minimumSignals:2,pageLimit:1,classificationSignals:[{pattern:"social security administration",label:"SSA issuer"},{pattern:"social security card|social security number",label:"card label"},{pattern:"valid for work|signature",label:"card language"}],ignored:"the full Social Security number after verification, signatures, card-control markings",fields:[fieldSpec("fullName","Name on card","string",{required:true,aliases:["name on card","name"]}),fieldSpec("ssnLast4","SSN last four","string",{required:true,normalizer:"last4",sensitive:"ssn",aliases:["social security number","ssn","number"]})]},
@@ -1608,6 +1608,8 @@ globalThis.__documentIntakeTestingRules=page10Rules;
     ];
     const fallback=[
       {label:"Reading the full license…",pageSegMode:"6",canvas:buildOcrCanvas(ocrSource,ocrBase,2400,2)},
+      {label:"Enhancing the full license…",pageSegMode:"11",canvas:buildCardTargetCanvas(bitmap,base,{x:0,y:0,width:1,height:1})},
+      {label:"Isolating printed license text…",pageSegMode:"11",canvas:buildCardInkCanvas(bitmap,base,{x:0,y:0,width:1,height:1})},
       {label:"Reading the name and address area…",pageSegMode:"11",canvas:buildOcrCanvas(ocrSource,composeRegion(ocrBase,{x:.26,y:.18,width:.73,height:.68}),2200,2.4)},
       {label:"Reading the date area…",pageSegMode:"6",canvas:buildOcrCanvas(ocrSource,composeRegion(ocrBase,{x:.62,y:.18,width:.37,height:.42}),1600,3)}
     ];
@@ -1947,7 +1949,7 @@ globalThis.__documentIntakeTestingRules=page10Rules;
       ];
       const uniqueWarnings=Array.from(new Set(warnings));
       render({
-        pipelineVersion:"page10_local_document_pipeline_v12",runAt:new Date().toISOString(),sourceFile:{name:selectedFile?selectedFile.name:"pasted-document.txt",type:selectedFile?selectedFile.type:"pasted-text",size:selectedFile?selectedFile.size:null},licenseBackFile:selectedLicenseBackFile?{name:selectedLicenseBackFile.name,type:selectedLicenseBackFile.type,size:selectedLicenseBackFile.size}:null,barcodeEvidence:{found:Boolean(read.barcode&&read.barcode.raw),method:read.barcode&&read.barcode.method||null,rawValueStored:false},evidenceTextSha256:await sha256Value(combinedText),classification:classification,selectedDocumentKind:selectedKind||null,documentKind:definition?resolution.kind:null,documentLabel:definition?definition.label:null,
+        pipelineVersion:"page10_local_document_pipeline_v13",runAt:new Date().toISOString(),sourceFile:{name:selectedFile?selectedFile.name:"pasted-document.txt",type:selectedFile?selectedFile.type:"pasted-text",size:selectedFile?selectedFile.size:null},licenseBackFile:selectedLicenseBackFile?{name:selectedLicenseBackFile.name,type:selectedLicenseBackFile.type,size:selectedLicenseBackFile.size}:null,barcodeEvidence:{found:Boolean(read.barcode&&read.barcode.raw),method:read.barcode&&read.barcode.method||null,rawValueStored:false},evidenceTextSha256:await sha256Value(combinedText),classification:classification,selectedDocumentKind:selectedKind||null,documentKind:definition?resolution.kind:null,documentLabel:definition?definition.label:null,
         runtimeArtifact:{artifactId:RUNTIME_ARTIFACT.artifactId,version:RUNTIME_ARTIFACT.version,rollbackVersion:RUNTIME_ARTIFACT.rollbackVersion,approvalState:RUNTIME_ARTIFACT.approvalState,expectedChecksum:RUNTIME_ARTIFACT.checksum,actualChecksum:artifactCheck.actual,verified:artifactCheck.verified,liveSheetRead:false},
         selectedBlueprint:definition?{ruleset:definition.ruleset,fieldIds:definition.fields.map(function(field){return field.id;}),reviewOnly:true}:null,fields:fields,foundCount:foundCount,fieldCount:definition?definition.fields.length:0,validation:validation,baseWarnings:uniqueWarnings,warnings:uniqueWarnings.slice(),status:foundCount?"ready_for_human_review":"needs_clearer_document",route:attorneyReviewRequired?"attorney_review":"document_review",review:{documentReviewRequired:true,attorneyReviewRequired:attorneyReviewRequired,correctionCount:0,corrections:{},correctionsRequireStaffVerification:false,approvalDecision:null,approvedBy:null,approvedAt:null},pipeline:pipelineStages,canonicalWriteAllowed:false,appliedToIntake:false,documentStored:false,documentTransmitted:false
       });
