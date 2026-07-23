@@ -35,11 +35,13 @@ const {
   applyReviewCorrection,
   artifactChecksumPayload,
   classifyDocument,
+  extractDocumentFields,
   extractLabeledFields,
   maskSensitiveEvidence,
   mergeDriverEvidence,
   normalizeFieldValue,
   parseAamva,
+  pdfTextFromItems,
   resetReviewCorrection,
   resolveDocumentKind,
   sha256Value,
@@ -245,7 +247,7 @@ for (const [kind, fixture] of Object.entries(PROFILE_CASES)) {
   const extraction =
     kind === 'driver-license'
       ? mergeDriverEvidence(definition, '', fixture.text, null)
-      : { fields: extractLabeledFields(definition, fixture.text, 'Local document text'), warnings: [] };
+      : { fields: extractDocumentFields(definition, fixture.text, 'Local document text'), warnings: [] };
   const validation = validateFields(definition, extraction.fields, fixture.text, '');
 
   assert.equal(validation.passed, true, `${kind}: ${validation.blocking.join('; ')}`);
@@ -262,6 +264,61 @@ for (const [kind, fixture] of Object.entries(PROFILE_CASES)) {
 }
 
 assert.equal(classifyDocument('notes.txt', 'Unstructured notes without document labels.').kind, 'unknown');
+
+const blankTaxFormFields = extractDocumentFields(
+  RUNTIME_ARTIFACT.definitions['tax-return'],
+  `Form 1040 2025 U.S. Individual Income Tax Return
+Your first name and middle initial
+Last name
+Home address (number and street). If you have a P.O. box, see instructions.
+Apt. no.
+Filing Status
+Single
+Married filing jointly`,
+  'Official blank-form text layer',
+);
+assert.equal(blankTaxFormFields.taxYear.value, '2025');
+assert.equal(blankTaxFormFields.taxpayerName.value, null);
+assert.equal(blankTaxFormFields.address.value, null);
+assert.equal(blankTaxFormFields.filingStatus.value, null);
+
+const instruction1099Fields = extractDocumentFields(
+  RUNTIME_ARTIFACT.definitions['1099'],
+  `Instructions for Form 1099-MISC (2012)
+PAYER'S name, street address, city, state, ZIP code, and telephone no.
+2
+Payments for which a Form 1099-MISC is not required include the following.
+RECIPIENT'S name
+services (report on Form W-2).`,
+  'Official instruction text layer',
+);
+assert.equal(instruction1099Fields.taxYear.value, '2012');
+assert.equal(instruction1099Fields.payerName.value, null);
+assert.equal(instruction1099Fields.recipientName.value, null);
+
+const blankVehicleTitleFields = extractDocumentFields(
+  RUNTIME_ARTIFACT.definitions['vehicle-title'],
+  `APPLICATION FOR TITLE
+Year:
+Make:
+Model:
+Vehicle identification number:`,
+  'Official blank-form text layer',
+);
+assert.equal(blankVehicleTitleFields.year.value, null);
+assert.equal(blankVehicleTitleFields.make.value, null);
+assert.equal(blankVehicleTitleFields.model.value, null);
+
+assert.equal(
+  pdfTextFromItems([
+    { str: 'Employee name', transform: [1, 0, 0, 1, 20, 700], width: 80 },
+    { str: 'Morgan Reed', transform: [1, 0, 0, 1, 240, 700], width: 70 },
+    { str: 'Gross pay', transform: [1, 0, 0, 1, 20, 680], width: 60 },
+    { str: '$2,450.00', transform: [1, 0, 0, 1, 240, 680], width: 65 },
+  ]),
+  'Employee name        Morgan Reed\nGross pay        $2,450.00',
+  'PDF items must be reconstructed into visual rows before extraction',
+);
 
 const mismatch = resolveDocumentKind(
   classifyDocument(PROFILE_CASES.w2.fileName, PROFILE_CASES.w2.text),
