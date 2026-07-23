@@ -339,10 +339,10 @@ function fieldSpec(id,label,valueType,options){
 
 const RUNTIME_ARTIFACT={
   artifactId:"page10_document_review_blueprints",
-  version:"2026-07-22.review-v15",
-  rollbackVersion:"2026-07-22.review-v14",
+  version:"2026-07-23.review-v16",
+  rollbackVersion:"2026-07-22.review-v15",
   approvalState:"review_only",
-  checksum:"sha256:c7b07fadb826ffa222656822a076fec59fb722af957d54729949fa6d6d6cbc7c",
+  checksum:"sha256:6569f9bbd83737c372b99366c52739e48c8ef1fd019a55e4c6745440d4ea6245",
   definitions:{
     "driver-license":{label:"Driver's license or photo ID",ruleset:"driver_license_review_v3",attorneyReviewRequired:false,minimumSignals:1,pageLimit:2,classificationSignals:[{pattern:"driver'?s license|identification card",label:"license label"},{pattern:"date of birth|\\bdob\\b|restrictions|endorsements",label:"license fields"},{pattern:"(?:^|[\\s._-])(?:license|driver[-_ ]?id|dl)(?:[\\s._-]|$)",label:"license file name"},{pattern:"(?:^|[\\r\\n])(?:DL|ID)?(?:DCS|DAC|DBB|DAG)",label:"AAMVA barcode fields"}],ignored:"license number, expiration date, class, physical descriptors, restrictions, endorsements, donor status",fields:[fieldSpec("fullName","Full legal name","string",{required:true,aliases:["full legal name","full name","name"]}),fieldSpec("dateOfBirth","Date of birth","date",{required:true,aliases:["date of birth","birth date","dob"]}),fieldSpec("streetAddress","Street address","string",{aliases:["street address","residence address","address"]}),fieldSpec("city","City","string"),fieldSpec("state","State","string",{normalizer:"state"}),fieldSpec("zipCode","ZIP code","string",{normalizer:"zip",aliases:["zip code","postal code","zip"]})]},
     "social-security-card":{label:"Social Security card",ruleset:"social_security_card_review_v1",attorneyReviewRequired:true,minimumSignals:2,pageLimit:1,classificationSignals:[{pattern:"social security administration",label:"SSA issuer"},{pattern:"social security card|social security number",label:"card label"},{pattern:"valid for work|signature",label:"card language"}],ignored:"the full Social Security number after verification, signatures, card-control markings",fields:[fieldSpec("fullName","Name on card","string",{required:true,aliases:["name on card","name"]}),fieldSpec("ssnLast4","SSN last four","string",{required:true,normalizer:"last4",sensitive:"ssn",aliases:["social security number","ssn","number"]})]},
@@ -366,22 +366,22 @@ const RUNTIME_ARTIFACT={
 };
 
 Object.assign(RUNTIME_ARTIFACT.definitions["social-security-card"],{ruleset:"social_security_card_review_v2",classificationSignals:[{pattern:"social security administration|social security",label:"SSA issuer"},{pattern:"social security card|social security number|\\b\\d{3}[- ]\\d{2}[- ]\\d{4}\\b",label:"card label"},{pattern:"valid for work|signature|u\\.s\\. citizen",label:"card language"}]});
-RUNTIME_ARTIFACT.definitions["social-security-card"].classificationSignals=[{pattern:"social security administration|social security|social[-_ ]?(?:security[-_ ]?)?card|\\bssn\\b",label:"SSA issuer"},{pattern:"social security card|social security number|\\b\\d{3}[- ]\\d{2}[- ]\\d{4}\\b|\\d[\\d -]{7,}",label:"card label"},{pattern:"valid for work|signature|u\\.?s\\.?[,\\s]+citizen",label:"card language"}];
-Object.assign(RUNTIME_ARTIFACT.definitions["other-income-proof"],{ruleset:"other_income_review_v2",classificationSignals:[{pattern:"benefit statement|award letter|benefits? verification|benefit verification letter",label:"benefit document"},{pattern:"social security benefit|unemployment|pension|retirement benefit|disability",label:"income type"},{pattern:"monthly benefit|monthly social security|gross amount|payment amount",label:"benefit amount"}]});
-Object.assign(RUNTIME_ARTIFACT.definitions["tax-return"],{ruleset:"tax_return_review_v3"});
+RUNTIME_ARTIFACT.definitions["social-security-card"].classificationSignals=[{pattern:"social security administration|social[-_ ]?(?:security[-_ ]?)?card|\\bssn\\b",label:"SSA issuer"},{pattern:"social security card|social security number|\\b\\d{3}[- ]\\d{2}[- ]\\d{4}\\b|\\d[\\d -]{7,}",label:"card label"},{pattern:"valid for work|u\\.?s\\.?[,\\s]+citizen",label:"card language"}];
+Object.assign(RUNTIME_ARTIFACT.definitions["other-income-proof"],{ruleset:"other_income_review_v3",classificationSignals:[{pattern:"benefit statement|award letter|benefits? verification|benefit verification letter|social security statement",label:"benefit document"},{pattern:"social security.*benefits|supplemental security income|unemployment|pension|retirement benefit|disability benefits|survivors benefits",label:"income type"},{pattern:"monthly benefit|monthly social security|gross amount|payment amount|benefit amount|personalized monthly retirement benefit",label:"benefit amount"}]});
+Object.assign(RUNTIME_ARTIFACT.definitions["tax-return"],{ruleset:"tax_return_review_v4",classificationSignals:[{pattern:"\\bform 1040\\b|individual income tax return|(?:^|[\\s._-])(?:tax[-_ ]?)?1040(?:[\\s._-]|$)",label:"Form 1040"},{pattern:"adjusted gross income|taxable income",label:"tax income fields"},{pattern:"refund|amount you owe|filing status",label:"tax result fields"}]});
 Object.assign(RUNTIME_ARTIFACT.definitions.w2,{ruleset:"w2_review_v3"});
 RUNTIME_ARTIFACT.definitions.w2.classificationSignals[0]={pattern:"\\bform\\s*w\\s*-?\\s*2\\b",label:"Form W-2"};
 Object.assign(RUNTIME_ARTIFACT.definitions["1099"],{ruleset:"form_1099_review_v3"});
 Object.assign(RUNTIME_ARTIFACT.definitions["property-valuation"],{ruleset:"property_valuation_review_v2",classificationSignals:[{pattern:"zestimate|zillow|property valuation|notice of valuation|estimated market value",label:"property valuation"},{pattern:"county assessor|tax assessment|parcel number",label:"assessment record"},{pattern:"assessed value|actual value|market value|property value|property address",label:"valuation fields"}]});
-Object.assign(RUNTIME_ARTIFACT.definitions["vehicle-valuation"],{ruleset:"vehicle_valuation_review_v2"});
+Object.assign(RUNTIME_ARTIFACT.definitions["vehicle-valuation"],{ruleset:"vehicle_valuation_review_v3",classificationSignals:[{pattern:"kelley blue book|\\bkbb\\b|vehicle valuation",label:"vehicle valuation"},{pattern:"trade-in value|private party value|estimated value",label:"valuation amount"},{pattern:"mileage|odometer|vehicle condition",label:"vehicle details"},{pattern:"estimated vehicle value|valuation source|\\bdvac\\b|diminished value appraisal",label:"valuation result"}]});
 fieldById(RUNTIME_ARTIFACT.definitions["vehicle-valuation"],"vinLast4").normalizer="vinLast4";
 Object.assign(RUNTIME_ARTIFACT.definitions["investment-statement"],{ruleset:"investment_statement_review_v2",classificationSignals:[{pattern:"investment statement|investment report|retirement statement|brokerage statement",label:"investment statement"},{pattern:"401\\s*\\(?k\\)?|\\bira\\b|pension|annuity|mutual fund|brokerage",label:"account type"},{pattern:"ending value|account value|vested balance|portfolio value",label:"account value"}]});
-Object.assign(RUNTIME_ARTIFACT.definitions["debt-notice"],{ruleset:"debt_statement_review_v3"});
-Object.assign(RUNTIME_ARTIFACT.definitions["mortgage-statement"],{ruleset:"mortgage_statement_review_v3",classificationSignals:[{pattern:"\\bform 1098\\b|mortgage interest statement",label:"mortgage form"},{pattern:"mortgage statement|loan servicer|escrow",label:"mortgage statement language"},{pattern:"outstanding principal|principal balance|payment due date|payment due|property address",label:"mortgage fields"}]});
-Object.assign(RUNTIME_ARTIFACT.definitions["foreclosure-repossession"],{ruleset:"foreclosure_repossession_review_v2"});
-Object.assign(RUNTIME_ARTIFACT.definitions["vehicle-title"],{ruleset:"vehicle_title_review_v3",classificationSignals:[{pattern:"certificate of title|vehicle title|(?:^|[\\s._-])(?:vehicle[-_ ]?)?title(?:[\\s._-]|$)",label:"vehicle title label"},{pattern:"\\bvin\\b|vehicle identification number",label:"VIN"},{pattern:"lienholder|odometer|vehicle make|vehicle model|actual mileage",label:"vehicle fields"}]});
+Object.assign(RUNTIME_ARTIFACT.definitions["debt-notice"],{ruleset:"debt_statement_review_v4",classificationSignals:[{pattern:"collection notice|debt collector|creditor|amount due|billing statement|cobrador de deudas",label:"debt statement language"},{pattern:"account number|balance owed|past due|minimum payment|n.mero de cuenta|monto total de la deuda",label:"debt account fields"},{pattern:"lawsuit|summons|judgment|garnishment|disputar la deuda|acreedor",label:"legal collection signal"}]});
+Object.assign(RUNTIME_ARTIFACT.definitions["mortgage-statement"],{ruleset:"mortgage_statement_review_v4",classificationSignals:[{pattern:"\\bform 1098\\b|mortgage interest statement|(?:^|[\\s._-])mortgage(?:[\\s._-]|$)",label:"mortgage form"},{pattern:"mortgage statement|loan servicer|escrow",label:"mortgage statement language"},{pattern:"outstanding principal|principal balance|payment due date|payment due|property address|regular monthly payment|past unpaid amount",label:"mortgage fields"},{pattern:"bankruptcy message|post-petition payment|pre-petition arrearage",label:"bankruptcy statement"}]});
+Object.assign(RUNTIME_ARTIFACT.definitions["foreclosure-repossession"],{ruleset:"foreclosure_repossession_review_v3",classificationSignals:[{pattern:"foreclosure|notice of sale|trustee sale|notice of default",label:"foreclosure language"},{pattern:"repossession|right to cure|intent to repossess|foreclosure commissioner",label:"enforcement process"},{pattern:"sale date|cure amount|amount to cure|redemption|collateral|secured party|foreclosure sale|public auction",label:"enforcement fields"}]});
+Object.assign(RUNTIME_ARTIFACT.definitions["vehicle-title"],{ruleset:"vehicle_title_review_v4",classificationSignals:[{pattern:"certificate of title|vehicle title|(?:^|[\\s._-])vehicle[-_ ]?title(?:[\\s._-]|$)",label:"vehicle title label"},{pattern:"\\bvin\\b|vehicle identification number|title number|certificate number",label:"VIN or title identifier"},{pattern:"lienholder|odometer|vehicle make|vehicle model|actual mileage|year make model",label:"vehicle fields"}]});
 Object.assign(RUNTIME_ARTIFACT.definitions["court-document"],{ruleset:"court_document_review_v2",classificationSignals:[{pattern:"district court|district of|county court|bankruptcy co(?:urt)?|court of",label:"court name"},{pattern:"case no|case number|docket number|civil action|\\bxx[-#x]{3,}",label:"case identifier"},{pattern:"summons|complaint|judgment|support order|garnishment|hearing|motion for relief|automatic stay",label:"court document type"}]});
-Object.assign(RUNTIME_ARTIFACT.definitions["counseling-certificate"],{ruleset:"counseling_certificate_review_v2"});
+Object.assign(RUNTIME_ARTIFACT.definitions["counseling-certificate"],{ruleset:"counseling_certificate_review_v4",classificationSignals:[{pattern:"certificate of counseling|credit counseling certificate|certificate number|bankruptcy briefing certificate",label:"counseling certificate"},{pattern:"pre-bankruptcy credit counseling|briefing concerning credit counseling|bankruptcy briefing",label:"course type"},{pattern:"completion date|completed.*counseling|provider|i certify that on",label:"certificate fields"}]});
 Object.assign(RUNTIME_ARTIFACT.definitions["other-document"],{ruleset:"other_document_review_v2"});
 
 function stableStringify(value){
@@ -629,16 +629,25 @@ function applyDocumentLayout(definition,text,fields,sourceLabel){
   if(ruleset.startsWith("other_income")){
     const issuer=firstMatchingLine(lines,/social security administration/i);
     if(issuer)setFieldFromEvidence(definition,fields,"sourceName",{rawValue:"Social Security Administration",sourceLines:[issuer.line.raw],lineNumbers:[issuer.line.lineNumber]},sourceLabel,"high",true);
-    const date=firstMatchingLine(lines,/^date\s*:\s*([A-Z]+\s+\d{1,2},?\s*\d{4})$/i);
+    const statementIssuer=!issuer&&(firstMatchingLine(lines,/^your social security statement$/i)||firstMatchingLine(lines,/\bssa\.gov\b|myaccount\.ssa\.gov/i));
+    if(statementIssuer)setFieldFromEvidence(definition,fields,"sourceName",{rawValue:"Social Security Administration",sourceLines:[statementIssuer.line.raw],lineNumbers:[statementIssuer.line.lineNumber]},sourceLabel,"high",true);
+    const date=firstMatchingLine(lines,/(?:^|[^A-Z])date\s*[:.\-]?\s*([A-Z]+\s+\d{1,2}[,.]?\s*\d{4})/i);
     if(date)setFieldFromEvidence(definition,fields,"statementDate",{rawValue:date.match[1],sourceLines:[date.line.raw],lineNumbers:[date.line.lineNumber]},sourceLabel,"high",true);
+    const inlineStatement=firstMatchingLine(lines,/^([A-Z][A-Z.'-]*(?:\s+[A-Z][A-Z.'-]*){1,3})\s+([A-Z]+\s+\d{1,2},?\s*\d{4})$/i),statementDate=!date&&(inlineStatement||firstMatchingLine(lines,/^([A-Z]+\s+\d{1,2},?\s*\d{4})$/i));
+    if(statementDate)setFieldFromEvidence(definition,fields,"statementDate",{rawValue:inlineStatement?statementDate.match[2]:statementDate.match[1],sourceLines:[statementDate.line.raw],lineNumbers:[statementDate.line.lineNumber]},sourceLabel,"high",true);
     const claim=firstMatchingLine(lines,/claim number\b/i),person=claim&&firstMatchingLine(lines,/^(?!.*(?:claim|address|avenue|street|road|social|security|information))[A-Z][A-Z.'-]+(?:\s+[A-Z][A-Z.'-]+){1,3}$/i,claim.index+1,Math.min(lines.length,claim.index+6));
     if(person)setFieldFromEvidence(definition,fields,"recipientName",{rawValue:person.line.clean,sourceLines:[person.line.raw],lineNumbers:[person.line.lineNumber]},sourceLabel,"high",true);
+    const statementPerson=!person&&statementIssuer&&lines.slice(0,statementIssuer.index).map(function(line,index){const match=line.clean.match(/^(?!.*(?:social|security|statement|avenue|street|road|benefit|retirement|disability|survivor|medicare))[A-Z][A-Z.'-]+(?:\s+[A-Z][A-Z.'-]+){1,3}$/i),nearby=lines.slice(index+1,Math.min(lines.length,index+4)).some(function(candidate){return /^\d{1,6}\s+[A-Z0-9.' -]+(?:STREET|ST|AVENUE|AVE|ROAD|RD|DRIVE|DR|LANE|LN|BOULEVARD|BLVD)\b/i.test(candidate.clean);});return match&&nearby?{line:line,match:match,index:index}:null;}).find(Boolean);
+    if((!fields.recipientName||fields.recipientName.value===null)&&statementPerson)setFieldFromEvidence(definition,fields,"recipientName",{rawValue:statementPerson.line.clean,sourceLines:[statementPerson.line.raw],lineNumbers:[statementPerson.line.lineNumber]},sourceLabel,"high",true);
+    else if((!fields.recipientName||fields.recipientName.value===null)&&!person&&inlineStatement)setFieldFromEvidence(definition,fields,"recipientName",{rawValue:inlineStatement.match[1],sourceLines:[inlineStatement.line.raw],lineNumbers:[inlineStatement.line.lineNumber]},sourceLabel,"high",true);
     const monthly=firstMatchingLine(lines,/full monthly social security benefit before any deductions is\s*\$\s*([\d,]+(?:\.\d{1,2})?)/i);
     if(monthly)setFieldFromEvidence(definition,fields,"grossAmount",{rawValue:monthly.match[1],sourceLines:[monthly.line.raw],lineNumbers:[monthly.line.lineNumber]},sourceLabel,"high",true);
     const retirement=firstMatchingLine(lines,/entitled to monthly\s+(.+?benefits?)\.?$/i);
     if(retirement)setFieldFromEvidence(definition,fields,"incomeType",{rawValue:retirement.match[1],sourceLines:[retirement.line.raw],lineNumbers:[retirement.line.lineNumber]},sourceLabel,"high",true);
     if(monthly)setFieldFromEvidence(definition,fields,"frequency",{rawValue:"Monthly",sourceLines:[monthly.line.raw],lineNumbers:[monthly.line.lineNumber]},sourceLabel,"high",true);
     else {const monthlyPayment=firstMatchingLine(lines,/regular m(?:onthly|amibly) social security payment/i);if(monthlyPayment)setFieldFromEvidence(definition,fields,"frequency",{rawValue:"Monthly",sourceLines:[monthlyPayment.line.raw],lineNumbers:[monthlyPayment.line.lineNumber]},sourceLabel,"medium",true);}
+    const estimateOnly=Boolean(firstMatchingLine(lines,/personalized monthly retirement benefit\s+estimates|benefit estimates on current law|depending on the age you start/i));
+    if(estimateOnly)["grossAmount","frequency","periodStart","periodEnd","ytdAmount"].forEach(function(id){fields[id]=emptyField(fieldById(definition,id));});
   }
   if(ruleset.startsWith("pay_stub")){
     const employeeMarker=firstMatchingLine(lines,/^employee(?:\s+name)?$/i),incomeMarker=firstMatchingLine(lines,/^(?:income|earnings)$/i,employeeMarker?employeeMarker.index+1:0);
@@ -684,6 +693,8 @@ function applyDocumentLayout(definition,text,fields,sourceLabel){
         break;
       }
     }
+    const blankWageTemplate=Boolean(firstMatchingLine(lines,/properly filled out, this optional form/i)&&firstMatchingLine(lines,/form wh-?501/i));
+    if(blankWageTemplate)definition.fields.forEach(function(spec){fields[spec.id]=emptyField(spec);});
   }
   if(ruleset.startsWith("bank_statement")){
     const summaryStart=firstMatchingLine(lines,/^(?:previous|beginning|opening) balance/i),summaryEnd=firstMatchingLine(lines,/^(?:ending|closing) balance/i,summaryStart?summaryStart.index:0);
@@ -731,16 +742,26 @@ function applyDocumentLayout(definition,text,fields,sourceLabel){
     if(accountType)setFieldFromEvidence(definition,fields,"accountType",{rawValue:accountType.line.clean,sourceLines:[accountType.line.raw],lineNumbers:[accountType.line.lineNumber]},sourceLabel,"medium",true);
   }
   if(ruleset.startsWith("debt_statement")){
+    const spanishDocument=Boolean(firstMatchingLine(lines,/cobrador de deudas|monto total de la deuda|disputar la deuda/i));
     const collector=firstMatchingLine(lines,/^(.{2,80}?)\s+is a debt collector\b/i);
     if(collector)setFieldFromEvidence(definition,fields,"creditorName",{rawValue:collector.match[1],sourceLines:[collector.line.raw],lineNumbers:[collector.line.lineNumber]},sourceLabel,"high",true);
+    const spanishCollector=!collector&&firstMatchingLine(lines,/^(.{2,80}?)\s+es un cobrador de deudas\b/i);
+    if(spanishCollector)setFieldFromEvidence(definition,fields,"creditorName",{rawValue:spanishCollector.match[1],sourceLines:[spanishCollector.line.raw],lineNumbers:[spanishCollector.line.lineNumber]},sourceLabel,"high",true);
     const toLine=firstMatchingLine(lines,/^to:\s*(.+)$/i);
     if(toLine)setFieldFromEvidence(definition,fields,"debtorName",{rawValue:toLine.match[1].replace(/[^\x20-\x7E]+/g,""),sourceLines:[toLine.line.raw],lineNumbers:[toLine.line.lineNumber]},sourceLabel,"high",true);
+    const spanishTo=spanishDocument&&!toLine&&(firstMatchingLine(lines,/\bpara:\s*([A-Z][A-Za-z.'-]*(?:\s+[A-Z][A-Za-z.'-]*){1,3})/i)||firstMatchingLine(lines,/^([A-Z][A-Za-z.'-]*(?:\s+[A-Z][A-Za-z.'-]*){1,3})$/,0,Math.min(lines.length,12)));
+    if(spanishTo)setFieldFromEvidence(definition,fields,"debtorName",{rawValue:spanishTo.match[1],sourceLines:[spanishTo.line.raw],lineNumbers:[spanishTo.line.lineNumber]},sourceLabel,"high",true);
     const totalDebt=firstMatchingLine(lines,/^total amount of the debt now\s*:?\s*\$?\s*([\d,]+(?:\.\d{1,2})?)/i);
     if(totalDebt)setFieldFromEvidence(definition,fields,"balanceOwed",{rawValue:totalDebt.match[1],sourceLines:[totalDebt.line.raw],lineNumbers:[totalDebt.line.lineNumber]},sourceLabel,"high",true);
     const totalDebtLabel=firstMatchingLine(lines,/^total amount of the debt now\s*:?$/i),totalDebtAmount=totalDebtLabel&&currencyLines(lines,totalDebtLabel.index+1,Math.min(lines.length,totalDebtLabel.index+5))[0];
     if(totalDebtAmount)setFieldFromEvidence(definition,fields,"balanceOwed",totalDebtAmount,sourceLabel,"high",true);
+    const spanishTotal=firstMatchingLine(lines,/monto total de la deuda ahora\s*:?\s*\$?\s*([\d,]+(?:\.\d{1,2})?)/i),spanishTotalLabel=!spanishTotal&&firstMatchingLine(lines,/monto total de la deuda ahora\s*:?$/i),spanishTotalAmount=spanishTotalLabel&&currencyLines(lines,spanishTotalLabel.index+1,Math.min(lines.length,spanishTotalLabel.index+4))[0];
+    if(spanishTotal)setFieldFromEvidence(definition,fields,"balanceOwed",{rawValue:spanishTotal.match[1],sourceLines:[spanishTotal.line.raw],lineNumbers:[spanishTotal.line.lineNumber]},sourceLabel,"high",true);
+    else if(spanishTotalAmount)setFieldFromEvidence(definition,fields,"balanceOwed",spanishTotalAmount,sourceLabel,"high",true);
     const account=firstMatchingLine(lines,/account number\s+([\d -]{5,})/i);
     if(account)setFieldFromEvidence(definition,fields,"accountNumberLast4",{rawValue:account.match[1],sourceLines:[account.line.raw],lineNumbers:[account.line.lineNumber]},sourceLabel,"high",true);
+    const spanishAccount=!account&&firstMatchingLine(lines,/n.mero de\s+cuenta\s+([\d -]{5,})/i),spanishAccountMarker=!account&&!spanishAccount&&firstMatchingLine(lines,/n.mero de\s*$/i),spanishAccountNext=spanishAccountMarker&&firstMatchingLine(lines,/^cuenta\s+([\d -]{5,})/i,spanishAccountMarker.index+1,Math.min(lines.length,spanishAccountMarker.index+3));
+    if(spanishAccount||spanishAccountNext){const found=spanishAccount||spanishAccountNext;setFieldFromEvidence(definition,fields,"accountNumberLast4",{rawValue:found.match[1],sourceLines:[found.line.raw],lineNumbers:[found.line.lineNumber]},sourceLabel,"high",true);}
   }
   if(ruleset.startsWith("form_1099")){
     const narrative=firstMatchingLine(lines,/completed form 1099.*?example\.\s+(.+?)\s+is a contractor/i),payerLabel=firstMatchingLine(lines,/^payer['\u2019]?s name\b/i),payerInline=payerLabel&&normalizeSpaces(payerLabel.line.clean.replace(/^payer['\u2019]?s name\s*/i,"")),payer=payerLabel&&!payerInline&&firstMatchingLine(lines,/^(?!.*(?:payer|street address|corrected|void|rents|omb))[A-Z][A-Za-z0-9&.'-]+(?:\s+[A-Z][A-Za-z0-9&.'-]+){0,5}$/i,payerLabel.index+1,Math.min(lines.length,payerLabel.index+8));
@@ -760,15 +781,17 @@ function applyDocumentLayout(definition,text,fields,sourceLabel){
     if(year)setFieldFromEvidence(definition,fields,"taxYear",{rawValue:year.match[1]||year.match[2]||year.match[3],sourceLines:[year.line.raw],lineNumbers:[year.line.lineNumber]},sourceLabel,"high",true);
     const instructionOnly=/\binstructions for form 1099\b/i.test(text)&&!/\bcompleted form 1099\b/i.test(text);
     if(instructionOnly)definition.fields.forEach(function(spec){if(spec.id!=="taxYear")fields[spec.id]=emptyField(spec);});
+    const blankOfficialForm=Boolean(firstMatchingLine(lines,/do not cut or separate forms on this page/i));
+    if(blankOfficialForm)definition.fields.forEach(function(spec){if(spec.id!=="taxYear"&&spec.id!=="formType")fields[spec.id]=emptyField(spec);});
   }
   if(ruleset.startsWith("tax_return")){
     const year=firstMatchingLine(lines,/form\s*1040\s*\(?((?:19|20)\d{2})\)?|individual income tax return\s+((?:19|20)\d{2})/i);
     if(year)setFieldFromEvidence(definition,fields,"taxYear",{rawValue:year.match[1]||year.match[2],sourceLines:[year.line.raw],lineNumbers:[year.line.lineNumber]},sourceLabel,"high",true);
     const firstName=firstMatchingLine(lines,/^your first name and (?:middle )?initial\b/i),inlineFirst=firstName&&normalizeSpaces(firstName.line.clean.replace(/^your first name and (?:middle )?initial\s*/i,"")),lastName=inlineFirst&&!/\blast name\b/i.test(inlineFirst)&&firstMatchingLine(lines,/^last name\s+(.+)$/i,firstName.index+1,Math.min(lines.length,firstName.index+4)),nameLine=firstName&&/\blast name\b/i.test(inlineFirst||"")&&firstMatchingLine(lines,/^([A-Z][A-Z.'-]+(?:\s+[A-Z][A-Z.'-]+){1,3})\s+(?:X|\*|\d)/i,firstName.index+1,Math.min(lines.length,firstName.index+5));
     if(inlineFirst&&!/\blast name\b/i.test(inlineFirst))setFieldFromEvidence(definition,fields,"taxpayerName",{rawValue:normalizeSpaces(inlineFirst+" "+(lastName?lastName.match[1]:"")),sourceLines:[firstName.line.raw].concat(lastName?[lastName.line.raw]:[]),lineNumbers:[firstName.line.lineNumber].concat(lastName?[lastName.line.lineNumber]:[])},sourceLabel,"high",true);
-    else if(nameLine)setFieldFromEvidence(definition,fields,"taxpayerName",{rawValue:nameLine.match[1],sourceLines:[nameLine.line.raw],lineNumbers:[nameLine.line.lineNumber]},sourceLabel,"high",true);
+    else if(nameLine)setFieldFromEvidence(definition,fields,"taxpayerName",{rawValue:nameLine.match[1].replace(/\s+X{1,4}$/i,""),sourceLines:[nameLine.line.raw],lineNumbers:[nameLine.line.lineNumber]},sourceLabel,"high",true);
     const spouseHeader=firstMatchingLine(lines,/^if joint return, spouse['\u2019]?s first name/i),spouseLine=spouseHeader&&firstMatchingLine(lines,/^([A-Z][A-Z.'-]+(?:\s+[A-Z][A-Z.'-]+){1,3})\s+(?:X|\*|\d)/i,spouseHeader.index+1,Math.min(lines.length,spouseHeader.index+5));
-    if(spouseLine)setFieldFromEvidence(definition,fields,"spouseName",{rawValue:spouseLine.match[1],sourceLines:[spouseLine.line.raw],lineNumbers:[spouseLine.line.lineNumber]},sourceLabel,"high",true);
+    if(spouseLine)setFieldFromEvidence(definition,fields,"spouseName",{rawValue:spouseLine.match[1].replace(/\s+X{1,4}$/i,""),sourceLines:[spouseLine.line.raw],lineNumbers:[spouseLine.line.lineNumber]},sourceLabel,"high",true);
     if(!fields.taxpayerName||fields.taxpayerName.value===null){const names=lines.slice(0,35).map(function(line,index){const match=line.clean.match(/^([A-Z][A-Z.'-]+(?:\s+[A-Z][A-Z.'-]+){1,3})\s+(?:X|\*|\d)/);return match&&{line:line,match:match,index:index};}).filter(Boolean),cleanName=function(item){return item.match[1].replace(/(?:\s+X+)+$/,"");};if(names[0])setFieldFromEvidence(definition,fields,"taxpayerName",{rawValue:cleanName(names[0]),sourceLines:[names[0].line.raw],lineNumbers:[names[0].line.lineNumber]},sourceLabel,"high",true);if(names[1]&&(!fields.spouseName||fields.spouseName.value===null))setFieldFromEvidence(definition,fields,"spouseName",{rawValue:cleanName(names[1]),sourceLines:[names[1].line.raw],lineNumbers:[names[1].line.lineNumber]},sourceLabel,"high",true);}
     if(fields.filingStatus&&fields.filingStatus.evidence&&fields.filingStatus.evidence.sourceLines.length>1)fields.filingStatus=emptyField(fieldById(definition,"filingStatus"));
     const address=firstMatchingLine(lines,/^home address(?:\s*\([^)]*\))?\.?\s+(.+)$/i);
@@ -797,6 +820,8 @@ function applyDocumentLayout(definition,text,fields,sourceLabel){
     const printedName=employeeHeader&&lines.slice(employeeHeader.index+1,Math.min(lines.length,employeeHeader.index+35)).map(function(line,index){const match=line.clean.match(/^([A-Z][a-z]+(?:\s+[A-Z][a-z]+){1,3})(?:\s+\d+|\s+[a-z].*|\s*$)/);return match&&{line:line,match:match,index:index};}).filter(function(item){return item&&!/^(?:Statutory|Retirement|Nonqualified|Dependent|Social Security)/.test(item.match[1]);})[0];
     if(printedName)setFieldFromEvidence(definition,fields,"employeeName",{rawValue:printedName.match[1],sourceLines:[printedName.line.raw],lineNumbers:[printedName.line.lineNumber]},sourceLabel,"high",true);
     [{pair:0,first:"wages",second:"federalTaxWithheld"},{pair:1,first:"socialSecurityWages",second:"socialSecurityTaxWithheld"},{pair:2,first:"medicareWages",second:"medicareTaxWithheld"}].forEach(function(mapping){const pair=pairs[mapping.pair];if(!pair)return;setFieldFromEvidence(definition,fields,mapping.first,pair.amounts[0],sourceLabel,"high",true);setFieldFromEvidence(definition,fields,mapping.second,pair.amounts[1],sourceLabel,"high",true);});
+    const blankOfficialForm=Boolean(firstMatchingLine(lines,/do not cut,? fold,? or staple forms on this page/i));
+    if(blankOfficialForm)definition.fields.forEach(function(spec){if(spec.id!=="taxYear")fields[spec.id]=emptyField(spec);});
   }
   if(ruleset.startsWith("property_valuation")){
     const address=firstMatchingLine(lines,/^(?:property\s+)?address\s*:?\s*(.+)$/i)||firstMatchingLine(lines,/^(?!20\d{2}\s+(?:notice|form|tax))\d{1,6}\s+[A-Z0-9.'-]+(?:\s+[A-Z0-9.'-]+){1,5}$/i);
@@ -850,18 +875,21 @@ function applyDocumentLayout(definition,text,fields,sourceLabel){
     if(borrower)setFieldFromEvidence(definition,fields,"borrowerName",{rawValue:borrower.match[1],sourceLines:[borrower.line.raw],lineNumbers:[borrower.line.lineNumber]},sourceLabel,"high",true);
     const address=borrower&&firstMatchingLine(lines,/^\d{1,6}\s+[A-Z][A-Za-z0-9.'-]+(?:\s+[A-Z][A-Za-z0-9.'-]+){1,5}$/i,borrower.index+1,Math.min(lines.length,borrower.index+5));
     if(address)setFieldFromEvidence(definition,fields,"propertyAddress",{rawValue:address.line.clean,sourceLines:[address.line.raw],lineNumbers:[address.line.lineNumber]},sourceLabel,"high",true);
-    const principal=firstMatchingLine(lines,/(?:outstanding\s+)?principal(?: balance)?\s*:?\s*\$?\s*([\d,]+(?:\.\d{1,2})?)/i);
+    const principal=firstMatchingLine(lines,/outstanding\s+principa[lIi](?: balance)?\s*:?\s*\$?\s*([\d,]+(?:\.\d{1,2})?)/i)||firstMatchingLine(lines,/principa[lIi]\s+balance\s*:?\s*\$?\s*([\d,]+(?:\.\d{1,2})?)/i);
     if(principal)setFieldFromEvidence(definition,fields,"principalBalance",{rawValue:principal.match[1],sourceLines:[principal.line.raw],lineNumbers:[principal.line.lineNumber]},sourceLabel,"high",true);
     const monthly=firstMatchingLine(lines,/r[eo]gular monthly payment\s*:?\s*\$?\s*([\d,]+(?:\.\d{1,2})?)/i);
     if(monthly)setFieldFromEvidence(definition,fields,"monthlyPayment",{rawValue:monthly.match[1],sourceLines:[monthly.line.raw],lineNumbers:[monthly.line.lineNumber]},sourceLabel,"high",true);
-    const pastDue=firstMatchingLine(lines,/^(?:past[- ]due amount|overdue payment)\s*:?\s*\$?\s*([\d,]+(?:\.\d{1,2})?)/i);
+    const account=firstMatchingLine(lines,/account number\s+([\d -]{4,})/i);
+    if(account)setFieldFromEvidence(definition,fields,"loanNumberLast4",{rawValue:account.match[1],sourceLines:[account.line.raw],lineNumbers:[account.line.lineNumber]},sourceLabel,"high",true);
+    const pastDue=firstMatchingLine(lines,/(?:past[- ]due amount|past unpaid amount|overdue payment)\s*:?\s*(?:\$|S|5(?=\d{1,3},))?\s*([\d,]+(?:[. ]\d{2})?)/i);
     if(pastDue)setFieldFromEvidence(definition,fields,"pastDueAmount",{rawValue:pastDue.match[1],sourceLines:[pastDue.line.raw],lineNumbers:[pastDue.line.lineNumber]},sourceLabel,"high",true);
   }
   if(ruleset.startsWith("foreclosure_repossession")){
-    const cure=firstMatchingLine(lines,/^notice of default\s*&\s*right to cure$/i),sale=firstMatchingLine(lines,/^notice of our plan to sell property$/i);
+    const cure=firstMatchingLine(lines,/^notice of default\s*&\s*right to cure$/i),sale=firstMatchingLine(lines,/^notice of our plan to sell property$/i),foreclosureSale=firstMatchingLine(lines,/^notice of default and foreclosure sale$/i);
     if(cure)setFieldFromEvidence(definition,fields,"actionType",{rawValue:cure.line.clean,sourceLines:[cure.line.raw],lineNumbers:[cure.line.lineNumber]},sourceLabel,"high",true);
     else if(sale)setFieldFromEvidence(definition,fields,"actionType",{rawValue:sale.line.clean,sourceLines:[sale.line.raw],lineNumbers:[sale.line.lineNumber]},sourceLabel,"high",true);
-    const blankTemplate=Boolean(firstMatchingLine(lines,/^\(name and address of secured party\)$/i)||firstMatchingLine(lines,/^lender name$/i));
+    else if(foreclosureSale&&(!fields.actionType||fields.actionType.value===null))setFieldFromEvidence(definition,fields,"actionType",{rawValue:"Notice of Default and Foreclosure Sale",sourceLines:[foreclosureSale.line.raw],lineNumbers:[foreclosureSale.line.lineNumber]},sourceLabel,"high",true);
+    const blankTemplate=Boolean(firstMatchingLine(lines,/^\(name and address of secured party\)$/i)||firstMatchingLine(lines,/^lender name$/i)||(foreclosureSale&&firstMatchingLine(lines,/whereas,? on\s*,?\s+a certain mortgage/i)));
     if(blankTemplate)["creditorName","debtorName","collateral","noticeDate","responseDeadline","scheduledSaleDate","amountToCure","balanceOwed","caseNumber"].forEach(function(id){fields[id]=emptyField(fieldById(definition,id));});
   }
   if(ruleset.startsWith("vehicle_title")){
@@ -888,6 +916,15 @@ function applyDocumentLayout(definition,text,fields,sourceLabel){
   if(ruleset.startsWith("counseling_certificate")){
     const briefing=firstMatchingLine(lines,/^bankruptcy briefing certificate$/i);
     if(briefing)setFieldFromEvidence(definition,fields,"courseType",{rawValue:"Bankruptcy Briefing",sourceLines:[briefing.line.raw],lineNumbers:[briefing.line.lineNumber]},sourceLabel,"high",true);
+    const certificate=firstMatchingLine(lines,/^certificate of counseling$/i),certify=firstMatchingLine(lines,/i certify that on\s+([A-Z]+\s+\d{1,2},?\s*\d{4})/i);
+    if(certificate&&(!fields.courseType||fields.courseType.value===null))setFieldFromEvidence(definition,fields,"courseType",{rawValue:"Pre-bankruptcy credit counseling",sourceLines:[certificate.line.raw],lineNumbers:[certificate.line.lineNumber]},sourceLabel,"high",true);
+    if(certify){
+      setFieldFromEvidence(definition,fields,"completionDate",{rawValue:certify.match[1],sourceLines:[certify.line.raw],lineNumbers:[certify.line.lineNumber]},sourceLabel,"high",true);
+      const debtor=firstMatchingLine(lines,/^(.+?)\s+receiv\s*ed from\s*$/i,certify.index,Math.min(lines.length,certify.index+5))||firstMatchingLine(lines,/^([A-Z][A-Za-z.'-]+(?:\s+[A-Z][A-Za-z.'-]+){1,4})$/i,certify.index+1,Math.min(lines.length,certify.index+4));
+      if(debtor)setFieldFromEvidence(definition,fields,"debtorName",{rawValue:debtor.match[1],sourceLines:[debtor.line.raw],lineNumbers:[debtor.line.lineNumber]},sourceLabel,"high",true);
+      const provider=debtor&&firstMatchingLine(lines,/^(.+?(?:Inc\.?|LLC|Services?|Counseling|International).*)$/i,debtor.index+1,Math.min(lines.length,debtor.index+5));
+      if(provider)setFieldFromEvidence(definition,fields,"providerName",{rawValue:provider.match[1],sourceLines:[provider.line.raw],lineNumbers:[provider.line.lineNumber]},sourceLabel,"high",true);
+    }
     const visiblyBlank=/\bI CERTIFY that on\s*[\[|I\s]+.*received from\s+[A-Z_\u2014]{3,}/i.test(text);
     if(visiblyBlank)["debtorName","providerName","completionDate","certificateNumber"].forEach(function(id){fields[id]=emptyField(fieldById(definition,id));});
   }
@@ -914,6 +951,8 @@ function applyDocumentLayout(definition,text,fields,sourceLabel){
       const cashLabels=lines.map(function(line,index){return /^cash to close$/i.test(line.clean)?index:-1;}).filter(function(index){return index>=0;}),cashEvidence=cashLabels.map(function(index){for(let next=index;next<Math.min(lines.length,index+6);next+=1){const amount=currenciesInLine(lines[next])[0];if(amount)return amount;}return null;}).filter(Boolean)[0];
       if(cashEvidence)setFieldFromEvidence(definition,fields,"amount",cashEvidence,sourceLabel,"high",true);
     }
+    const installmentTitle=firstMatchingLine(lines,/retail installment sale contract/i);
+    if(installmentTitle)setFieldFromEvidence(definition,fields,"documentTitle",{rawValue:"Retail Installment Sale Contract",sourceLines:[installmentTitle.line.raw],lineNumbers:[installmentTitle.line.lineNumber]},sourceLabel,"high",true);
   }
   return fields;
 }
@@ -969,14 +1008,31 @@ function structuredDriverFields(definition,structured,sourceLabel){
   return fields;
 }
 
+function printedLicenseEvidence(text){
+  const lines=String(text||"").split(/\r?\n/).map(function(line){return {raw:line.trim(),clean:normalizeSpaces(line).toUpperCase()};}).filter(function(line){return line.clean;});
+  const output={},streetPattern=/\b(\d{3,6})\s*([A-Z][A-Z0-9.'# -]*?)\s*(ST(?:REET)?|AVE(?:NUE)?|RD|ROAD|DR(?:IVE)?|LN|LANE|BLVD|BOULEVARD|CT|COURT|WAY|PKWY|PARKWAY|PL|PLACE|CIR|CIRCLE|TER|TERRACE|HWY|HIGHWAY)\b(?:\s+(APT|UNIT|#)\s*([A-Z0-9-]+))?/i;
+  const streetLine=lines.find(function(line){return streetPattern.test(line.clean);});
+  if(streetLine){const match=streetLine.clean.match(streetPattern);output.streetAddress={value:normalizeSpaces(match[1]+" "+match[2]+" "+match[3]+(match[4]?" "+match[4]+" "+match[5]:"")),sourceLines:[streetLine.raw]};}
+  const locationPattern=/\b([A-Z][A-Z .'-]{1,35}?)[,.;\s]+([A-Z0-9]{2})\s+(\d{5})(?:-\d{4})?\b/i,locationLine=lines.find(function(line){return locationPattern.test(line.clean);});
+  if(locationLine){const match=locationLine.clean.match(locationPattern),state=normalizeFieldValue(match[2],{valueType:"string",normalizer:"state"});if(state){output.city={value:normalizeSpaces(match[1].replace(/^.*?\b8\s+/,"")),sourceLines:[locationLine.raw]};output.state={value:state,sourceLines:[locationLine.raw]};output.zipCode={value:match[3],sourceLines:[locationLine.raw]};}}
+  const birthPattern=/\b(?:0?[1-9]|1[0-2])[\/. -](?:0?[1-9]|[12]\d|3[01])[\/. -](?:19|20)\d{2}\b/,birthLine=lines.find(function(line){return (/\bDOB\b|DATE OF BIRTH|BIRTH DATE|(?:^|\s)3\s+(?:D[O0]B|P[O0]E|D[O0]E)?/i.test(line.clean))&&birthPattern.test(line.clean);});
+  if(birthLine){const match=birthLine.clean.match(birthPattern);output.dateOfBirth={value:normalizeDate(match[0]),sourceLines:[birthLine.raw]};}
+  const taggedFamily=lines.map(function(line){const match=line.clean.match(/(?:^|[^A-Z0-9])1\s+([A-Z][A-Z.'-]{2,}(?:\s+[A-Z][A-Z.'-]{2,}){0,2})\b/);return match&&{line:line,value:match[1]};}).find(Boolean),taggedGiven=lines.map(function(line){const match=line.clean.match(/(?:^|[^A-Z0-9])2\s+([A-Z][A-Z.'-]{2,}(?:\s+[A-Z][A-Z.'-]{2,}){0,2})\b/);return match&&{line:line,value:match[1]};}).find(Boolean);
+  const excluded=new Set(["WEST","VIRGINIA","DRIVER","LICENSE","COLORADO","CLASS","NONE","CARDINAL","STREET","SCENIC","VIEW","USA","DOB"]),standalone=lines.map(function(line){const words=line.raw.match(/\b[A-Z][A-Z.'-]{2,}\b/g)||[];return {line:line,words:words.filter(function(word){return !excluded.has(word);})};}).filter(function(item){return item.words.length>=1&&item.words.length<=3;});
+  const family=taggedFamily, given=taggedGiven||standalone.find(function(item){return !family||item.words.join(" ")!==family.value;});
+  if(family&&given){output.fullName={value:normalizeSpaces((given.value||given.words.join(" "))+" "+family.value),sourceLines:[given.line.raw,family.line.raw]};}
+  return output;
+}
+
 function mergeDriverEvidence(definition,barcodeRaw,text,structured){
   const barcodeFields=parseAamva(barcodeRaw);
   const targetedFields=structuredDriverFields(definition,structured,"Local targeted image OCR");
+  const printedFields=structuredDriverFields(definition,printedLicenseEvidence(text),"Local printed license OCR");
   const textFields=extractLabeledFields(definition,text,"Local document text");
   const fields={};
   const warnings=[];
   definition.fields.forEach(function(spec){
-    const candidates=[barcodeFields[spec.id],targetedFields[spec.id],textFields[spec.id]].filter(function(field){return field&&field.value!==null;});
+    const candidates=[barcodeFields[spec.id],targetedFields[spec.id],textFields[spec.id],printedFields[spec.id]].filter(function(field){return field&&field.value!==null;});
     if(!candidates.length){fields[spec.id]=emptyField(spec);return;}
     fields[spec.id]=candidates[0];
     const conflict=candidates.slice(1).find(function(field){return String(field.value).toLowerCase()!==String(candidates[0].value).toLowerCase();});
@@ -1568,23 +1624,7 @@ globalThis.__documentIntakeTestingRules=page10Rules;
   }
 
   function genericLicenseEvidence(text){
-    const lines=String(text||"").split(/\r?\n/).map(function(line){return {raw:line.trim(),clean:normalizeSpaces(line).toUpperCase()};}).filter(function(line){return line.clean;});
-    const output={};
-    const streetPattern=/\b(\d{3,6})\s*([A-Z][A-Z0-9.'# -]*?)\s*(ST(?:REET)?|AVE(?:NUE)?|RD|ROAD|DR(?:IVE)?|LN|LANE|BLVD|BOULEVARD|CT|COURT|WAY|PKWY|PARKWAY|PL|PLACE|CIR|CIRCLE|TER|TERRACE|HWY|HIGHWAY)\b(?:\s+(APT|UNIT|#)\s*([A-Z0-9-]+))?/i;
-    const streetLine=lines.find(function(line){return streetPattern.test(line.clean);});
-    if(streetLine){
-      const match=streetLine.clean.match(streetPattern);
-      output.streetAddress={value:normalizeSpaces(match[1]+" "+match[2]+" "+match[3]+(match[4]?" "+match[4]+" "+match[5]:"")),sourceLines:[streetLine.raw]};
-    }
-    const locationPattern=/^\s*([A-Z][A-Z .'-]{1,35}?)[,\s]+([A-Z0-9]{2})\s+(\d{5})(?:-\d{4})?\b/i;
-    const locationLine=lines.find(function(line){return locationPattern.test(line.clean);});
-    if(locationLine){
-      const match=locationLine.clean.match(locationPattern),state=normalizeStateToken(match[2]);
-      if(state){output.city={value:normalizeSpaces(match[1]),sourceLines:[locationLine.raw]};output.state={value:state,sourceLines:[locationLine.raw]};output.zipCode={value:match[3],sourceLines:[locationLine.raw]};}
-    }
-    const birthLine=lines.find(function(line){return /\bDOB\b|DATE OF BIRTH|BIRTH DATE/i.test(line.clean)&&/\b(?:0?[1-9]|1[0-2])[\/. -](?:0?[1-9]|[12]\d|3[01])[\/. -](?:19|20)\d{2}\b/.test(line.clean);});
-    if(birthLine){const match=birthLine.clean.match(/\b(?:0?[1-9]|1[0-2])[\/. -](?:0?[1-9]|[12]\d|3[01])[\/. -](?:19|20)\d{2}\b/);output.dateOfBirth={value:normalizeDate(match[0]),sourceLines:[birthLine.raw]};}
-    return output;
+    return printedLicenseEvidence(text);
   }
 
   async function prepareLicenseRegions(file){
@@ -1949,7 +1989,7 @@ globalThis.__documentIntakeTestingRules=page10Rules;
       ];
       const uniqueWarnings=Array.from(new Set(warnings));
       render({
-        pipelineVersion:"page10_local_document_pipeline_v15",runAt:new Date().toISOString(),sourceFile:{name:selectedFile?selectedFile.name:"pasted-document.txt",type:selectedFile?selectedFile.type:"pasted-text",size:selectedFile?selectedFile.size:null},licenseBackFile:selectedLicenseBackFile?{name:selectedLicenseBackFile.name,type:selectedLicenseBackFile.type,size:selectedLicenseBackFile.size}:null,barcodeEvidence:{found:Boolean(read.barcode&&read.barcode.raw),method:read.barcode&&read.barcode.method||null,rawValueStored:false},evidenceTextSha256:await sha256Value(combinedText),classification:classification,selectedDocumentKind:selectedKind||null,documentKind:definition?resolution.kind:null,documentLabel:definition?definition.label:null,
+        pipelineVersion:"page10_local_document_pipeline_v16",runAt:new Date().toISOString(),sourceFile:{name:selectedFile?selectedFile.name:"pasted-document.txt",type:selectedFile?selectedFile.type:"pasted-text",size:selectedFile?selectedFile.size:null},licenseBackFile:selectedLicenseBackFile?{name:selectedLicenseBackFile.name,type:selectedLicenseBackFile.type,size:selectedLicenseBackFile.size}:null,barcodeEvidence:{found:Boolean(read.barcode&&read.barcode.raw),method:read.barcode&&read.barcode.method||null,rawValueStored:false},evidenceTextSha256:await sha256Value(combinedText),classification:classification,selectedDocumentKind:selectedKind||null,documentKind:definition?resolution.kind:null,documentLabel:definition?definition.label:null,
         runtimeArtifact:{artifactId:RUNTIME_ARTIFACT.artifactId,version:RUNTIME_ARTIFACT.version,rollbackVersion:RUNTIME_ARTIFACT.rollbackVersion,approvalState:RUNTIME_ARTIFACT.approvalState,expectedChecksum:RUNTIME_ARTIFACT.checksum,actualChecksum:artifactCheck.actual,verified:artifactCheck.verified,liveSheetRead:false},
         selectedBlueprint:definition?{ruleset:definition.ruleset,fieldIds:definition.fields.map(function(field){return field.id;}),reviewOnly:true}:null,fields:fields,foundCount:foundCount,fieldCount:definition?definition.fields.length:0,validation:validation,baseWarnings:uniqueWarnings,warnings:uniqueWarnings.slice(),status:foundCount?"ready_for_human_review":"needs_clearer_document",route:attorneyReviewRequired?"attorney_review":"document_review",review:{documentReviewRequired:true,attorneyReviewRequired:attorneyReviewRequired,correctionCount:0,corrections:{},correctionsRequireStaffVerification:false,approvalDecision:null,approvedBy:null,approvedAt:null},pipeline:pipelineStages,canonicalWriteAllowed:false,appliedToIntake:false,documentStored:false,documentTransmitted:false
       });
