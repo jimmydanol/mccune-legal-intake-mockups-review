@@ -73,6 +73,14 @@ h2{margin:0;font-size:28px;line-height:1.15}
 .photo-quality.review{border-color:#d6b16d;background:#fff8eb;color:#6f4a16}
 .photo-quality strong{display:block;margin-bottom:3px;font-size:13px}
 .photo-quality ul{margin:5px 0 0;padding-left:18px}
+.license-back{margin-top:14px;border:1px solid #b8dce2;border-radius:8px;background:var(--soft);padding:12px 14px}
+.license-back summary{cursor:pointer;color:#244f5b;font-size:13px;font-weight:800}
+.license-back-copy{margin:7px 0 10px;color:#315765;font-size:12px}
+.license-back-actions{display:flex;gap:8px;flex-wrap:wrap}
+.license-back-actions .btn{flex:1 1 180px}
+.back-file-summary{display:none;margin-top:10px;padding:10px;border:1px solid #b8dce2;border-radius:7px;background:#fff;color:#315765;font-size:12px}
+.back-file-summary.visible{display:block}
+.back-file-name{display:block;color:var(--ink);font-weight:800;overflow-wrap:anywhere}
 .field-label{display:block;font-size:13px;font-weight:700;margin:17px 0 6px}
 .ocr-text{width:100%;min-height:170px;resize:vertical;border:1px solid #b8c1cc;border-radius:6px;padding:10px 11px;line-height:1.4;background:#fff;color:var(--ink)}
 .ocr-text:focus{outline:0;border-color:var(--accent);box-shadow:0 0 0 3px rgba(47,125,140,.14)}
@@ -98,12 +106,22 @@ h2{margin:0;font-size:28px;line-height:1.15}
 .empty strong{display:block;color:var(--ink);margin-bottom:5px}
 .fields{display:grid;gap:10px;padding:16px}
 .field{border:1px solid var(--line);border-radius:7px;padding:12px;background:#fff}
+.field.needs-check{border-color:#d6b16d;background:#fffdf7}
 .field-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
 .field-name{font-size:12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.03em}
 .field-value{font-size:17px;font-weight:800;margin-top:2px;overflow-wrap:anywhere}
 .confidence{font-size:11px;font-weight:800;border:1px solid #bcdacf;background:#edf8f2;color:var(--ok);border-radius:999px;padding:3px 7px;white-space:nowrap}
 .confidence.medium{border-color:#d6b16d;background:#fff8eb;color:var(--warn)}
+.confidence.reviewed{border-color:#8eb7d8;background:#eef6ff;color:#245779}
 .evidence{margin-top:8px;padding-top:8px;border-top:1px solid #edf0f2;color:var(--muted);font-size:12px;overflow-wrap:anywhere}
+.review-alert{margin-top:8px;border-left:3px solid #d6b16d;padding:6px 8px;background:#fff8eb;color:#6f4a16;font-size:12px}
+.field-correction{margin-top:10px;padding-top:10px;border-top:1px solid #edf0f2}
+.field-correction label{display:block;color:var(--ink);font-size:12px;font-weight:800;margin-bottom:5px}
+.correction-row{display:flex;gap:7px;align-items:stretch}
+.correction-input{min-width:0;flex:1;border:1px solid #aeb9c4;border-radius:5px;padding:8px 9px;background:#fff;color:var(--ink)}
+.correction-input:focus{outline:0;border-color:var(--accent);box-shadow:0 0 0 3px rgba(47,125,140,.14)}
+.correction-row .btn{min-height:36px;padding:7px 10px;font-size:12px}
+.correction-help{margin:5px 0 0;color:var(--muted);font-size:11px}
 .warnings{margin:0 16px 16px;border:1px solid #d6b16d;background:#fffaf0;border-radius:7px;padding:12px 14px;color:#6f4a16;font-size:13px}
 .warnings strong{display:block;margin-bottom:5px}
 .warnings ul{margin:0;padding-left:18px}
@@ -124,7 +142,7 @@ h2{margin:0;font-size:28px;line-height:1.15}
 .json-output{width:100%;min-height:150px;border:1px solid var(--line);border-radius:6px;background:#14212b;color:#e5f3f6;padding:11px;font:12px/1.45 Consolas,Monaco,monospace;resize:vertical}
 .footer-note{margin-top:20px;border-top:1px solid var(--line);padding-top:14px;color:var(--muted);font-size:12px}
 @media(max-width:900px){.layout{grid-template-columns:1fr}.rule-grid{grid-template-columns:1fr}.scope-panel{min-width:0}.pipeline{grid-template-columns:1fr 1fr}}
-@media(max-width:760px){.app{margin:0;border-left:0;border-right:0}.hdr,.page-head{align-items:flex-start;flex-direction:column}.content{padding:20px 16px}.pilot-badge{white-space:normal}.actions .btn{flex:1 1 180px}.control-grid,.capture-options,.photo-tips{grid-template-columns:1fr}.pipeline{grid-template-columns:1fr}.dropzone{padding:18px 14px}}
+@media(max-width:760px){.app{margin:0;border-left:0;border-right:0}.hdr,.page-head{align-items:flex-start;flex-direction:column}.content{padding:20px 16px}.pilot-badge{white-space:normal}.actions .btn{flex:1 1 180px}.control-grid,.capture-options,.photo-tips{grid-template-columns:1fr}.pipeline{grid-template-columns:1fr}.dropzone{padding:18px 14px}.correction-row{flex-wrap:wrap}.correction-input{flex-basis:100%}.correction-row .btn{flex:1 1 120px}}
 </style>
 <script defer src="experimental-parity.js?v=parity-v1"></script>
 </head>
@@ -215,6 +233,21 @@ h2{margin:0;font-size:28px;line-height:1.15}
           </div>
           <div class="photo-quality" id="photoQuality" role="status" aria-live="polite"><strong id="photoQualityTitle"></strong><ul id="photoQualityList"></ul></div>
 
+          <details class="license-back" id="licenseBackPanel">
+            <summary>Driver's license: add the back for barcode accuracy</summary>
+            <p class="license-back-copy">The PDF417 barcode usually carries the name, birth date, and address without the security-printing problems found on the front. Page 10 compares both sides and shows any disagreement.</p>
+            <div class="license-back-actions">
+              <label class="btn" for="licenseBackCamera">Take back photo</label>
+              <label class="btn secondary" for="licenseBackFile">Choose back image</label>
+            </div>
+            <input class="file-input" id="licenseBackCamera" type="file" accept="image/*" capture="environment"/>
+            <input class="file-input" id="licenseBackFile" type="file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"/>
+            <div class="back-file-summary" id="licenseBackSummary">
+              <span class="back-file-name" id="licenseBackName"></span>
+              <span id="licenseBackDetail"></span>
+            </div>
+          </details>
+
           <div class="control-grid">
             <label class="select-label" for="expectedKind">Document type (choose for best accuracy)
               <select id="expectedKind">
@@ -245,7 +278,7 @@ h2{margin:0;font-size:28px;line-height:1.15}
       <section class="card" aria-labelledby="resultsTitle">
         <div class="card-head">
           <h3 id="resultsTitle">2. Review the suggested facts</h3>
-          <p>Suggestions only. No result is written into an intake record.</p>
+          <p>Compare every suggestion with the document. Corrections stay in this review result and do not update an intake record.</p>
         </div>
         <div class="result-state">
           <div class="state-line">
@@ -402,7 +435,7 @@ function normalizeFieldValue(value,field){
     return Number.isFinite(amount)&&amount>=0&&amount<=100?amount+"%":null;
   }
   if(field.normalizer==="state")return (/\b[A-Z]{2}\b/i.exec(raw)||[])[0]?.toUpperCase()||null;
-  if(field.normalizer==="zip")return (/\b\d{5}(?:-\d{4})?\b/.exec(raw)||[])[0]?.slice(0,5)||null;
+  if(field.normalizer==="zip")return (/\b\d{5}(?:-?\d{4})?\b/.exec(raw)||[])[0]?.slice(0,5)||null;
   if(field.normalizer==="vin"){
     const vin=raw.toUpperCase().replace(/[^A-Z0-9]/g,"");
     return /^[A-HJ-NPR-Z0-9]{17}$/.test(vin)?vin:null;
@@ -453,9 +486,9 @@ function extractLabeledFields(definition,text,sourceLabel){
 }
 
 function parseAamva(raw){
-  const source=String(raw||"").replace(/\u001e/g,"\n");
+  const source=String(raw||"").replace(/[\u001d\u001e\r]/g,"\n");
   const elements={};
-  const pattern=/(?:^|[\r\n])(?:DL|ID)?(DCS|DAC|DAD|DBB|DAG|DAI|DAJ|DAK)([^\r\n]+)/g;
+  const pattern=/(?:^|[\r\n])(?:DL|ID)?(DAA|DCS|DAC|DAD|DCT|DBB|DAG|DAI|DAJ|DAK)([^\r\n]+)/g;
   let match;
   while((match=pattern.exec(source))){
     const value=normalizeSpaces(match[2]);
@@ -467,11 +500,18 @@ function parseAamva(raw){
     const sourceLines=codes.map(function(code){return elements[code]&&elements[code].sourceLine;}).filter(Boolean);
     return normalized===null?emptyField(field):{id:id,label:label,valueType:valueType,value:normalized,status:"present",confidence:"high",source:"PDF417 barcode",evidence:{sourceLines:sourceLines,lineNumbers:[]}};
   };
-  const first=elements.DAC&&elements.DAC.value;
-  const middle=elements.DAD&&elements.DAD.value;
-  const last=elements.DCS&&elements.DCS.value;
+  const fullName=elements.DAA&&elements.DAA.value;
+  const combinedGiven=elements.DCT&&elements.DCT.value;
+  let first=elements.DAC&&elements.DAC.value;
+  let middle=elements.DAD&&elements.DAD.value;
+  let last=elements.DCS&&elements.DCS.value;
+  if(!first&&combinedGiven){const givenParts=combinedGiven.split(/[;,]/).map(normalizeSpaces).filter(Boolean);first=givenParts.shift()||"";middle=givenParts.join(" ");}
+  if(fullName&&(!first||!last)){
+    const nameParts=fullName.split(/[;,]/).map(normalizeSpaces).filter(Boolean);
+    if(nameParts.length>=2){last=last||nameParts.shift();first=first||nameParts.shift();middle=middle||nameParts.join(" ");}
+  }
   return {
-    fullName:record("fullName","Full legal name","string",[first,middle,last].filter(Boolean).join(" "),["DAC","DAD","DCS"]),
+    fullName:record("fullName","Full legal name","string",[first,middle,last].filter(Boolean).join(" "),["DAC","DAD","DCT","DCS","DAA"]),
     dateOfBirth:record("dateOfBirth","Date of birth","date",elements.DBB&&elements.DBB.value,["DBB"]),
     streetAddress:record("streetAddress","Street address","string",elements.DAG&&elements.DAG.value,["DAG"]),
     city:record("city","City","string",elements.DAI&&elements.DAI.value,["DAI"]),
@@ -503,11 +543,33 @@ function mergeDriverEvidence(definition,barcodeRaw,text,structured){
     fields[spec.id]=candidates[0];
     const conflict=candidates.slice(1).find(function(field){return String(field.value).toLowerCase()!==String(candidates[0].value).toLowerCase();});
     if(conflict){
-      fields[spec.id]={...candidates[0],confidence:"medium",conflict:{value:conflict.value,source:conflict.source,evidence:conflict.evidence}};
+      fields[spec.id]={...candidates[0],confidence:"medium",needsReview:true,reviewReason:"Two local evidence sources disagree. Compare this field with both sides of the license.",conflict:{value:conflict.value,source:conflict.source,evidence:conflict.evidence}};
       warnings.push(spec.label+" differs between "+candidates[0].source+" and "+conflict.source+". Compare the suggestion with the document.");
     }
   });
+  if(!normalizeSpaces(barcodeRaw)){
+    ["fullName","dateOfBirth","streetAddress","city","state","zipCode"].forEach(function(id){
+      const field=fields[id];
+      if(field&&field.value!==null&&field.source!=="PDF417 barcode")fields[id]={...field,needsReview:true,reviewReason:id==="streetAddress"?"Security printing can hide a house-number digit. Compare it carefully or add a clear photo of the back barcode.":"Front-side OCR can confuse characters printed over security artwork. Add the back barcode for a stronger cross-check."};
+    });
+    warnings.push("No PDF417 evidence was available. Front-side OCR remains a suggestion; add a clear photo of the license back for the strongest local cross-check.");
+  }
   return {fields:fields,warnings:warnings};
+}
+
+function snapshotSuggestion(field){
+  return {value:field.value,status:field.status,confidence:field.confidence,source:field.source,evidence:field.evidence||null,conflict:field.conflict||null,needsReview:Boolean(field.needsReview),reviewReason:field.reviewReason||null};
+}
+
+function applyReviewCorrection(field,spec,rawValue,correctedAt){
+  const enteredValue=normalizeSpaces(rawValue);
+  const normalizedValue=normalizeFieldValue(enteredValue,spec);
+  return {...field,originalSuggestion:field.originalSuggestion||snapshotSuggestion(field),value:normalizedValue,status:enteredValue?(normalizedValue===null?"correction_invalid":"user_corrected"):"user_cleared",confidence:"reviewed",source:"Debtor review correction",evidence:null,conflict:null,needsReview:true,reviewReason:normalizedValue===null&&enteredValue?"The correction does not match this field's expected format.":"A person changed the machine suggestion. Staff must compare the correction with the document.",reviewCorrection:{enteredValue:enteredValue,normalizedValue:normalizedValue,correctedAt:correctedAt||new Date().toISOString(),requiresStaffVerification:true}};
+}
+
+function resetReviewCorrection(field){
+  if(!field||!field.originalSuggestion)return field;
+  return {...field,...field.originalSuggestion,originalSuggestion:undefined,reviewCorrection:undefined};
 }
 
 function classifyDocument(fileName,text){
@@ -557,9 +619,11 @@ function validateFields(definition,fields,text,barcodeRaw){
     const field=fields[spec.id]||emptyField(spec);
     if(spec.required&&field.value===null)blocking.push(spec.label+" is required but missing or invalid.");
     if(field.status==="invalid")blocking.push(spec.label+" could not be normalized from its source evidence.");
+    if(field.status==="correction_invalid")blocking.push(spec.label+" has an invalid review correction.");
     if(field.status==="conflicting")blocking.push(spec.label+" has conflicting source evidence.");
-    if(field.value!==null){
-      const source=field.source==="PDF417 barcode"?String(barcodeRaw||""):String(text||"");
+    if(field.reviewCorrection)warnings.push(spec.label+" was corrected during review and must be compared with the document by staff.");
+    if(field.value!==null&&!field.reviewCorrection){
+      const source=String(field.source||"").includes("PDF417")?String(barcodeRaw||""):String(text||"");
       const lines=field.evidence&&field.evidence.sourceLines||[];
       if(!lines.length||lines.some(function(line){return !source.includes(line);})){
         fields[spec.id]={...field,value:null,status:"evidence_failed",confidence:"low"};
@@ -589,7 +653,7 @@ function formatFieldValue(field){
   return String(field.value);
 }
 
-const page10Rules={RUNTIME_ARTIFACT:RUNTIME_ARTIFACT,stableStringify:stableStringify,artifactChecksumPayload:artifactChecksumPayload,sha256Value:sha256Value,verifyRuntimeArtifact:verifyRuntimeArtifact,normalizeFieldValue:normalizeFieldValue,findLabeledEvidence:findLabeledEvidence,extractLabeledFields:extractLabeledFields,parseAamva:parseAamva,mergeDriverEvidence:mergeDriverEvidence,classifyDocument:classifyDocument,resolveDocumentKind:resolveDocumentKind,validateFields:validateFields,maskSensitiveEvidence:maskSensitiveEvidence,formatFieldValue:formatFieldValue};
+const page10Rules={RUNTIME_ARTIFACT:RUNTIME_ARTIFACT,stableStringify:stableStringify,artifactChecksumPayload:artifactChecksumPayload,sha256Value:sha256Value,verifyRuntimeArtifact:verifyRuntimeArtifact,normalizeFieldValue:normalizeFieldValue,findLabeledEvidence:findLabeledEvidence,extractLabeledFields:extractLabeledFields,parseAamva:parseAamva,mergeDriverEvidence:mergeDriverEvidence,applyReviewCorrection:applyReviewCorrection,resetReviewCorrection:resetReviewCorrection,classifyDocument:classifyDocument,resolveDocumentKind:resolveDocumentKind,validateFields:validateFields,maskSensitiveEvidence:maskSensitiveEvidence,formatFieldValue:formatFieldValue};
 globalThis.__documentIntakeTestingRules=page10Rules;
 /* PURE PILOT RULES END */
 
@@ -597,6 +661,11 @@ globalThis.__documentIntakeTestingRules=page10Rules;
   const dropzone=document.getElementById("dropzone");
   const fileInput=document.getElementById("documentFile");
   const cameraInput=document.getElementById("documentCamera");
+  const licenseBackCamera=document.getElementById("licenseBackCamera");
+  const licenseBackInput=document.getElementById("licenseBackFile");
+  const licenseBackSummary=document.getElementById("licenseBackSummary");
+  const licenseBackName=document.getElementById("licenseBackName");
+  const licenseBackDetail=document.getElementById("licenseBackDetail");
   const fileSummary=document.getElementById("fileSummary");
   const imagePreview=document.getElementById("imagePreview");
   const fileName=document.getElementById("fileName");
@@ -629,11 +698,13 @@ globalThis.__documentIntakeTestingRules=page10Rules;
   const artifactStatus=document.getElementById("artifactStatus");
   const ignoredFields=document.getElementById("ignoredFields");
   let selectedFile=null;
+  let selectedLicenseBackFile=null;
   let objectUrl=null;
   let latestResult=null;
   let ocrLibraryPromise=null;
   let ocrWorkerPromise=null;
   let pdfLibraryPromise=null;
+  let zxingLibraryPromise=null;
   let ocrPassIndex=0;
   let ocrPassCount=1;
   let ocrPassLabel="Reading document text locally…";
@@ -658,7 +729,7 @@ globalThis.__documentIntakeTestingRules=page10Rules;
   }
 
   function updateRunState(){
-    runButton.disabled=!selectedFile&&!normalizeSpaces(ocrText.value);
+    runButton.disabled=!selectedFile&&!selectedLicenseBackFile&&!normalizeSpaces(ocrText.value);
   }
 
   function setProgress(message,progress){
@@ -760,6 +831,15 @@ globalThis.__documentIntakeTestingRules=page10Rules;
       assessPhotoQuality(file,checkId);
     }
     if(isTextFile(file))fileDetail.textContent+=" · read locally when analyzed";
+    updateRunState();
+  }
+
+  function setLicenseBackFile(file){
+    selectedLicenseBackFile=file||null;
+    if(!selectedLicenseBackFile){licenseBackSummary.classList.remove("visible");licenseBackName.textContent="";licenseBackDetail.textContent="";updateRunState();return;}
+    licenseBackSummary.classList.add("visible");
+    licenseBackName.textContent=selectedLicenseBackFile.name;
+    licenseBackDetail.textContent=(selectedLicenseBackFile.type||"Image file")+" · "+fileSize(selectedLicenseBackFile.size)+" · read locally for PDF417 data";
     updateRunState();
   }
 
@@ -1179,34 +1259,110 @@ globalThis.__documentIntakeTestingRules=page10Rules;
     }
   }
 
-  async function detectPdf417(file){
-    if(!isImageFile(file))return {raw:"",warning:""};
-    if(!("BarcodeDetector" in window))return {raw:"",warning:"This browser does not provide native PDF417 scanning; the front-image OCR process was still used."};
+  function loadZxingLibrary(){
+    if(window.ZXingWASM&&typeof window.ZXingWASM.readBarcodes==="function")return Promise.resolve(window.ZXingWASM);
+    if(zxingLibraryPromise)return zxingLibraryPromise;
+    setProgress("Loading the local PDF417 reader…",.06);
+    zxingLibraryPromise=new Promise(function(resolve,reject){
+      const script=document.createElement("script");
+      script.src="https://cdn.jsdelivr.net/npm/zxing-wasm@3.1.2/dist/iife/reader/index.js";
+      script.crossOrigin="anonymous";
+      script.onload=function(){window.ZXingWASM&&typeof window.ZXingWASM.readBarcodes==="function"?resolve(window.ZXingWASM):reject(new Error("PDF417 reader did not initialize"));};
+      script.onerror=function(){reject(new Error("PDF417 reader could not be downloaded"));};
+      document.head.append(script);
+    }).catch(function(error){zxingLibraryPromise=null;throw error;});
+    return zxingLibraryPromise;
+  }
+
+  async function detectPdf417Native(file){
+    if(!("BarcodeDetector" in window))return null;
     let bitmap=null;
     try{
       const supported=await BarcodeDetector.getSupportedFormats();
-      if(!supported.includes("pdf417"))return {raw:"",warning:"This browser does not support native PDF417 scanning; the front-image OCR process was still used."};
+      if(!supported.includes("pdf417"))return null;
       bitmap=await createImageBitmap(file);
       const detector=new BarcodeDetector({formats:["pdf417"]}),codes=await detector.detect(bitmap);bitmap.close();bitmap=null;
-      return {raw:codes.length?codes[0].rawValue||"":"",warning:codes.length?"":"No readable PDF417 barcode was found; front-image OCR was still used."};
-    }catch(error){if(bitmap)bitmap.close();return {raw:"",warning:"Native PDF417 scanning could not read this image; front-image OCR was still used."};}
+      return codes.length?{raw:codes[0].rawValue||"",method:"Native browser PDF417"}:null;
+    }catch(error){if(bitmap)bitmap.close();return null;}
+  }
+
+  async function detectPdf417Fallback(file){
+    try{
+      const zxing=await loadZxingLibrary();
+      setProgress("Reading the license-back barcode locally…",.18);
+      const codes=await zxing.readBarcodes(file,{formats:["PDF417"],tryHarder:true,tryRotate:true,tryInvert:true,tryDownscale:true,maxNumberOfSymbols:1});
+      return codes.length?{raw:codes[0].text||"",method:"Local ZXing PDF417"}:null;
+    }catch(error){return null;}
+  }
+
+  async function detectPdf417(file){
+    if(!isImageFile(file))return {raw:"",method:null,warning:""};
+    const nativeResult=await detectPdf417Native(file);
+    if(nativeResult&&normalizeSpaces(nativeResult.raw))return {...nativeResult,warning:"PDF417 barcode read locally."};
+    const fallbackResult=await detectPdf417Fallback(file);
+    if(fallbackResult&&normalizeSpaces(fallbackResult.raw))return {...fallbackResult,warning:"PDF417 barcode read locally with the browser-compatible fallback."};
+    return {raw:"",method:null,warning:"No readable PDF417 barcode was found. Retake the back straight-on, fill the frame with the card, and avoid glare across the barcode."};
   }
 
   async function readSelectedDocument(kind){
-    if(!selectedFile)return {raw:"",warning:"",source:"Pasted document text",structured:null,barcode:{raw:"",warning:""}};
+    if(!selectedFile&&!(kind==="driver-license"&&selectedLicenseBackFile))return {raw:"",warning:"",source:"Pasted document text",structured:null,barcode:{raw:"",method:null,warning:""}};
+    if(kind==="driver-license"){
+      const barcodeFile=selectedLicenseBackFile||selectedFile;
+      const barcode=await detectPdf417(barcodeFile);
+      if(!selectedFile)return {raw:"",warning:"Only the license back was provided. Barcode fields were still analyzed locally.",source:"Local PDF417 barcode",structured:null,barcode:barcode};
+      if(isImageFile(selectedFile)){const result=await recognizeLicenseImage(selectedFile);result.barcode=barcode;return result;}
+    }
     if(isTextFile(selectedFile)){
-      try{return {raw:await selectedFile.text(),warning:"",source:"Local text file",structured:null,barcode:{raw:"",warning:""}};}
-      catch(error){return {raw:"",warning:"The text file could not be read locally.",source:"Local text file",structured:null,barcode:{raw:"",warning:""}};}
+      try{return {raw:await selectedFile.text(),warning:"",source:"Local text file",structured:null,barcode:{raw:"",method:null,warning:""}};}
+      catch(error){return {raw:"",warning:"The text file could not be read locally.",source:"Local text file",structured:null,barcode:{raw:"",method:null,warning:""}};}
     }
     if(isPdfFile(selectedFile)){
       const definition=kind&&RUNTIME_ARTIFACT.definitions[kind],result=await recognizePdf(selectedFile,definition?definition.pageLimit:6);
-      result.structured=null;result.barcode={raw:"",warning:""};return result;
+      result.structured=null;result.barcode={raw:"",method:null,warning:""};return result;
     }
-    if(isImageFile(selectedFile)&&kind==="driver-license"){
-      const results=await Promise.all([recognizeLicenseImage(selectedFile),detectPdf417(selectedFile)]),result=results[0];result.barcode=results[1];return result;
-    }
-    if(isImageFile(selectedFile)){const result=await recognizeGenericImage(selectedFile);result.structured=null;result.barcode={raw:"",warning:""};return result;}
-    return {raw:"",warning:"This file type is not supported. Choose JPG, PNG, WEBP, PDF, or TXT.",source:"Local document reader",structured:null,barcode:{raw:"",warning:""}};
+    if(isImageFile(selectedFile)){const result=await recognizeGenericImage(selectedFile);result.structured=null;result.barcode={raw:"",method:null,warning:""};return result;}
+    return {raw:"",warning:"This file type is not supported. Choose JPG, PNG, WEBP, PDF, or TXT.",source:"Local document reader",structured:null,barcode:{raw:"",method:null,warning:""}};
+  }
+
+  function correctionInputValue(field){
+    if(field.value===null)return "";
+    if(field.valueType==="currency"&&typeof field.value==="number")return field.value.toFixed(2);
+    if(field.valueType==="boolean")return field.value?"Yes":"No";
+    return String(field.value);
+  }
+
+  function refreshReviewMetadata(result){
+    const corrections={};
+    Object.values(result.fields||{}).forEach(function(field){
+      if(!field.reviewCorrection)return;
+      corrections[field.id]={originalValue:field.originalSuggestion?field.originalSuggestion.value:null,reviewedValue:field.value,enteredValue:field.reviewCorrection.enteredValue,status:field.status,correctedAt:field.reviewCorrection.correctedAt,requiresStaffVerification:true};
+    });
+    const correctionCount=Object.keys(corrections).length;
+    const invalidFields=Object.values(result.fields||{}).filter(function(field){return field.status==="correction_invalid";}).map(function(field){return field.label;});
+    result.review=result.review||{};
+    result.review.correctionCount=correctionCount;
+    result.review.corrections=corrections;
+    result.review.correctionsRequireStaffVerification=correctionCount>0;
+    result.reviewResolution={reviewedValueCount:Object.values(result.fields||{}).filter(function(field){return field.value!==null;}).length,correctionCount:correctionCount,invalidCorrectionFields:invalidFields,readyForStaffVerification:invalidFields.length===0};
+    result.warnings=(result.baseWarnings||result.warnings||[]).slice();
+    if(correctionCount)result.warnings.push(correctionCount+" field"+(correctionCount===1?" was":"s were")+" corrected during review. Staff must compare every correction with the document before using it.");
+    if(invalidFields.length)result.warnings.push("Fix the invalid review correction"+(invalidFields.length===1?"":"s")+": "+invalidFields.join(", ")+".");
+    if(result.pipeline&&result.pipeline.length)result.pipeline[result.pipeline.length-1]={label:"5. Review",state:"review",detail:correctionCount?correctionCount+" correction"+(correctionCount===1?"":"s")+" to verify":result.review.attorneyReviewRequired?"Attorney review":"Document review"};
+    return result;
+  }
+
+  function applyFieldCorrection(fieldId,rawValue){
+    if(!latestResult||!latestResult.documentKind)return;
+    const definition=RUNTIME_ARTIFACT.definitions[latestResult.documentKind],spec=definition&&definition.fields.find(function(item){return item.id===fieldId;});
+    if(!spec||!latestResult.fields[fieldId])return;
+    latestResult.fields[fieldId]=applyReviewCorrection(latestResult.fields[fieldId],spec,rawValue,new Date().toISOString());
+    render(refreshReviewMetadata(latestResult));
+  }
+
+  function resetFieldCorrection(fieldId){
+    if(!latestResult||!latestResult.fields[fieldId])return;
+    latestResult.fields[fieldId]=resetReviewCorrection(latestResult.fields[fieldId]);
+    render(refreshReviewMetadata(latestResult));
   }
 
   function render(result){
@@ -1217,19 +1373,36 @@ globalThis.__documentIntakeTestingRules=page10Rules;
     resultFields.innerHTML="";
     resultFields.hidden=fields.length===0;
     fields.forEach(function(field){
-      const item=document.createElement("div");item.className="field";
+      const item=document.createElement("div");item.className="field"+(field.needsReview?" needs-check":"");
       const top=document.createElement("div");top.className="field-top";
       const valueWrap=document.createElement("div"),name=document.createElement("div"),value=document.createElement("div");
       name.className="field-name";name.textContent=field.label;value.className="field-value";value.textContent=formatFieldValue(field);valueWrap.append(name,value);
-      const confidence=document.createElement("span");confidence.className="confidence "+(field.confidence==="high"?"":"medium");confidence.textContent=field.value===null?field.status:field.confidence;
+      const confidence=document.createElement("span");confidence.className="confidence "+(field.confidence==="high"?"":field.confidence==="reviewed"?"reviewed":"medium");confidence.textContent=field.reviewCorrection?"Corrected":field.value===null?field.status:field.confidence;
       top.append(valueWrap,confidence);item.append(top);
-      if(field.value!==null&&field.evidence){const evidence=document.createElement("div");evidence.className="evidence";evidence.textContent="Evidence: "+field.source+" · "+field.evidence.sourceLines.map(function(line){return "“"+line+"”";}).join("; ");item.append(evidence);}
+      if(field.reviewCorrection&&field.originalSuggestion){
+        const original=document.createElement("div");original.className="evidence";
+        const originalField={...field,value:field.originalSuggestion.value};
+        original.textContent="Original machine suggestion: "+formatFieldValue(originalField)+(field.originalSuggestion.source?" · "+field.originalSuggestion.source:"");item.append(original);
+      }else if(field.value!==null&&field.evidence){const evidence=document.createElement("div");evidence.className="evidence";evidence.textContent="Evidence: "+field.source+" · "+field.evidence.sourceLines.map(function(line){return "“"+line+"”";}).join("; ");item.append(evidence);}
+      if(field.conflict){const conflict=document.createElement("div");conflict.className="review-alert";conflict.textContent="Other evidence suggested “"+field.conflict.value+"” from "+field.conflict.source+".";item.append(conflict);}
+      if(field.reviewReason){const alert=document.createElement("div");alert.className="review-alert";alert.textContent=field.reviewReason;item.append(alert);}
+      const correction=document.createElement("div");correction.className="field-correction";
+      const correctionLabel=document.createElement("label");correctionLabel.htmlFor="correction-"+field.id;correctionLabel.textContent="Review or correct this field";
+      const correctionRow=document.createElement("div");correctionRow.className="correction-row";
+      const correctionInput=document.createElement("input");correctionInput.className="correction-input";correctionInput.id="correction-"+field.id;correctionInput.value=correctionInputValue(field);correctionInput.setAttribute("aria-label","Reviewed value for "+field.label);correctionInput.autocomplete="off";
+      if(field.valueType==="date")correctionInput.placeholder="YYYY-MM-DD";else if(field.valueType==="currency")correctionInput.inputMode="decimal";else if(field.valueType==="number")correctionInput.inputMode="numeric";
+      const save=document.createElement("button");save.className="btn secondary";save.type="button";save.textContent="Save correction";save.addEventListener("click",function(){applyFieldCorrection(field.id,correctionInput.value);});
+      correctionRow.append(correctionInput,save);
+      if(field.reviewCorrection){const reset=document.createElement("button");reset.className="btn ghost";reset.type="button";reset.textContent="Use original";reset.addEventListener("click",function(){resetFieldCorrection(field.id);});correctionRow.append(reset);}
+      const correctionHelp=document.createElement("p");correctionHelp.className="correction-help";correctionHelp.textContent="This keeps the machine suggestion and your correction separate. Nothing is written to intake.";
+      correction.append(correctionLabel,correctionRow,correctionHelp);item.append(correction);
       resultFields.append(item);
     });
     warningList.innerHTML="";result.warnings.forEach(function(warning){const li=document.createElement("li");li.textContent=warning;warningList.append(li);});warningBox.hidden=!result.warnings.length;
     stateTitle.textContent=result.foundCount?result.review.attorneyReviewRequired?"Attorney review required":"Document review required":"A clearer document is needed";
-    statusBadge.textContent=result.foundCount?"Review required":"No readable fields";statusBadge.className="status "+(result.foundCount?"review":"blocked");
-    stateDetail.textContent=(result.documentLabel||result.classification.label)+" · "+result.foundCount+" of "+result.fieldCount+" process fields found · no intake data changed";
+    const correctionCount=result.review&&result.review.correctionCount||0;
+    statusBadge.textContent=result.foundCount||correctionCount?"Review required":"No readable fields";statusBadge.className="status "+(result.foundCount||correctionCount?"review":"blocked");
+    stateDetail.textContent=(result.documentLabel||result.classification.label)+" · "+result.foundCount+" of "+result.fieldCount+" process fields found"+(correctionCount?" · "+correctionCount+" review correction"+(correctionCount===1?"":"s"):"")+" · no intake data changed";
     pipeline.hidden=false;pipeline.innerHTML="";
     result.pipeline.forEach(function(stage){const node=document.createElement("div");node.className="stage "+stage.state;const title=document.createElement("strong");title.textContent=stage.label;const detail=document.createElement("span");detail.textContent=stage.detail;node.append(title,detail);pipeline.append(node);});
     const definition=result.documentKind&&RUNTIME_ARTIFACT.definitions[result.documentKind];ignoredFields.innerHTML="<strong>Intentionally ignored:</strong> "+(definition?definition.ignored+", plus any value outside this blueprint.":"all values until an allowlisted document type is selected or detected.");
@@ -1240,9 +1413,9 @@ globalThis.__documentIntakeTestingRules=page10Rules;
     runButton.disabled=true;runButton.textContent="Analyzing locally…";stateTitle.textContent="Reading the document";statusBadge.textContent="Running";statusBadge.className="status";stateDetail.textContent="Local OCR, document-specific extraction, evidence checks, and code validation are running.";
     setProgress("Preparing local document analysis…",.01);
     try{
-      const selectedKind=expectedKind.value,artifactCheck=await verifyRuntimeArtifact(RUNTIME_ARTIFACT);
+      const selectedKind=expectedKind.value||(!selectedFile&&selectedLicenseBackFile?"driver-license":""),artifactCheck=await verifyRuntimeArtifact(RUNTIME_ARTIFACT);
       let read=await readSelectedDocument(selectedKind),combinedText=[read.raw,ocrText.value].filter(function(value){return normalizeSpaces(value);}).join("\n");
-      let classification=classifyDocument(selectedFile?selectedFile.name:"pasted-document.txt",combinedText+(read.barcode&&read.barcode.raw?"\n"+read.barcode.raw:""));
+      let classification=classifyDocument(selectedFile?selectedFile.name:selectedLicenseBackFile?selectedLicenseBackFile.name:"pasted-document.txt",combinedText+(read.barcode&&read.barcode.raw?"\n"+read.barcode.raw:""));
       if(!selectedKind&&classification.kind==="driver-license"&&isImageFile(selectedFile)){
         read=await readSelectedDocument("driver-license");combinedText=[read.raw,ocrText.value].filter(function(value){return normalizeSpaces(value);}).join("\n");classification=classifyDocument(selectedFile.name,combinedText+(read.barcode.raw?"\n"+read.barcode.raw:""));
       }
@@ -1253,6 +1426,7 @@ globalThis.__documentIntakeTestingRules=page10Rules;
       if(definition){
         if(resolution.kind==="driver-license"){
           const merged=mergeDriverEvidence(definition,read.barcode&&read.barcode.raw,combinedText,read.structured);fields=merged.fields;extractionWarnings=merged.warnings;
+          if(read.barcode&&read.barcode.method)Object.values(fields).forEach(function(field){if(field.source==="PDF417 barcode")field.source=read.barcode.method+" (license back)";});
         }else fields=extractLabeledFields(definition,combinedText,read.source||"Local document text");
       }
       const validation=definition?validateFields(definition,fields,combinedText,read.barcode&&read.barcode.raw):{passed:false,blocking:["No extraction blueprint was selected."],warnings:[]};
@@ -1268,10 +1442,11 @@ globalThis.__documentIntakeTestingRules=page10Rules;
         {label:"4. Validate",state:artifactCheck.verified&&validation.passed?"done":"review",detail:validation.passed?"Evidence checks passed":validation.blocking.length+" review issue(s)"},
         {label:"5. Review",state:"review",detail:attorneyReviewRequired?"Attorney review":"Document review"}
       ];
+      const uniqueWarnings=Array.from(new Set(warnings));
       render({
-        pipelineVersion:"page10_local_document_pipeline_v3",runAt:new Date().toISOString(),sourceFile:{name:selectedFile?selectedFile.name:"pasted-document.txt",type:selectedFile?selectedFile.type:"pasted-text",size:selectedFile?selectedFile.size:null},evidenceTextSha256:await sha256Value(combinedText),classification:classification,selectedDocumentKind:selectedKind||null,documentKind:definition?resolution.kind:null,documentLabel:definition?definition.label:null,
+        pipelineVersion:"page10_local_document_pipeline_v4",runAt:new Date().toISOString(),sourceFile:{name:selectedFile?selectedFile.name:"pasted-document.txt",type:selectedFile?selectedFile.type:"pasted-text",size:selectedFile?selectedFile.size:null},licenseBackFile:selectedLicenseBackFile?{name:selectedLicenseBackFile.name,type:selectedLicenseBackFile.type,size:selectedLicenseBackFile.size}:null,barcodeEvidence:{found:Boolean(read.barcode&&read.barcode.raw),method:read.barcode&&read.barcode.method||null,rawValueStored:false},evidenceTextSha256:await sha256Value(combinedText),classification:classification,selectedDocumentKind:selectedKind||null,documentKind:definition?resolution.kind:null,documentLabel:definition?definition.label:null,
         runtimeArtifact:{artifactId:RUNTIME_ARTIFACT.artifactId,version:RUNTIME_ARTIFACT.version,rollbackVersion:RUNTIME_ARTIFACT.rollbackVersion,approvalState:RUNTIME_ARTIFACT.approvalState,expectedChecksum:RUNTIME_ARTIFACT.checksum,actualChecksum:artifactCheck.actual,verified:artifactCheck.verified,liveSheetRead:false},
-        selectedBlueprint:definition?{ruleset:definition.ruleset,fieldIds:definition.fields.map(function(field){return field.id;}),reviewOnly:true}:null,fields:fields,foundCount:foundCount,fieldCount:definition?definition.fields.length:0,validation:validation,warnings:Array.from(new Set(warnings)),status:foundCount?"ready_for_human_review":"needs_clearer_document",route:attorneyReviewRequired?"attorney_review":"document_review",review:{documentReviewRequired:true,attorneyReviewRequired:attorneyReviewRequired,approvalDecision:null,approvedBy:null,approvedAt:null},pipeline:pipelineStages,canonicalWriteAllowed:false,appliedToIntake:false,documentStored:false,documentTransmitted:false
+        selectedBlueprint:definition?{ruleset:definition.ruleset,fieldIds:definition.fields.map(function(field){return field.id;}),reviewOnly:true}:null,fields:fields,foundCount:foundCount,fieldCount:definition?definition.fields.length:0,validation:validation,baseWarnings:uniqueWarnings,warnings:uniqueWarnings.slice(),status:foundCount?"ready_for_human_review":"needs_clearer_document",route:attorneyReviewRequired?"attorney_review":"document_review",review:{documentReviewRequired:true,attorneyReviewRequired:attorneyReviewRequired,correctionCount:0,corrections:{},correctionsRequireStaffVerification:false,approvalDecision:null,approvedBy:null,approvedAt:null},pipeline:pipelineStages,canonicalWriteAllowed:false,appliedToIntake:false,documentStored:false,documentTransmitted:false
       });
     }catch(error){
       render({classification:{kind:"unknown",label:"Unreadable document",confidence:"low",matchedSignals:[]},documentKind:null,documentLabel:"Document analysis",fields:{},foundCount:0,fieldCount:0,validation:{passed:false,blocking:["Local analysis could not complete."],warnings:[]},warnings:["Local analysis could not complete. Clear the document and try again."],status:"needs_clearer_document",route:"document_review",review:{documentReviewRequired:true,attorneyReviewRequired:false},pipeline:[{label:"1. Read",state:"blocked",detail:"Local analysis stopped"},{label:"2. Classify",state:"blocked",detail:"Not completed"},{label:"3. Extract",state:"blocked",detail:"No fields"},{label:"4. Validate",state:"blocked",detail:"Not completed"},{label:"5. Review",state:"review",detail:"Retake or choose another file"}]});
@@ -1281,12 +1456,13 @@ globalThis.__documentIntakeTestingRules=page10Rules;
   function updateProfileHelp(){
     const definition=RUNTIME_ARTIFACT.definitions[expectedKind.value];
     if(!definition){profileHelp.textContent="Auto-detect works best with a readable title and labels. Choose the exact type when you know it.";ignoredFields.innerHTML="<strong>Intentionally ignored:</strong> any value outside the classifier-selected blueprint.";return;}
+    if(expectedKind.value==="driver-license")document.getElementById("licenseBackPanel").open=true;
     profileHelp.textContent=definition.label+" process reads "+definition.fields.map(function(field){return field.label.toLowerCase();}).join(", ")+". It analyzes up to "+definition.pageLimit+" page"+(definition.pageLimit===1?"":"s")+".";
     ignoredFields.innerHTML="<strong>Intentionally ignored:</strong> "+definition.ignored+", plus any value outside this blueprint.";
   }
 
   function clear(){
-    setFile(null);fileInput.value="";cameraInput.value="";ocrText.value="";latestResult=null;emptyResult.hidden=false;emptyResult.innerHTML="<strong>No extracted data yet</strong>Only fields from the selected checksummed blueprint can appear here.";resultFields.hidden=true;resultFields.innerHTML="";warningBox.hidden=true;warningList.innerHTML="";resultActions.hidden=true;pipeline.hidden=true;pipeline.innerHTML="";jsonWrap.classList.remove("visible");toggleJson.textContent="Show review JSON";jsonOutput.value="";stateTitle.textContent="Waiting for a document";statusBadge.textContent="Not run";statusBadge.className="status";stateDetail.textContent="Take a photo, choose a file, or paste OCR text to begin.";hideProgress();updateProfileHelp();updateRunState();
+    setFile(null);setLicenseBackFile(null);fileInput.value="";cameraInput.value="";licenseBackInput.value="";licenseBackCamera.value="";ocrText.value="";latestResult=null;emptyResult.hidden=false;emptyResult.innerHTML="<strong>No extracted data yet</strong>Only fields from the selected checksummed blueprint can appear here.";resultFields.hidden=true;resultFields.innerHTML="";warningBox.hidden=true;warningList.innerHTML="";resultActions.hidden=true;pipeline.hidden=true;pipeline.innerHTML="";jsonWrap.classList.remove("visible");toggleJson.textContent="Show review JSON";jsonOutput.value="";stateTitle.textContent="Waiting for a document";statusBadge.textContent="Not run";statusBadge.className="status";stateDetail.textContent="Take a photo, choose a file, or paste OCR text to begin.";hideProgress();updateProfileHelp();updateRunState();
   }
 
   ["dragenter","dragover"].forEach(function(eventName){dropzone.addEventListener(eventName,function(event){event.preventDefault();dropzone.classList.add("drag");});});
@@ -1294,6 +1470,8 @@ globalThis.__documentIntakeTestingRules=page10Rules;
   dropzone.addEventListener("drop",function(event){const file=event.dataTransfer.files&&event.dataTransfer.files[0];if(file)setFile(file);});
   fileInput.addEventListener("change",function(){setFile(fileInput.files&&fileInput.files[0]);});
   cameraInput.addEventListener("change",function(){setFile(cameraInput.files&&cameraInput.files[0]);});
+  licenseBackInput.addEventListener("change",function(){setLicenseBackFile(licenseBackInput.files&&licenseBackInput.files[0]);});
+  licenseBackCamera.addEventListener("change",function(){setLicenseBackFile(licenseBackCamera.files&&licenseBackCamera.files[0]);});
   ocrText.addEventListener("input",updateRunState);expectedKind.addEventListener("change",updateProfileHelp);runButton.addEventListener("click",run);clearButton.addEventListener("click",clear);
   toggleJson.addEventListener("click",function(){const visible=jsonWrap.classList.toggle("visible");toggleJson.textContent=visible?"Hide review JSON":"Show review JSON";});
   copyJson.addEventListener("click",async function(){if(!latestResult)return;try{await navigator.clipboard.writeText(JSON.stringify(latestResult,null,2));copyJson.textContent="Copied";setTimeout(function(){copyJson.textContent="Copy JSON";},1200);}catch(error){jsonWrap.classList.add("visible");toggleJson.textContent="Hide review JSON";jsonOutput.select();}});

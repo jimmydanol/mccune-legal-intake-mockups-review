@@ -32,12 +32,15 @@ assert.ok(rules, 'Page 10 test hook was not exported');
 
 const {
   RUNTIME_ARTIFACT,
+  applyReviewCorrection,
   artifactChecksumPayload,
   classifyDocument,
   extractLabeledFields,
   maskSensitiveEvidence,
   mergeDriverEvidence,
   normalizeFieldValue,
+  parseAamva,
+  resetReviewCorrection,
   resolveDocumentKind,
   sha256Value,
   stableStringify,
@@ -276,6 +279,52 @@ const driverFields = mergeDriverEvidence(
 ).fields;
 assert.equal('licenseNumber' in driverFields, false);
 
+const barcodeText = `@
+ANSI 636000000002DL00410288ZA03290015DL
+DCSAVERY
+DACJORDAN
+DADMORGAN
+DBB02141986
+DAG127 PINE STREET
+DAIDENVER
+DAJCO
+DAK802030000`;
+const barcodeFields = parseAamva(barcodeText);
+assert.equal(barcodeFields.fullName.value, 'JORDAN MORGAN AVERY');
+assert.equal(barcodeFields.dateOfBirth.value, '1986-02-14');
+assert.equal(barcodeFields.streetAddress.value, '127 PINE STREET');
+assert.equal(barcodeFields.city.value, 'DENVER');
+assert.equal(barcodeFields.state.value, 'CO');
+assert.equal(barcodeFields.zipCode.value, '80203');
+
+const conflictingDriver = mergeDriverEvidence(
+  RUNTIME_ARTIFACT.definitions['driver-license'],
+  barcodeText,
+  `Street address: 27 PINE STREET`,
+  null,
+);
+assert.equal(conflictingDriver.fields.streetAddress.value, '127 PINE STREET');
+assert.equal(conflictingDriver.fields.streetAddress.conflict.value, '27 PINE STREET');
+assert.equal(conflictingDriver.fields.streetAddress.needsReview, true);
+
+const streetSpec = RUNTIME_ARTIFACT.definitions['driver-license'].fields.find(
+  (field) => field.id === 'streetAddress',
+);
+const correctedStreet = applyReviewCorrection(
+  driverFields.streetAddress,
+  streetSpec,
+  '127 Pine Street Apt 2',
+  '2026-07-22T12:00:00.000Z',
+);
+assert.equal(correctedStreet.value, '127 Pine Street Apt 2');
+assert.equal(correctedStreet.status, 'user_corrected');
+assert.equal(correctedStreet.source, 'Debtor review correction');
+assert.equal(correctedStreet.originalSuggestion.value, '127 Pine Street');
+assert.equal(correctedStreet.reviewCorrection.requiresStaffVerification, true);
+const resetStreet = resetReviewCorrection(correctedStreet);
+assert.equal(resetStreet.value, '127 Pine Street');
+assert.equal(resetStreet.source, 'Local document text');
+
 assert.equal(
   normalizeFieldValue('Account 0000 1111 9876', { valueType: 'string', normalizer: 'last4' }),
   '9876',
@@ -320,9 +369,13 @@ assert.equal(
 assert.equal(/\b(?:fake|demo|sample|beth)\b/i.test(html), false, 'Removed language must not appear');
 assert.equal(/I confirm/i.test(html), false, 'There must be no confirmation checkbox language');
 assert.match(html, /id="documentCamera"[^>]*capture="environment"/);
+assert.match(html, /id="licenseBackCamera"[^>]*capture="environment"/);
+assert.match(html, /id="licenseBackFile"[^>]*accept="image\/jpeg/);
 assert.match(html, /id="documentFile"[^>]*application\/pdf/);
 assert.ok(html.includes('tesseract.js@7.0.0'));
 assert.ok(html.includes('pdfjs-dist@6.1.200'));
+assert.ok(html.includes('zxing-wasm@3.1.2/dist/iife/reader/index.js'));
+assert.ok(html.includes('formats:["PDF417"]'));
 assert.ok(html.includes('recognizeLicenseImage'));
 assert.ok(html.includes('recognizeGenericImage'));
 assert.ok(html.includes('recognizePdf'));
@@ -331,6 +384,8 @@ assert.ok(html.includes('appliedToIntake:false'));
 assert.ok(html.includes('documentStored:false'));
 assert.ok(html.includes('documentTransmitted:false'));
 assert.ok(html.includes('liveSheetRead:false'));
+assert.ok(html.includes('correctionsRequireStaffVerification'));
+assert.ok(html.includes('rawValueStored:false'));
 
 console.log('Page 10 document-specific checks passed for 18 document processes.');
 console.log(`Runtime artifact checksum verified: ${actualChecksum}`);
