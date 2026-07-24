@@ -282,6 +282,60 @@ assert.equal(blankTaxFormFields.taxpayerName.value, null);
 assert.equal(blankTaxFormFields.address.value, null);
 assert.equal(blankTaxFormFields.filingStatus.value, null);
 
+const employeeAddressBoxW2Fields = extractDocumentFields(
+  RUNTIME_ARTIFACT.definitions.w2,
+  `2023 W-2 AND EARNINGS SUMMARY
+W-2 Wage and Tax Statement 2023
+c Employer's name, address, and ZIP code
+SAMPLE HEALTH INITIATIVES
+9100 EAST SAMPLE CIRCLE
+CENTENNIAL, CO 80112
+e/f Employee's name, address, and ZIP code
+ALEX LI-STEIN
+1104 SAMPLE AVE
+LOUISVILLE, CO 80027
+1 Wages, tips, other compensation 61144.95
+2 Federal income tax withheld 1776.39`,
+  'ADP-style W-2 text layer',
+);
+assert.equal(employeeAddressBoxW2Fields.employeeName.value, 'ALEX LI-STEIN');
+assert.equal(employeeAddressBoxW2Fields.employeeName.evidence.sourceLines[0], 'ALEX LI-STEIN');
+
+const employeeAddressBoxPdfText = pdfTextFromItems([
+  { str: 'W-2 Wage and Tax Statement 2023', transform: [1, 0, 0, 1, 20, 700], width: 185 },
+  { str: "e/f Employee's name, address, and ZIP code", transform: [1, 0, 0, 1, 20, 620], width: 245 },
+  { str: 'Earnings summary', transform: [1, 0, 0, 1, 430, 620], width: 100 },
+  { str: 'ALEX LI-STEIN', transform: [1, 0, 0, 1, 20, 600], width: 90 },
+  { str: 'Social Security Number: XXX-XX-0000', transform: [1, 0, 0, 1, 430, 600], width: 205 },
+  { str: '1104 SAMPLE AVE', transform: [1, 0, 0, 1, 20, 580], width: 105 },
+]);
+const employeeAddressBoxPdfFields = extractDocumentFields(
+  RUNTIME_ARTIFACT.definitions.w2,
+  employeeAddressBoxPdfText,
+  'ADP-style positioned PDF text layer',
+);
+assert.equal(employeeAddressBoxPdfFields.employeeName.value, 'ALEX LI-STEIN');
+assert.ok(employeeAddressBoxPdfFields.employeeName.evidence.sourceLines[0].startsWith('ALEX LI-STEIN'));
+
+const employeeAddressBoxOcrFields = extractDocumentFields(
+  RUNTIME_ARTIFACT.definitions.w2,
+  `W-2 Wage and Tax Statement 2023
+e/f Employee s name address and ZIP code ALEX LI-STEIN
+1104 SAMPLE AVE`,
+  'W-2 image OCR',
+);
+assert.equal(employeeAddressBoxOcrFields.employeeName.value, 'ALEX LI-STEIN');
+
+const blankEmployeeAddressBoxW2Fields = extractDocumentFields(
+  RUNTIME_ARTIFACT.definitions.w2,
+  `W-2 Wage and Tax Statement 2023
+e/f Employee's name, address, and ZIP code
+1 Wages, tips, other compensation
+2 Federal income tax withheld`,
+  'Blank employee-address W-2 box',
+);
+assert.equal(blankEmployeeAddressBoxW2Fields.employeeName.value, null);
+
 const instruction1099Fields = extractDocumentFields(
   RUNTIME_ARTIFACT.definitions['1099'],
   `Instructions for Form 1099-MISC (2012)
