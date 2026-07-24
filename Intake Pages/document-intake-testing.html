@@ -339,10 +339,10 @@ function fieldSpec(id,label,valueType,options){
 
 const RUNTIME_ARTIFACT={
   artifactId:"page10_document_review_blueprints",
-  version:"2026-07-23.review-v19",
-  rollbackVersion:"2026-07-23.review-v18",
+  version:"2026-07-24.review-v20",
+  rollbackVersion:"2026-07-23.review-v19",
   approvalState:"review_only",
-  checksum:"sha256:f07794cbf43f4c2833b36a733635fa8f761d596f532a9f495282882490aa1475",
+  checksum:"sha256:24cc2cb6f63a2505c050baac7fb098c4d25a01472b5a8631582d0ea8fd8d178f",
   definitions:{
     "driver-license":{label:"Driver's license or photo ID",ruleset:"driver_license_review_v3",attorneyReviewRequired:false,minimumSignals:1,pageLimit:2,classificationSignals:[{pattern:"driver'?s license|identification card",label:"license label"},{pattern:"date of birth|\\bdob\\b|restrictions|endorsements",label:"license fields"},{pattern:"(?:^|[\\s._-])(?:license|driver[-_ ]?id|dl)(?:[\\s._-]|$)",label:"license file name"},{pattern:"(?:^|[\\r\\n])(?:DL|ID)?(?:DCS|DAC|DBB|DAG)",label:"AAMVA barcode fields"}],ignored:"license number, expiration date, class, physical descriptors, restrictions, endorsements, donor status",fields:[fieldSpec("fullName","Full legal name","string",{required:true,aliases:["full legal name","full name","name"]}),fieldSpec("dateOfBirth","Date of birth","date",{required:true,aliases:["date of birth","birth date","dob"]}),fieldSpec("streetAddress","Street address","string",{aliases:["street address","residence address","address"]}),fieldSpec("city","City","string"),fieldSpec("state","State","string",{normalizer:"state"}),fieldSpec("zipCode","ZIP code","string",{normalizer:"zip",aliases:["zip code","postal code","zip"]})]},
     "social-security-card":{label:"Social Security card",ruleset:"social_security_card_review_v1",attorneyReviewRequired:true,minimumSignals:2,pageLimit:1,classificationSignals:[{pattern:"social security administration",label:"SSA issuer"},{pattern:"social security card|social security number",label:"card label"},{pattern:"valid for work|signature",label:"card language"}],ignored:"the full Social Security number after verification, signatures, card-control markings",fields:[fieldSpec("fullName","Name on card","string",{required:true,aliases:["name on card","name"]}),fieldSpec("ssnLast4","SSN last four","string",{required:true,normalizer:"last4",sensitive:"ssn",aliases:["social security number","ssn","number"]})]},
@@ -368,6 +368,7 @@ const RUNTIME_ARTIFACT={
 Object.assign(RUNTIME_ARTIFACT.definitions["social-security-card"],{ruleset:"social_security_card_review_v2",classificationSignals:[{pattern:"social security administration|social security",label:"SSA issuer"},{pattern:"social security card|social security number|\\b\\d{3}[- ]\\d{2}[- ]\\d{4}\\b",label:"card label"},{pattern:"valid for work|signature|u\\.s\\. citizen",label:"card language"}]});
 RUNTIME_ARTIFACT.definitions["social-security-card"].classificationSignals=[{pattern:"social security administration|social[-_ ]?(?:security[-_ ]?)?card|\\bssn\\b",label:"SSA issuer"},{pattern:"social security card|social security number|\\b\\d{3}[- ]\\d{2}[- ]\\d{4}\\b|\\d[\\d -]{7,}",label:"card label"},{pattern:"valid for work|u\\.?s\\.?[,\\s]+citizen",label:"card language"}];
 Object.assign(RUNTIME_ARTIFACT.definitions["other-income-proof"],{ruleset:"other_income_review_v3",classificationSignals:[{pattern:"benefit statement|award letter|benefits? verification|benefit verification letter|social security statement",label:"benefit document"},{pattern:"social security.*benefits|supplemental security income|unemployment|pension|retirement benefit|disability benefits|survivors benefits",label:"income type"},{pattern:"monthly benefit|monthly social security|gross amount|payment amount|benefit amount|personalized monthly retirement benefit",label:"benefit amount"}]});
+fieldById(RUNTIME_ARTIFACT.definitions["pay-stub"],"ytdGross").aliases.push("year-to-date gross pay");
 Object.assign(RUNTIME_ARTIFACT.definitions["driver-license"],{ruleset:"driver_license_review_v5"});
 Object.assign(RUNTIME_ARTIFACT.definitions["tax-return"],{ruleset:"tax_return_review_v5",classificationSignals:[{pattern:"\\bform 1040\\b|individual income tax return|(?:^|[\\s._-])(?:tax[-_ ]?)?1040(?:[\\s._-]|$)",label:"Form 1040"},{pattern:"adjusted gross income|taxable income",label:"tax income fields"},{pattern:"refund|amount you owe|filing status",label:"tax result fields"}]});
 Object.assign(RUNTIME_ARTIFACT.definitions.w2,{ruleset:"w2_review_v5"});
@@ -379,11 +380,30 @@ fieldById(RUNTIME_ARTIFACT.definitions["vehicle-valuation"],"vinLast4").normaliz
 Object.assign(RUNTIME_ARTIFACT.definitions["investment-statement"],{ruleset:"investment_statement_review_v2",classificationSignals:[{pattern:"investment statement|investment report|retirement statement|brokerage statement",label:"investment statement"},{pattern:"401\\s*\\(?k\\)?|\\bira\\b|pension|annuity|mutual fund|brokerage",label:"account type"},{pattern:"ending value|account value|vested balance|portfolio value",label:"account value"}]});
 Object.assign(RUNTIME_ARTIFACT.definitions["debt-notice"],{ruleset:"debt_statement_review_v4",classificationSignals:[{pattern:"collection notice|debt collector|creditor|amount due|billing statement|cobrador de deudas",label:"debt statement language"},{pattern:"account number|balance owed|past due|minimum payment|n.mero de cuenta|monto total de la deuda",label:"debt account fields"},{pattern:"lawsuit|summons|judgment|garnishment|disputar la deuda|acreedor",label:"legal collection signal"}]});
 Object.assign(RUNTIME_ARTIFACT.definitions["mortgage-statement"],{ruleset:"mortgage_statement_review_v4",classificationSignals:[{pattern:"\\bform 1098\\b|mortgage interest statement|(?:^|[\\s._-])mortgage(?:[\\s._-]|$)",label:"mortgage form"},{pattern:"mortgage statement|loan servicer|escrow",label:"mortgage statement language"},{pattern:"outstanding principal|principal balance|payment due date|payment due|property address|regular monthly payment|past unpaid amount",label:"mortgage fields"},{pattern:"bankruptcy message|post-petition payment|pre-petition arrearage",label:"bankruptcy statement"}]});
+fieldById(RUNTIME_ARTIFACT.definitions["mortgage-statement"],"principalBalance").aliases.push("outstanding principal balance");
 Object.assign(RUNTIME_ARTIFACT.definitions["foreclosure-repossession"],{ruleset:"foreclosure_repossession_review_v3",classificationSignals:[{pattern:"foreclosure|notice of sale|trustee sale|notice of default",label:"foreclosure language"},{pattern:"repossession|right to cure|intent to repossess|foreclosure commissioner",label:"enforcement process"},{pattern:"sale date|cure amount|amount to cure|redemption|collateral|secured party|foreclosure sale|public auction",label:"enforcement fields"}]});
 Object.assign(RUNTIME_ARTIFACT.definitions["vehicle-title"],{ruleset:"vehicle_title_review_v4",classificationSignals:[{pattern:"certificate of title|vehicle title|(?:^|[\\s._-])vehicle[-_ ]?title(?:[\\s._-]|$)",label:"vehicle title label"},{pattern:"\\bvin\\b|vehicle identification number|title number|certificate number",label:"VIN or title identifier"},{pattern:"lienholder|odometer|vehicle make|vehicle model|actual mileage|year make model",label:"vehicle fields"}]});
 Object.assign(RUNTIME_ARTIFACT.definitions["court-document"],{ruleset:"court_document_review_v2",classificationSignals:[{pattern:"district court|district of|county court|bankruptcy co(?:urt)?|court of",label:"court name"},{pattern:"case no|case number|docket number|civil action|\\bxx[-#x]{3,}",label:"case identifier"},{pattern:"summons|complaint|judgment|support order|garnishment|hearing|motion for relief|automatic stay",label:"court document type"}]});
 Object.assign(RUNTIME_ARTIFACT.definitions["counseling-certificate"],{ruleset:"counseling_certificate_review_v4",classificationSignals:[{pattern:"certificate of counseling|credit counseling certificate|certificate number|bankruptcy briefing certificate",label:"counseling certificate"},{pattern:"pre-bankruptcy credit counseling|briefing concerning credit counseling|bankruptcy briefing",label:"course type"},{pattern:"completion date|completed.*counseling|provider|i certify that on",label:"certificate fields"}]});
 Object.assign(RUNTIME_ARTIFACT.definitions["other-document"],{ruleset:"other_document_review_v2"});
+Object.assign(RUNTIME_ARTIFACT.definitions["driver-license"],{ruleset:"driver_license_review_v6"});
+Object.assign(RUNTIME_ARTIFACT.definitions["social-security-card"],{ruleset:"social_security_card_review_v3"});
+Object.assign(RUNTIME_ARTIFACT.definitions["pay-stub"],{ruleset:"pay_stub_review_v3"});
+Object.assign(RUNTIME_ARTIFACT.definitions["other-income-proof"],{ruleset:"other_income_review_v4"});
+Object.assign(RUNTIME_ARTIFACT.definitions["tax-return"],{ruleset:"tax_return_review_v6"});
+Object.assign(RUNTIME_ARTIFACT.definitions.w2,{ruleset:"w2_review_v6"});
+Object.assign(RUNTIME_ARTIFACT.definitions["1099"],{ruleset:"form_1099_review_v4"});
+Object.assign(RUNTIME_ARTIFACT.definitions["bank-statement"],{ruleset:"bank_statement_review_v3"});
+Object.assign(RUNTIME_ARTIFACT.definitions["property-valuation"],{ruleset:"property_valuation_review_v3"});
+Object.assign(RUNTIME_ARTIFACT.definitions["vehicle-valuation"],{ruleset:"vehicle_valuation_review_v4"});
+Object.assign(RUNTIME_ARTIFACT.definitions["investment-statement"],{ruleset:"investment_statement_review_v3"});
+Object.assign(RUNTIME_ARTIFACT.definitions["debt-notice"],{ruleset:"debt_statement_review_v5"});
+Object.assign(RUNTIME_ARTIFACT.definitions["mortgage-statement"],{ruleset:"mortgage_statement_review_v5"});
+Object.assign(RUNTIME_ARTIFACT.definitions["foreclosure-repossession"],{ruleset:"foreclosure_repossession_review_v4"});
+Object.assign(RUNTIME_ARTIFACT.definitions["vehicle-title"],{ruleset:"vehicle_title_review_v5"});
+Object.assign(RUNTIME_ARTIFACT.definitions["court-document"],{ruleset:"court_document_review_v3"});
+Object.assign(RUNTIME_ARTIFACT.definitions["counseling-certificate"],{ruleset:"counseling_certificate_review_v5"});
+Object.assign(RUNTIME_ARTIFACT.definitions["other-document"],{ruleset:"other_document_review_v3"});
 
 function stableStringify(value){
   if(Array.isArray(value))return "["+value.map(stableStringify).join(",")+"]";
@@ -432,7 +452,7 @@ function normalizeDate(value){
 function normalizeCurrency(value){
   const raw=normalizeSpaces(value);
   const negative=/^\(.*\)$/.test(raw)||/^\s*-/.test(raw);
-  const cleaned=raw.replace(/[^0-9.]/g,"");
+  const punctuation=raw.replace(/[^0-9.,]/g,""),ocrThousands=/^\d{1,3}(?:[.,]\d{3})+[.,]\d{2}$/.test(punctuation),cleaned=ocrThousands?punctuation.slice(0,-3).replace(/[.,]/g,"")+"."+punctuation.slice(-2):raw.replace(/[^0-9.]/g,"");
   if(!/^\d+(?:\.\d{1,2})?$/.test(cleaned))return null;
   const amount=Number(cleaned)*(negative?-1:1);
   return Number.isFinite(amount)?amount:null;
@@ -467,7 +487,10 @@ function normalizeFieldValue(value,field){
     const amount=Number(match[0]);
     return Number.isFinite(amount)&&amount>=0&&amount<=100?amount+"%":null;
   }
-  if(field.normalizer==="state")return (/\b[A-Z]{2}\b/i.exec(raw)||[])[0]?.toUpperCase()||null;
+  if(field.normalizer==="state"){
+    const state=(/\b[A-Z]{2}\b/i.exec(raw)||[])[0]?.toUpperCase()||null;
+    return state&&/^(?:A[KLRSZ]|C[AOT]|D[CE]|F[LM]|G[AU]|HI|I[ADLN]|K[SY]|LA|M[ADEHINOPST]|N[CDEHJMVY]|O[HKR]|P[ARW]|RI|S[CD]|T[NX]|UT|V[AIT]|W[AIVY])$/.test(state)?state:null;
+  }
   if(field.normalizer==="zip")return (/\b\d{5}(?:-?\d{4})?\b/.exec(raw)||[])[0]?.slice(0,5)||null;
   if(field.normalizer==="vin"){
     const vin=raw.toUpperCase().replace(/[^A-Z0-9]/g,"");
@@ -497,21 +520,25 @@ function plausibleFieldEvidence(rawValue,field){
   if(!value)return false;
   if(!field)return true;
   if(field.valueType==="currency"){
-    if(!/^\(?\s*[-+]?\s*\$?\s*\d[\d,]*(?:\.\d{1,2})?\s*\)?$/.test(value))return false;
+    if(!/^\(?\s*[-+]?\s*\$?\s*\d[\d,.]*(?:[.,]\d{1,2})?\s*\)?$/.test(value))return false;
     const digits=value.replace(/\D/g,"");
     return digits.length>=3||/[.$,]/.test(value);
   }
   if(field.valueType==="date"){
     const numeric=value.match(/\b\d{1,2}[\/. -]\d{1,2}[\/. -]\d{2,4}\b/g)||[],named=value.match(/\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},?\s+(?:19|20)\d{2}\b/gi)||[],dates=numeric.concat(named);
-    return dates.length===1&&normalizeDate(dates[0])!==null;
+    return dates.length===1&&normalizeDate(dates[0])!==null||value.replace(/\D/g,"").length===8&&normalizeDate(value)!==null;
   }
   if(field.valueType==="number")return /^-?\d[\d,]*$/.test(value);
   if(field.valueType==="boolean")return /\b(?:yes|no|true|false|mentioned|none|lawsuit|judgment)\b/i.test(value);
   if(field.normalizer==="year")return /\b(?:19|20)\d{2}\b/.test(value);
   if(field.normalizer==="last4")return /^(?:[A-Za-z ]+)?[Xx*\u2022\d -]{4,}$/.test(value);
-  if(field.normalizer==="state")return /^[A-Z]{2}$/i.test(value);
+  if(field.normalizer==="state")return normalizeFieldValue(value,field)!==null;
   if(field.normalizer==="zip")return /^\d{5}(?:-\d{4})?$/.test(value);
   if(field.normalizer==="vin")return /[A-HJ-NPR-Z0-9]{17}/i.test(value.replace(/[^A-Z0-9]/gi,""));
+  if(field.id==="payFrequency")return /^(?:weekly|biweekly|semi[- ]?monthly|monthly|quarterly|annual(?:ly)?)$/i.test(value);
+  if(field.id==="condition")return /^(?:excellent|very good|good|fair|poor|new|used)$/i.test(value);
+  if(/^(?:employeeName|recipientName|debtorName|borrowerName|ownerName|accountOwner|taxpayerName|spouseName|personName|plaintiff|defendant)$/.test(field.id))return /^[A-Za-z][A-Za-z.'-]*(?:\s+[A-Za-z][A-Za-z.'-]*){1,5}$/.test(value)&&!/^(?:employee|recipient|debtor|borrower|owner|account|taxpayer|plaintiff|defendant|statement|earnings|summary|date|amount|pay|vehicle|loan)\b/i.test(value);
+  if(field.id==="fullName")return /^[A-Za-z][A-Za-z.'-]*(?:\s+[A-Za-z][A-Za-z.'-]*){1,4}$/.test(value);
   return /[A-Za-z0-9]/.test(value);
 }
 
@@ -522,15 +549,15 @@ function findLabeledEvidence(text,aliases,field,allAliases){
     for(const alias of aliases.slice().sort(function(left,right){return right.length-left.length;})){
       const labelPattern=new RegExp("(?:^|[|;]\\s*|(?:box\\s*)?\\d{1,2}[a-z]?[.)\\s:-]+)"+escapeRegex(alias)+"\\b","i"),labelMatch=labelPattern.exec(line.clean);
       if(!labelMatch)continue;
-      const suffix=line.clean.slice(labelMatch.index+labelMatch[0].length).replace(/^\s*(?:[:#=\u2013\u2014.-]|\.{2,})?\s*/,"");
+      const suffix=line.clean.slice(labelMatch.index+labelMatch[0].length).replace(/^\s*(?:[|:#=\u2013\u2014.-]|\.{2,})?\s*/,"");
       if(suffix&&!/^['\u2019]s\b/i.test(suffix)&&!(field&&field.valueType==="string"&&/^\([^)]*\)(?:\.|$)/.test(suffix))&&plausibleFieldEvidence(suffix,field)&&!looksLikeLabel(suffix,labels))return {rawValue:suffix,sourceLines:[line.raw],lineNumbers:[line.lineNumber]};
       const lookahead=field&&field.valueType==="string"?3:field&&field.valueType==="date"?4:2;
       for(let next=index+1;next<Math.min(lines.length,index+1+lookahead);next+=1){
-        const candidate=lines[next];
-        if(looksLikeLabel(candidate.clean,labels))continue;
-        if(field&&field.valueType==="string"&&/^(?:check|one box|see|enter|if |for |copy |form |department |instructions?|last name|suffix|city|state|zip|address|account|amount|balance|date|year|tax|wages|income|refund|total|box\b)/i.test(candidate.clean))continue;
-        if(!plausibleFieldEvidence(candidate.clean,field))continue;
-        return {rawValue:candidate.clean,sourceLines:[line.raw,candidate.raw],lineNumbers:[line.lineNumber,candidate.lineNumber]};
+        const candidate=lines[next],candidateValue=candidate.clean.replace(/^(?:\|\s*)+/,"");
+        if(looksLikeLabel(candidateValue,labels))continue;
+        if(field&&field.valueType==="string"&&/^(?:check|one box|see|enter|if |for |copy |form |department |instructions?|last name|suffix|city|state|zip|address|account|amount|balance|date|year|tax|wages|income|refund|total|box\b)/i.test(candidateValue))continue;
+        if(!plausibleFieldEvidence(candidateValue,field))continue;
+        return {rawValue:candidateValue,sourceLines:[line.raw,candidate.raw],lineNumbers:[line.lineNumber,candidate.lineNumber]};
       }
     }
   }
@@ -568,6 +595,53 @@ function setFieldFromEvidence(definition,fields,id,evidence,sourceLabel,confiden
   if(value===null)return false;
   fields[id]={id:id,label:spec.label,valueType:spec.valueType,value:value,status:"present",confidence:confidence||"medium",source:sourceLabel||"Local document text",evidence:{sourceLines:evidence.sourceLines,lineNumbers:evidence.lineNumbers||[]}};
   return true;
+}
+
+function editDistance(left,right){
+  const a=String(left||""),b=String(right||""),prior=Array.from({length:b.length+1},function(_,index){return index;});
+  for(let row=1;row<=a.length;row+=1){let diagonal=prior[0];prior[0]=row;for(let column=1;column<=b.length;column+=1){const above=prior[column],cost=a[row-1]===b[column-1]?0:1;prior[column]=Math.min(prior[column]+1,prior[column-1]+1,diagonal+cost);diagonal=above;}}
+  return prior[b.length];
+}
+
+function fieldForColumnLabel(definition,label){
+  const clean=normalizeSpaces(label).replace(/^(?:(?:box\s*)?\d{1,2}[a-z]?|e\s*\/?\s*f|[a-z](?:\s*\/\s*[a-z])?)[.)\s:-]+/i,"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
+  const candidates=[];
+  definition.fields.forEach(function(field){
+    field.aliases.forEach(function(alias){
+      const normalized=String(alias).toLowerCase().replace(/[^a-z0-9]+/g," ").trim(),suffix=clean.startsWith(normalized+" ")?clean.slice(normalized.length+1):"";
+      if(clean===normalized||suffix==="address and zip code")candidates.push({field:field,length:normalized.length});
+    });
+  });
+  const exact=candidates.sort(function(left,right){return right.length-left.length;})[0]?.field;if(exact)return exact;
+  const fuzzy=[];
+  if(clean.length>=6)definition.fields.forEach(function(field){field.aliases.forEach(function(alias){const normalized=String(alias).toLowerCase().replace(/[^a-z0-9]+/g," ").trim(),maxDistance=normalized.length>=16?3:normalized.length>=8?2:1;if(normalized.length>=6&&Math.abs(normalized.length-clean.length)<=maxDistance&&editDistance(clean,normalized)<=maxDistance)fuzzy.push({field:field,length:normalized.length});});});
+  return fuzzy.sort(function(left,right){return right.length-left.length;})[0]?.field||null;
+}
+
+function applyParallelLabelRows(definition,text,fields,sourceLabel){
+  const rows=String(text||"").split(/\r?\n/).map(function(raw,index){const trimmed=raw.trim();return {raw:trimmed,clean:normalizeSpaces(trimmed),parts:trimmed.includes("|")?trimmed.split(/\s*\|\s*/).map(normalizeSpaces):[normalizeSpaces(trimmed)],lineNumber:index+1};}).filter(function(row){return row.clean;});
+  rows.forEach(function(row){
+    if(row.parts.length<2||row.parts.length%2!==0)return;
+    for(let column=0;column<row.parts.length;column+=2){
+      const field=fieldForColumnLabel(definition,row.parts[column]),rawValue=row.parts[column+1];
+      if(!field||fieldForColumnLabel(definition,rawValue)||!plausibleFieldEvidence(rawValue,field))continue;
+      setFieldFromEvidence(definition,fields,field.id,{rawValue:rawValue,sourceLines:[row.raw],lineNumbers:[row.lineNumber]},sourceLabel,"high",true);
+    }
+  });
+  for(let index=0;index<rows.length-1;index+=1){
+    const labels=rows[index],values=rows[index+1];
+    if(labels.parts.length<2||values.parts.length!==labels.parts.length)continue;
+    const mapped=labels.parts.map(function(part){return fieldForColumnLabel(definition,part);});
+    if(mapped.filter(Boolean).length<2)continue;
+    mapped.forEach(function(field,column){
+      let rawValue=values.parts[column],sourceLines=[labels.raw,values.raw],lineNumbers=[labels.lineNumber,values.lineNumber];
+      const continuation=rows[index+2],continuationValues=continuation&&continuation.parts.map(function(value,partIndex){return value?{value:value,index:partIndex}:null;}).filter(Boolean)||[];
+      if(field&&field.valueType==="string"&&continuation&&continuationValues.length===1&&continuationValues[0].index===column&&!fieldForColumnLabel(definition,continuationValues[0].value)&&!/^(?:photo|signature|page\s+\d+|copy\s+[a-z]|additional document detail)$/i.test(continuationValues[0].value)){rawValue=normalizeSpaces(rawValue+" "+continuationValues[0].value);sourceLines.push(continuation.raw);lineNumbers.push(continuation.lineNumber);}
+      if(!field||!plausibleFieldEvidence(rawValue,field)||fieldForColumnLabel(definition,rawValue))return;
+      setFieldFromEvidence(definition,fields,field.id,{rawValue:rawValue,sourceLines:sourceLines,lineNumbers:lineNumbers},sourceLabel,"high",true);
+    });
+  }
+  return fields;
 }
 
 function firstMatchingLine(lines,pattern,start,end){
@@ -621,7 +695,7 @@ function currencyCandidatesNearLabels(lines,pattern,start,end){
 }
 
 function applyDocumentLayout(definition,text,fields,sourceLabel){
-  const lines=normalizedDocumentLines(text),ruleset=definition.ruleset;
+  const lines=normalizedDocumentLines(text),ruleset=definition.ruleset,tableRows=String(text||"").split(/\r?\n/).map(function(raw,index){const trimmed=raw.trim();return {raw:trimmed,parts:trimmed.split(/\s*\|\s*/).map(normalizeSpaces),lineNumber:index+1};}).filter(function(row){return row.raw&&row.parts.length>1;});
   if(ruleset.startsWith("social_security_card")){
     const number=firstMatchingLine(lines,/\b(\d{3})[- ]?(\d{2})[- ]?(\d{4})\b/)||firstMatchingLine(lines,/\d[\d -]{7,}/),initialPerson=firstMatchingLine(lines,/^[A-Z][A-Z.'-]+\s+[A-Z]\.?\s+[A-Z][A-Z.'-]+$/),person=initialPerson||lines.map(function(line,index){const match=line.clean.match(/^([A-Z][A-Z.'-]+(?:\s+[A-Z][A-Z.'-]+){1,3})$/),words=match&&match[1].split(/\s+/);return match&&{line:line,match:match,index:index,score:words.length};}).filter(function(item){return item&&!/(?:social|security|administration|signature|valid|work|number|citizen)/i.test(item.line.clean);}).sort(function(a,b){return b.score-a.score||b.index-a.index;})[0];
     if(number)setFieldFromEvidence(definition,fields,"ssnLast4",{rawValue:number.match[0],sourceLines:[number.line.raw],lineNumbers:[number.line.lineNumber]},sourceLabel,"high",true);
@@ -780,6 +854,8 @@ function applyDocumentLayout(definition,text,fields,sourceLabel){
     else if(compensation)setFieldFromEvidence(definition,fields,"nonemployeeCompensation",compensation,sourceLabel,"high",true);
     const year=firstMatchingLine(lines,/form 1099[^\r\n]*?\b((?:19|20)\d{2})\b|\b((?:19|20)\d{2})\s+miscellaneous\s+income\b|miscellaneous\s+income\s+((?:19|20)\d{2})/i);
     if(year)setFieldFromEvidence(definition,fields,"taxYear",{rawValue:year.match[1]||year.match[2]||year.match[3],sourceLines:[year.line.raw],lineNumbers:[year.line.lineNumber]},sourceLabel,"high",true);
+    const formHeader=firstMatchingLine(lines,/\bform\s+(1099(?:\s*-\s*(?:nec|misc|r|int|div|k))?)\b/i);
+    if(formHeader)setFieldFromEvidence(definition,fields,"formType",{rawValue:formHeader.match[1].replace(/\s+/g,"").toUpperCase(),sourceLines:[formHeader.line.raw],lineNumbers:[formHeader.line.lineNumber]},sourceLabel,"high",true);
     const instructionOnly=/\binstructions for form 1099\b/i.test(text)&&!/\bcompleted form 1099\b/i.test(text);
     if(instructionOnly)definition.fields.forEach(function(spec){if(spec.id!=="taxYear")fields[spec.id]=emptyField(spec);});
     const blankOfficialForm=Boolean(firstMatchingLine(lines,/do not cut or separate forms on this page/i));
@@ -825,6 +901,30 @@ function applyDocumentLayout(definition,text,fields,sourceLabel){
     if(fields.address&&fields.address.value&&!streetPattern.test(String(fields.address.value))&&!/\bP\.?\s*O\.?\s*BOX\s+\d+/i.test(String(fields.address.value)))fields.address=emptyField(fieldById(definition,"address"));
     if(fields.totalIncome&&Number(fields.totalIncome.value)===9)fields.totalIncome=emptyField(fieldById(definition,"totalIncome"));
   }
+  if(ruleset.startsWith("driver_license")){
+    const gridRows=String(text||"").split(/\r?\n/).map(function(raw,index){return {raw:raw.trim(),parts:raw.split(/\s*\|\s*/).map(normalizeSpaces),lineNumber:index+1};}).filter(function(row){return row.raw&&row.parts.length>1;});
+    gridRows.forEach(function(row,index){
+      const values=gridRows[index+1];if(!values||values.parts.length!==row.parts.length)return;
+      const nameColumn=row.parts.findIndex(function(part){return /^full legal name$/i.test(part);});
+      if(nameColumn>=0){
+        if(values.parts[nameColumn].trim().split(/\s+/).length>=2)setFieldFromEvidence(definition,fields,"fullName",{rawValue:values.parts[nameColumn],sourceLines:[row.raw,values.raw],lineNumbers:[row.lineNumber,values.lineNumber]},sourceLabel,"high",true);
+        const cityColumn=nameColumn===0&&values.parts.length>1?1:-1,cityValue=cityColumn>=0&&values.parts[cityColumn];
+        if(cityValue&&/^[A-Za-z][A-Za-z .'-]{1,35}$/.test(cityValue)&&!/^(?:state|address|photo|dob|date of birth|zip(?: code)?)$/i.test(cityValue))setFieldFromEvidence(definition,fields,"city",{rawValue:cityValue,sourceLines:[row.raw,values.raw],lineNumbers:[row.lineNumber,values.lineNumber]},sourceLabel,"medium",true);
+      }
+      const stateColumn=row.parts.findIndex(function(part){return /^state$/i.test(part);});
+      if(stateColumn>=0){
+        setFieldFromEvidence(definition,fields,"state",{rawValue:values.parts[stateColumn],sourceLines:[row.raw,values.raw],lineNumbers:[row.lineNumber,values.lineNumber]},sourceLabel,"high",true);
+        const birthValue=values.parts.find(function(value,column){return column!==stateColumn&&/^(?:0?[1-9]|1[0-2])[\/. -](?:0?[1-9]|[12]\d|3[01])[\/. -](?:19|20)\d{2}$/.test(value);});
+        if(birthValue)setFieldFromEvidence(definition,fields,"dateOfBirth",{rawValue:birthValue,sourceLines:[row.raw,values.raw],lineNumbers:[row.lineNumber,values.lineNumber]},sourceLabel,"high",true);
+      }
+      const addressColumn=row.parts.findIndex(function(part){return /^(?:street )?address$/i.test(part);});
+      if(addressColumn>=0){
+        if(/^\d{1,6}\s+.+\b(?:ST(?:REET)?|AVE(?:NUE)?|RD|ROAD|DR(?:IVE)?|LN|LANE|BLVD|BOULEVARD|CT|COURT|WAY|PKWY|PARKWAY|PL|PLACE|CIR|CIRCLE|TER|TERRACE|HWY|HIGHWAY)\b/i.test(values.parts[addressColumn]))setFieldFromEvidence(definition,fields,"streetAddress",{rawValue:values.parts[addressColumn],sourceLines:[row.raw,values.raw],lineNumbers:[row.lineNumber,values.lineNumber]},sourceLabel,"high",true);
+        const zipValue=values.parts.find(function(value,column){return column!==addressColumn&&/^\d{5}(?:-\d{4})?$/.test(value);});
+        if(zipValue)setFieldFromEvidence(definition,fields,"zipCode",{rawValue:zipValue,sourceLines:[row.raw,values.raw],lineNumbers:[row.lineNumber,values.lineNumber]},sourceLabel,"high",true);
+      }
+    });
+  }
   if(ruleset.startsWith("w2_review")){
     const w2Street=/^\d{1,6}\s+[A-Z][A-Za-z0-9.'-]*(?:\s+[A-Z][A-Za-z0-9.'-]*){0,4}\s+(?:ST(?:REET)?|AVE(?:NUE)?|RD|ROAD|DR(?:IVE)?|LN|LANE|BLVD|BOULEVARD|CT|COURT|WAY|PKWY|PARKWAY|PL|PLACE)\b/i,formLine=firstMatchingLine(lines,/form\s+w\s*-?\s*2(?!\s*g)/i),yearCandidates=lines.map(function(line){const years=line.clean.match(/\b(?:19|20)\d{2}\b/g)||[],split=line.clean.match(/\b20\D{1,4}(2\d)\b/);if(split)years.push("20"+split[1]);return years.map(function(value){return {value:value,line:line};});}).flat().filter(function(item){const value=Number(item.value);return value>=1990&&value<=new Date().getFullYear()+1;}).sort(function(left,right){return Number(right.value)-Number(left.value);}),year=yearCandidates[0];
     if(year)setFieldFromEvidence(definition,fields,"taxYear",{rawValue:year.value,sourceLines:[year.line.raw],lineNumbers:[year.line.lineNumber]},sourceLabel,"high",true);
@@ -855,7 +955,7 @@ function applyDocumentLayout(definition,text,fields,sourceLabel){
     const employeeAddressHeaderPattern=/(?:^|\b)(?:e\s*\/\s*f\s+)?employee\s*(?:['\u2019]\s*)?s\s+name\s*,?\s*address\s*,?\s*and\s+zip\s+code\b/i,employeeAddressBoxCandidates=[];
     const employeeNameFromBoxLine=function(line){
       if(!line)return null;
-      const segment=normalizeSpaces(String(line.raw||"").split(/\s{2,}/)[0]).replace(/^[^A-Za-z]+/,""),match=segment.match(/^([A-Z][A-Za-z.'-]{1,}(?:\s+(?:[A-Z][A-Za-z.'-]{1,}|Jr\.?|Sr\.?|II|III|IV)){1,4})$/);
+      const segment=normalizeSpaces(String(line.raw||"").split(/\s{2,}|\s*\|\s*/)[0]).replace(/^[^A-Za-z]+/,""),match=segment.match(/^([A-Z][A-Za-z.'-]{1,}(?:\s+(?:[A-Z][A-Za-z.'-]{1,}|Jr\.?|Sr\.?|II|III|IV)){1,4})$/);
       if(!match||/(?:employee|employer|wage|tax|statement|summary|address|zip|social|federal|medicare|page|copy)/i.test(match[1]))return null;
       return {value:match[1],sourceLines:[line.raw],lineNumbers:[line.lineNumber]};
     };
@@ -919,6 +1019,9 @@ function applyDocumentLayout(definition,text,fields,sourceLabel){
     if(fidelity)setFieldFromEvidence(definition,fields,"institutionName",{rawValue:"Fidelity",sourceLines:[fidelity.line.raw],lineNumbers:[fidelity.line.lineNumber]},sourceLabel,"high",true);
     const owner=fidelity&&firstMatchingLine(lines,/^(?!.*(?:fidelity|investment|statement|informational|envelope|main st|boston|value by account))[A-Z][A-Za-z.'-]+(?:\s+[A-Z][A-Za-z.'-]+){1,3}$/i,0,Math.min(lines.length,20));
     if(owner)setFieldFromEvidence(definition,fields,"accountOwner",{rawValue:owner.line.clean,sourceLines:[owner.line.raw],lineNumbers:[owner.line.lineNumber]},sourceLabel,"high",true);
+    const namedInstitution=firstMatchingLine(lines,/^(?!financial institution|account owner)([A-Z][A-Za-z&.'-]+(?:\s+[A-Z][A-Za-z&.'-]+){0,5}\s+(?:Brokerage|Financial|Investments?|Securities|Bank|Credit Union|Trust)(?:\s+[A-Z][A-Za-z&.'-]+)*)$/i),titleOwner=title&&lines.slice(title.index+1,Math.min(lines.length,title.index+10)).map(function(line,index){const match=line.clean.match(/^([A-Z][A-Za-z.'-]+(?:\s+[A-Z][A-Za-z.'-]+){1,4})$/),lineIndex=title.index+index+1,addressNearby=lines.slice(lineIndex+1,Math.min(lines.length,lineIndex+4)).some(function(candidate){return /^\d{1,6}\s+/.test(candidate.clean);});return match&&addressNearby&&!/(?:statement|account|summary|document|quarterly|retirement|investment)/i.test(match[1])?{line:line,match:match}:null;}).find(Boolean);
+    if(namedInstitution)setFieldFromEvidence(definition,fields,"institutionName",{rawValue:namedInstitution.match[1],sourceLines:[namedInstitution.line.raw],lineNumbers:[namedInstitution.line.lineNumber]},sourceLabel,"high",true);
+    if(titleOwner)setFieldFromEvidence(definition,fields,"accountOwner",{rawValue:titleOwner.match[1],sourceLines:[titleOwner.line.raw],lineNumbers:[titleOwner.line.lineNumber]},sourceLabel,"high",true);
     const period=firstMatchingLine(lines,/([A-Z]+\s+\d{1,2})(?:,\s*((?:19|20)\d{2}))?\s*[-=â€“â€”]\s*([A-Z]+\s+\d{1,2}),?\s*((?:19|20)\d{2})/i);
     if(period){const year=period.match[2]||period.match[4];setFieldFromEvidence(definition,fields,"statementStartDate",{rawValue:period.match[1]+" "+year,sourceLines:[period.line.raw],lineNumbers:[period.line.lineNumber]},sourceLabel,"high",true);setFieldFromEvidence(definition,fields,"statementEndDate",{rawValue:period.match[3]+" "+period.match[4],sourceLines:[period.line.raw],lineNumbers:[period.line.lineNumber]},sourceLabel,"high",true);}
     const ending=firstMatchingLine(lines,/^ending value as of .*?\$\s*([\d,]+(?:\.\d{1,2})?)/i)||firstMatchingLine(lines,/^(?:ending (?:portfolio )?value(?:\*\*|\*â„¢)?|your portfolio value)\s*:?[^0-9]*\$?\s*([\d,]+(?:\.\d{1,2})?)/i);
@@ -984,6 +1087,48 @@ function applyDocumentLayout(definition,text,fields,sourceLabel){
     const visiblyBlank=/\bI CERTIFY that on\s*[\[|I\s]+.*received from\s+[A-Z_\u2014]{3,}/i.test(text);
     if(visiblyBlank)["debtorName","providerName","completionDate","certificateNumber"].forEach(function(id){fields[id]=emptyField(fieldById(definition,id));});
   }
+  if(ruleset.startsWith("w2_review")){
+    tableRows.forEach(function(row,index){
+      const values=tableRows[index+1];if(!values||values.parts.length!==row.parts.length)return;
+      if(row.parts.length===3&&/employer.*name/i.test(row.parts[0])&&/employee.*name/i.test(row.parts[1])&&/wages.*compensation/i.test(row.parts[2])){
+        setFieldFromEvidence(definition,fields,"employerName",{rawValue:values.parts[0],sourceLines:[row.raw,values.raw],lineNumbers:[row.lineNumber,values.lineNumber]},sourceLabel,"high",true);
+        setFieldFromEvidence(definition,fields,"employeeName",{rawValue:values.parts[1],sourceLines:[row.raw,values.raw],lineNumbers:[row.lineNumber,values.lineNumber]},sourceLabel,"high",true);
+        setFieldFromEvidence(definition,fields,"wages",{rawValue:values.parts[2],sourceLines:[row.raw,values.raw],lineNumbers:[row.lineNumber,values.lineNumber]},sourceLabel,"high",true);
+      }
+      if(row.parts.length===3&&/federal.*tax.*with/i.test(row.parts[0])&&/social.*security.*wages/i.test(row.parts[1])&&/tax.*with/i.test(row.parts[2])){
+        [["federalTaxWithheld",0],["socialSecurityWages",1],["socialSecurityTaxWithheld",2]].forEach(function(mapping){setFieldFromEvidence(definition,fields,mapping[0],{rawValue:values.parts[mapping[1]],sourceLines:[row.raw,values.raw],lineNumbers:[row.lineNumber,values.lineNumber]},sourceLabel,"high",true);});
+      }
+      if(row.parts.length===2&&/medicare.*wages/i.test(row.parts[0])&&/medicare.*tax.*with/i.test(row.parts[1])){
+        setFieldFromEvidence(definition,fields,"medicareWages",{rawValue:values.parts[0],sourceLines:[row.raw,values.raw],lineNumbers:[row.lineNumber,values.lineNumber]},sourceLabel,"high",true);
+        setFieldFromEvidence(definition,fields,"medicareTaxWithheld",{rawValue:values.parts[1],sourceLines:[row.raw,values.raw],lineNumbers:[row.lineNumber,values.lineNumber]},sourceLabel,"high",true);
+      }
+    });
+  }
+  if(ruleset.startsWith("other_income")){
+    tableRows.forEach(function(row,index){
+      const payment=tableRows.filter(function(candidate){return Math.abs(candidate.lineNumber-row.lineNumber)<=6&&candidate.parts.length===3&&plausibleFieldEvidence(candidate.parts[0],fieldById(definition,"statementDate"))&&plausibleFieldEvidence(candidate.parts[1],fieldById(definition,"grossAmount"))&&/^(?:weekly|biweekly|semimonthly|monthly|quarterly|annual(?:ly)?)$/i.test(candidate.parts[2]);}).sort(function(left,right){return Math.abs(left.lineNumber-row.lineNumber)-Math.abs(right.lineNumber-row.lineNumber);})[0];
+      if(row.parts.length!==3||!payment||!/^[A-Za-z][A-Za-z.'-]*(?:\s+[A-Za-z][A-Za-z.'-]*){1,4}$/.test(row.parts[0])||!/benefit|retirement|pension|disability|unemployment|income/i.test(row.parts[2]))return;
+      [["recipientName",row.parts[0]],["sourceName",row.parts[1]],["incomeType",row.parts[2]],["statementDate",payment.parts[0]],["grossAmount",payment.parts[1]],["frequency",payment.parts[2]]].forEach(function(mapping){setFieldFromEvidence(definition,fields,mapping[0],{rawValue:mapping[1],sourceLines:[row.raw,payment.raw],lineNumbers:[row.lineNumber,payment.lineNumber]},sourceLabel,"high",true);});
+    });
+  }
+  if(ruleset.startsWith("mortgage_statement")){
+    tableRows.forEach(function(row,index){
+      if(row.parts.length!==3||!/servic/i.test(row.parts[0])||!/^[A-Za-z][A-Za-z.'-]*(?:\s+[A-Za-z][A-Za-z.'-]*){1,4}$/.test(row.parts[1])||!/^\d{1,6}\s+/.test(row.parts[2]))return;
+      const account=tableRows.slice(index+1,index+4).find(function(candidate){return candidate.parts.length===3&&/^[Xx*\d -]{4,}$/.test(candidate.parts[0])&&plausibleFieldEvidence(candidate.parts[2],fieldById(definition,"principalBalance"));}),payment=account&&tableRows.slice(tableRows.indexOf(account)+1,tableRows.indexOf(account)+4).find(function(candidate){return candidate.parts.length===3&&candidate.parts.every(function(value){return plausibleFieldEvidence(value,fieldById(definition,"monthlyPayment"));});}),continuation=tableRows.find(function(candidate){return candidate.lineNumber===row.lineNumber+1&&candidate.parts.length===3&&/^\d{5}$/.test(candidate.parts[2]);}),property=normalizeSpaces(row.parts[2]+(continuation?" "+continuation.parts[2]:""));
+      [["servicerName",row.parts[0]],["borrowerName",row.parts[1]],["propertyAddress",property]].forEach(function(mapping){setFieldFromEvidence(definition,fields,mapping[0],{rawValue:mapping[1],sourceLines:[row.raw].concat(continuation?[continuation.raw]:[]),lineNumbers:[row.lineNumber].concat(continuation?[continuation.lineNumber]:[])},sourceLabel,"high",true);});
+      if(account){[["loanNumberLast4",account.parts[0]],["principalBalance",account.parts[2]]].forEach(function(mapping){setFieldFromEvidence(definition,fields,mapping[0],{rawValue:mapping[1],sourceLines:[account.raw],lineNumbers:[account.lineNumber]},sourceLabel,"high",true);});if(plausibleFieldEvidence(account.parts[1],fieldById(definition,"statementDate")))setFieldFromEvidence(definition,fields,"statementDate",{rawValue:account.parts[1],sourceLines:[account.raw],lineNumbers:[account.lineNumber]},sourceLabel,"high",true);}
+      if(payment)[["monthlyPayment",payment.parts[0]],["escrowBalance",payment.parts[1]],["pastDueAmount",payment.parts[2]]].forEach(function(mapping){setFieldFromEvidence(definition,fields,mapping[0],{rawValue:mapping[1],sourceLines:[payment.raw],lineNumbers:[payment.lineNumber]},sourceLabel,"high",true);});
+    });
+  }
+  if(ruleset.startsWith("foreclosure_repossession")){
+    tableRows.forEach(function(row,index){
+      if(row.parts.length!==3||!/^(?:foreclosure|repossession)$/i.test(row.parts[0])||!/servic|bank|credit union|lender/i.test(row.parts[1]))return;
+      const detail=tableRows.slice(index+1,index+4).find(function(candidate){return candidate.parts.length===3&&/^\d{1,6}\s+/.test(candidate.parts[0])&&plausibleFieldEvidence(candidate.parts[1],fieldById(definition,"noticeDate"));}),sale=detail&&tableRows.slice(tableRows.indexOf(detail)+1,tableRows.indexOf(detail)+4).find(function(candidate){return candidate.parts.length>=2&&plausibleFieldEvidence(candidate.parts[1],fieldById(definition,"amountToCure"));}),zipLine=detail&&lines.find(function(line){return line.lineNumber===detail.lineNumber+1&&/^\d{5}$/.test(line.clean);}),collateral=detail&&normalizeSpaces(detail.parts[0]+(zipLine?" "+zipLine.clean:""));
+      [["actionType",row.parts[0]],["creditorName",row.parts[1]],["debtorName",row.parts[2]]].forEach(function(mapping){setFieldFromEvidence(definition,fields,mapping[0],{rawValue:mapping[1],sourceLines:[row.raw],lineNumbers:[row.lineNumber]},sourceLabel,"high",true);});
+      if(detail){[["collateral",collateral],["noticeDate",detail.parts[1]]].forEach(function(mapping){setFieldFromEvidence(definition,fields,mapping[0],{rawValue:mapping[1],sourceLines:[detail.raw].concat(zipLine?[zipLine.raw]:[]),lineNumbers:[detail.lineNumber].concat(zipLine?[zipLine.lineNumber]:[])},sourceLabel,"high",true);});if(plausibleFieldEvidence(detail.parts[2],fieldById(definition,"responseDeadline")))setFieldFromEvidence(definition,fields,"responseDeadline",{rawValue:detail.parts[2],sourceLines:[detail.raw],lineNumbers:[detail.lineNumber]},sourceLabel,"high",true);}
+      if(sale){if(plausibleFieldEvidence(sale.parts[0],fieldById(definition,"scheduledSaleDate")))setFieldFromEvidence(definition,fields,"scheduledSaleDate",{rawValue:sale.parts[0],sourceLines:[sale.raw],lineNumbers:[sale.lineNumber]},sourceLabel,"high",true);setFieldFromEvidence(definition,fields,"amountToCure",{rawValue:sale.parts[1],sourceLines:[sale.raw],lineNumbers:[sale.lineNumber]},sourceLabel,"high",true);}
+    });
+  }
   if(ruleset.startsWith("other_document")){
     const explicitTitle=firstMatchingLine(lines,/^title\s*:?\s*(.+)$/i),explicitFrom=firstMatchingLine(lines,/^from\s*:?\s*(.+)$/i);
     if(explicitTitle)setFieldFromEvidence(definition,fields,"documentTitle",{rawValue:explicitTitle.match[1],sourceLines:[explicitTitle.line.raw],lineNumbers:[explicitTitle.line.lineNumber]},sourceLabel,"high",true);
@@ -1015,7 +1160,73 @@ function applyDocumentLayout(definition,text,fields,sourceLabel){
 
 function extractDocumentFields(definition,text,sourceLabel){
   const fields=extractLabeledFields(definition,text,sourceLabel);
-  return applyDocumentLayout(definition,text,fields,sourceLabel||"Local document text");
+  applyDocumentLayout(definition,text,fields,sourceLabel||"Local document text");
+  applyParallelLabelRows(definition,text,fields,sourceLabel||"Local document text");
+  if(definition.ruleset.startsWith("w2_")){
+    const header=firstMatchingLine(normalizedDocumentLines(text),/\b(?:19|20)\d{2}\b.*\bform\s*w\s*-?\s*2\b|\bform\s*w\s*-?\s*2\b.*\b(?:19|20)\d{2}\b/i,0,12);
+    if(header){const year=(header.line.clean.match(/\b(?:19|20)\d{2}\b/)||[])[0];if(year)setFieldFromEvidence(definition,fields,"taxYear",{rawValue:year,sourceLines:[header.line.raw],lineNumbers:[header.line.lineNumber]},sourceLabel,"high",true);}
+  }
+  return fields;
+}
+
+function reanchorFieldEvidence(field,sourceText){
+  if(!field||field.value===null||!field.evidence||!Array.isArray(field.evidence.sourceLines))return field;
+  const sourceLines=normalizedDocumentLines(sourceText),anchored=[],lineNumbers=[];
+  field.evidence.sourceLines.forEach(function(sourceLine){
+    const clean=normalizeSpaces(sourceLine),match=sourceLines.find(function(line){return line.clean.toLowerCase()===clean.toLowerCase();});
+    if(match){anchored.push(match.raw);lineNumbers.push(match.lineNumber);}
+  });
+  if(anchored.length===field.evidence.sourceLines.length)field.evidence={...field.evidence,sourceLines:anchored,lineNumbers:lineNumbers};
+  return field;
+}
+
+function vinCheckDigitValid(value){
+  const vin=String(value||"").toUpperCase().replace(/[^A-Z0-9]/g,"");
+  if(!/^[A-HJ-NPR-Z0-9]{17}$/.test(vin))return false;
+  const values={A:1,B:2,C:3,D:4,E:5,F:6,G:7,H:8,J:1,K:2,L:3,M:4,N:5,P:7,R:9,S:2,T:3,U:4,V:5,W:6,X:7,Y:8,Z:9},weights=[8,7,6,5,4,3,2,10,0,9,8,7,6,5,4,3,2];
+  let total=0;for(let index=0;index<vin.length;index+=1)total+=(values[vin[index]]===undefined?Number(vin[index]):values[vin[index]])*weights[index];
+  const digit=total%11===10?"X":String(total%11);return vin[8]===digit;
+}
+
+function candidateReliability(spec,value){
+  if(spec&&spec.normalizer==="vin")return vinCheckDigitValid(value)?3:0;
+  const raw=normalizeSpaces(value),id=spec&&spec.id||"";
+  if(/^(?:employeeName|recipientName|debtorName|borrowerName|ownerName|accountOwner|taxpayerName|spouseName|personName|plaintiff|defendant|fullName)$/.test(id))return /^[A-Za-z][A-Za-z.'-]*(?:\s+[A-Za-z][A-Za-z.'-]*){1,5}$/.test(raw)?2:0;
+  if(/^(?:institutionName|sourceName|employerName|servicerName|creditorName|providerName|payerName|issuerName)$/.test(id))return /\b(?:bank|credit union|brokerage|network|trust|services?|servicing|medical|partners|logistics|studio|payments?|administration|agency|llc|inc\.?|corp\.?|company|group|university)\b/i.test(raw)?3:raw.length>=4&&!/^[$\d]/.test(raw)?1:0;
+  if(id==="payFrequency")return /^(?:weekly|biweekly|semi[- ]?monthly|monthly|quarterly|annual(?:ly)?)$/i.test(raw)?3:0;
+  if(id==="condition")return /^(?:excellent|very good|good|fair|poor|new|used)$/i.test(raw)?3:0;
+  if(id==="actionType")return /^(?:foreclosure|repossession|notice of default|right to cure)$/i.test(raw)?3:1;
+  if(/^(?:propertyAddress|collateral)$/.test(id))return /\b\d{5}(?:-\d{4})?\b/.test(raw)?3:1;
+  if(id==="make")return /\b(?:vehicle|model|make)\b/i.test(raw)?0:/^[A-Za-z][A-Za-z.'-]+$/.test(raw)?3:1;
+  if(id==="model")return /^(?:Acura|Audi|BMW|Buick|Cadillac|Chevrolet|Chevy|Chrysler|Dodge|Ford|GMC|Honda|Hyundai|Infiniti|Jeep|Kia|Lexus|Lincoln|Mazda|Mercedes|Mitsubishi|Nissan|Subaru|Tesla|Toyota|Volkswagen|Volvo)\b/i.test(raw)?1:2;
+  return 1;
+}
+
+function fuseFieldCandidates(definition,fieldSets,sourceText){
+  const fields={};
+  definition.fields.forEach(function(spec){
+    const candidates=(fieldSets||[]).map(function(fieldSet,index){const field=fieldSet&&fieldSet[spec.id];return field&&field.value!==null?{field:field,index:index}:null;}).filter(Boolean);
+    if(!candidates.length){fields[spec.id]=emptyField(spec);return;}
+    const groups=new Map();
+    candidates.forEach(function(candidate){
+      const value=candidate.field.value,key=typeof value==="number"?"n:"+value.toFixed(2):typeof value==="boolean"?"b:"+value:"s:"+String(value).toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
+      const group=groups.get(key)||{key:key,count:0,firstIndex:candidate.index,candidate:candidate,reliability:candidateReliability(spec,value)};group.count+=1;group.reliability=Math.max(group.reliability,candidateReliability(spec,value));if(candidate.index<group.firstIndex){group.firstIndex=candidate.index;group.candidate=candidate;}groups.set(key,group);
+    });
+    const ranked=Array.from(groups.values()).sort(function(left,right){return right.reliability-left.reliability||right.count-left.count||left.firstIndex-right.firstIndex;}),winner=ranked[0],selected={...winner.candidate.field};
+    if(winner.count>=2)selected.confidence="high";
+    if(ranked[1]&&(ranked[1].count===winner.count||ranked[1].count>winner.count)){selected.confidence="medium";selected.needsReview=true;selected.reviewReason="Local OCR readings disagree. Compare this field with the document image.";selected.conflict={value:ranked[1].candidate.field.value,source:ranked[1].candidate.field.source,evidence:ranked[1].candidate.field.evidence};}
+    if(spec.normalizer==="vin"&&!vinCheckDigitValid(selected.value)){selected.confidence="medium";selected.needsReview=true;selected.reviewReason="The visible VIN does not pass its check digit. Compare each character with the document.";}
+    fields[spec.id]=reanchorFieldEvidence(selected,sourceText);
+  });
+  const coherentPair=function(firstId,secondId,predicate){
+    if(!fields[firstId]||!fields[secondId]||predicate(fields[firstId].value,fields[secondId].value))return;
+    const pair=(fieldSets||[]).map(function(fieldSet){return {first:fieldSet&&fieldSet[firstId],second:fieldSet&&fieldSet[secondId]};}).find(function(candidate){return candidate.first&&candidate.second&&candidate.first.value!==null&&candidate.second.value!==null&&predicate(candidate.first.value,candidate.second.value);});
+    if(pair){fields[firstId]=reanchorFieldEvidence({...pair.first},sourceText);fields[secondId]=reanchorFieldEvidence({...pair.second},sourceText);}
+  };
+  coherentPair("statementStartDate","statementEndDate",function(start,end){return Boolean(start&&end&&String(end)>String(start));});
+  coherentPair("periodStart","periodEnd",function(start,end){return Boolean(start&&end&&String(end)>=String(start));});
+  coherentPair("plaintiff","defendant",function(plaintiff,defendant){return Boolean(plaintiff&&defendant&&String(plaintiff).toLowerCase()!==String(defendant).toLowerCase());});
+  return fields;
 }
 
 function parseAamva(raw){
@@ -1125,11 +1336,11 @@ function mergeDriverEvidence(definition,barcodeRaw,text,structured){
   const barcodeFields=parseAamva(barcodeRaw);
   const targetedFields=structuredDriverFields(definition,structured,"Local targeted image OCR");
   const printedFields=structuredDriverFields(definition,printedLicenseEvidence(text),"Local printed license OCR");
-  const textFields=extractLabeledFields(definition,text,"Local document text");
+  const textFields=extractDocumentFields(definition,text,"Local document text");
   const fields={};
   const warnings=[];
   definition.fields.forEach(function(spec){
-    let ordered=spec.id==="fullName"?[barcodeFields[spec.id],printedFields[spec.id],targetedFields[spec.id],textFields[spec.id]]:[barcodeFields[spec.id],textFields[spec.id],printedFields[spec.id],targetedFields[spec.id]];
+    let ordered=[barcodeFields[spec.id],targetedFields[spec.id],textFields[spec.id],printedFields[spec.id]];
     if(spec.id==="streetAddress")ordered=ordered.filter(function(field){return !field||field.value===null||/^(?:\d{1,6}\s+.+\b(?:ST(?:REET)?|AVE(?:NUE)?|RD|ROAD|DR(?:IVE)?|LN|LANE|BLVD|BOULEVARD|CT|COURT|WAY|PKWY|PARKWAY|PL|PLACE|CIR|CIRCLE|TER|TERRACE|HWY|HIGHWAY)|PO BOX \d+)\b/i.test(String(field.value))&&String(field.value).length<=60;});
     const candidates=ordered.filter(function(field){return field&&field.value!==null;});
     if(!candidates.length){fields[spec.id]=emptyField(spec);return;}
@@ -1257,18 +1468,85 @@ function pdfTextFromItems(items){
     if(!row){row={y:item.y,items:[]};rows.push(row);}
     row.items.push(item);
   });
+  const reference=(rows.filter(function(row){return row.items.length>1;}).sort(function(left,right){return right.items.length-left.items.length||right.y-left.y;})[0]||{items:[]}).items.slice().sort(function(left,right){return left.x-right.x;}).map(function(item){return item.x;});
   return rows.sort(function(left,right){return right.y-left.y;}).map(function(row){
     const ordered=row.items.sort(function(left,right){return left.x-right.x;}),parts=[],characterWidth=ordered.reduce(function(total,item){return total+(item.text.length?item.width/item.text.length:0);},0)/Math.max(1,ordered.length);
     let priorEnd=null;
     ordered.forEach(function(item){
-      if(priorEnd!==null){const gap=item.x-priorEnd,spaces=gap>Math.max(5,characterWidth*1.8)?Math.min(8,Math.max(2,Math.round(gap/Math.max(3,characterWidth)))):1;parts.push(" ".repeat(spaces));}
+      if(priorEnd!==null){const gap=item.x-priorEnd;if(gap>Math.max(18,characterWidth*4.2))parts.push(" | ");else{const spaces=gap>Math.max(5,characterWidth*1.8)?Math.min(8,Math.max(2,Math.round(gap/Math.max(3,characterWidth)))):1;parts.push(" ".repeat(spaces));}}
       parts.push(item.text);priorEnd=item.x+item.width;
     });
-    return parts.join("").trim();
+    const value=parts.join("").trim();
+    if(ordered.length===1&&reference.length>1){let column=0,distance=Infinity;reference.forEach(function(x,index){const delta=Math.abs(ordered[0].x-x);if(delta<distance){distance=delta;column=index;}});if(column>0)return "| ".repeat(column)+value;}
+    return value;
   }).filter(Boolean).join("\n");
 }
 
-const page10Rules={RUNTIME_ARTIFACT:RUNTIME_ARTIFACT,stableStringify:stableStringify,artifactChecksumPayload:artifactChecksumPayload,sha256Value:sha256Value,verifyRuntimeArtifact:verifyRuntimeArtifact,normalizeFieldValue:normalizeFieldValue,findLabeledEvidence:findLabeledEvidence,extractLabeledFields:extractLabeledFields,extractDocumentFields:extractDocumentFields,pdfTextFromItems:pdfTextFromItems,parseAamva:parseAamva,mergeDriverEvidence:mergeDriverEvidence,applyReviewCorrection:applyReviewCorrection,resetReviewCorrection:resetReviewCorrection,classifyDocument:classifyDocument,resolveDocumentKind:resolveDocumentKind,validateFields:validateFields,maskSensitiveEvidence:maskSensitiveEvidence,formatFieldValue:formatFieldValue};
+function ocrTextFromBlocks(blocks){
+  const words=[];
+  (blocks||[]).forEach(function(block){
+    (block&&block.paragraphs||[]).forEach(function(paragraph){
+      (paragraph&&paragraph.lines||[]).forEach(function(line){
+        (line&&line.words||[]).forEach(function(word){
+          const text=normalizeSpaces(word&&word.text),box=word&&word.bbox||{},x0=Number(box.x0),y0=Number(box.y0),x1=Number(box.x1),y1=Number(box.y1);
+          if(text&&[x0,y0,x1,y1].every(Number.isFinite)&&x1>x0&&y1>y0)words.push({text:text,x0:x0,y0:y0,x1:x1,y1:y1,y:(y0+y1)/2,height:y1-y0});
+        });
+      });
+    });
+  });
+  words.sort(function(left,right){return Math.abs(left.y-right.y)>Math.max(5,Math.min(left.height,right.height)*.55)?left.y-right.y:left.x0-right.x0;});
+  const rows=[];
+  words.forEach(function(word){
+    let row=rows.find(function(candidate){return Math.abs(candidate.y-word.y)<=Math.max(5,Math.min(candidate.height,word.height)*.55);});
+    if(!row){row={y:word.y,height:word.height,words:[]};rows.push(row);}
+    row.words.push(word);row.y=(row.y*(row.words.length-1)+word.y)/row.words.length;row.height=(row.height*(row.words.length-1)+word.height)/row.words.length;
+  });
+  rows.sort(function(left,right){return left.y-right.y;}).forEach(function(row){
+    const ordered=row.words.sort(function(left,right){return left.x0-right.x0;}),widths=ordered.map(function(word){return (word.x1-word.x0)/Math.max(1,word.text.length);}).sort(function(left,right){return left-right;}),characterWidth=widths[Math.floor(widths.length/2)]||8,segments=[];
+    ordered.forEach(function(word){
+      const prior=segments[segments.length-1],gap=prior?word.x0-prior.x1:0;
+      if(!prior||gap>Math.max(22,characterWidth*4.5))segments.push({x0:word.x0,x1:word.x1,words:[word.text]});
+      else{prior.words.push(word.text);prior.x1=word.x1;}
+    });
+    row.segments=segments;
+  });
+  return rows.map(function(row,index){
+    const segments=row.segments||[],parts=segments.map(function(segment){return segment.words.join(" ");});
+    if(segments.length===1){
+      const nearby=rows.map(function(candidate,candidateIndex){return candidate.segments&&candidate.segments.length>1&&Math.abs(candidateIndex-index)<=2?{row:candidate,distance:Math.abs(candidateIndex-index)}:null;}).filter(Boolean).sort(function(left,right){return left.distance-right.distance||right.row.segments.length-left.row.segments.length;})[0];
+      if(nearby){let column=0,distance=Infinity;nearby.row.segments.forEach(function(segment,segmentIndex){const delta=Math.abs(segment.x0-segments[0].x0);if(delta<distance){distance=delta;column=segmentIndex;}});if(column>0)return "| ".repeat(column)+parts[0];}
+    }
+    return parts.join(" | ");
+  }).filter(Boolean).join("\n");
+}
+
+function detectPaperRegionPixels(data,width,height){
+  const pixelWidth=Math.max(1,Math.floor(Number(width)||0)),pixelHeight=Math.max(1,Math.floor(Number(height)||0)),total=pixelWidth*pixelHeight,stride=data&&data.length>=total*4?4:3;
+  if(!data||pixelWidth<20||pixelHeight<20||data.length<total*stride)return {x:0,y:0,width:1,height:1,detected:false};
+  const mask=new Uint8Array(total),visited=new Uint8Array(total);
+  for(let index=0;index<total;index+=1){const offset=index*stride,r=Number(data[offset]||0),g=Number(data[offset+1]||0),b=Number(data[offset+2]||0),maximum=Math.max(r,g,b),minimum=Math.min(r,g,b),luma=(.2126*r)+(.7152*g)+(.0722*b);if(luma>=168&&maximum-minimum<=62)mask[index]=1;}
+  let best=null;
+  for(let start=0;start<total;start+=1){
+    if(!mask[start]||visited[start])continue;
+    const stack=[start];visited[start]=1;let count=0,minX=pixelWidth,minY=pixelHeight,maxX=0,maxY=0;
+    while(stack.length){
+      const index=stack.pop(),x=index%pixelWidth,y=Math.floor(index/pixelWidth);count+=1;minX=Math.min(minX,x);maxX=Math.max(maxX,x);minY=Math.min(minY,y);maxY=Math.max(maxY,y);
+      const neighbors=[index-1,index+1,index-pixelWidth,index+pixelWidth];
+      for(let item=0;item<neighbors.length;item+=1){const next=neighbors[item],nx=next%pixelWidth,ny=Math.floor(next/pixelWidth);if(next<0||next>=total||visited[next]||!mask[next]||Math.abs(nx-x)+Math.abs(ny-y)!==1)continue;visited[next]=1;stack.push(next);}
+    }
+    const boxWidth=maxX-minX+1,boxHeight=maxY-minY+1,score=count*Math.sqrt(Math.max(1,boxWidth*boxHeight));
+    if(count>=total*.018&&boxWidth>=pixelWidth*.28&&boxHeight>=pixelHeight*.24&&(!best||score>best.score))best={minX:minX,minY:minY,maxX:maxX,maxY:maxY,count:count,score:score};
+  }
+  if(!best)return {x:0,y:0,width:1,height:1,detected:false};
+  let left=best.minX,right=best.maxX+1,top=best.minY,bottom=best.maxY+1,boxWidth=right-left,boxHeight=bottom-top;
+  const targetHeight=Math.max(boxHeight,boxWidth*1.29),missingHeight=Math.max(0,targetHeight-boxHeight);top-=missingHeight*.88;bottom+=missingHeight*.12;
+  const margin=Math.max(3,boxWidth*.025);left-=margin;right+=margin;top-=margin;bottom+=margin;
+  left=Math.max(0,left);top=Math.max(0,top);right=Math.min(pixelWidth,right);bottom=Math.min(pixelHeight,bottom);boxWidth=right-left;boxHeight=bottom-top;
+  if(boxWidth<pixelWidth*.3||boxHeight<pixelHeight*.3)return {x:0,y:0,width:1,height:1,detected:false};
+  return {x:left/pixelWidth,y:top/pixelHeight,width:boxWidth/pixelWidth,height:boxHeight/pixelHeight,detected:true};
+}
+
+const page10Rules={RUNTIME_ARTIFACT:RUNTIME_ARTIFACT,stableStringify:stableStringify,artifactChecksumPayload:artifactChecksumPayload,sha256Value:sha256Value,verifyRuntimeArtifact:verifyRuntimeArtifact,normalizeFieldValue:normalizeFieldValue,findLabeledEvidence:findLabeledEvidence,extractLabeledFields:extractLabeledFields,extractDocumentFields:extractDocumentFields,fuseFieldCandidates:fuseFieldCandidates,reanchorFieldEvidence:reanchorFieldEvidence,vinCheckDigitValid:vinCheckDigitValid,candidateReliability:candidateReliability,fieldForColumnLabel:fieldForColumnLabel,applyParallelLabelRows:applyParallelLabelRows,pdfTextFromItems:pdfTextFromItems,ocrTextFromBlocks:ocrTextFromBlocks,detectPaperRegionPixels:detectPaperRegionPixels,parseAamva:parseAamva,mergeDriverEvidence:mergeDriverEvidence,applyReviewCorrection:applyReviewCorrection,resetReviewCorrection:resetReviewCorrection,classifyDocument:classifyDocument,resolveDocumentKind:resolveDocumentKind,validateFields:validateFields,maskSensitiveEvidence:maskSensitiveEvidence,formatFieldValue:formatFieldValue};
 globalThis.__documentIntakeTestingRules=page10Rules;
 /* PURE PILOT RULES END */
 
@@ -1793,8 +2071,14 @@ globalThis.__documentIntakeTestingRules=page10Rules;
     }
   }
 
-  function createReadingVariant(bitmap,mode){
-    const canvas=buildOcrCanvas(bitmap,{x:0,y:0,width:1,height:1},2600,3);
+  function detectGenericDocumentRegion(bitmap){
+    const width=240,height=Math.max(1,Math.round(width*(bitmap.height/bitmap.width))),canvas=document.createElement("canvas");canvas.width=width;canvas.height=height;
+    const context=canvas.getContext("2d",{alpha:false,willReadFrequently:true});context.drawImage(bitmap,0,0,width,height);
+    return detectPaperRegionPixels(context.getImageData(0,0,width,height).data,width,height);
+  }
+
+  function createReadingVariant(bitmap,mode,region){
+    const canvas=buildOcrCanvas(bitmap,region&&region.detected?region:{x:0,y:0,width:1,height:1},2600,3);
     if(mode==="color")return canvas;
     const context=canvas.getContext("2d",{alpha:false,willReadFrequently:true}),image=context.getImageData(0,0,canvas.width,canvas.height),pixels=image.data;
     for(let offset=0;offset<pixels.length;offset+=4){
@@ -1839,7 +2123,7 @@ globalThis.__documentIntakeTestingRules=page10Rules;
     let bitmap=null;
     try{
       bitmap=await createImageBitmap(file);
-      const variants=[{label:"Reading the full document…",pageSegMode:"3",canvas:createReadingVariant(bitmap,"color")},{label:"Checking faint and high-contrast text…",pageSegMode:"6",canvas:createReadingVariant(bitmap,"contrast")},{label:"Checking boxed fields and columns…",pageSegMode:"11",canvas:createReadingVariant(bitmap,"threshold")}];
+      const documentRegion=kind==="driver-license"?{x:0,y:0,width:1,height:1,detected:false}:detectGenericDocumentRegion(bitmap),variants=[{label:documentRegion.detected?"Finding and reading the document…":"Reading the full document…",pageSegMode:"3",canvas:createReadingVariant(bitmap,"color",documentRegion)},{label:"Checking faint and high-contrast text…",pageSegMode:"6",canvas:createReadingVariant(bitmap,"contrast",documentRegion)},{label:"Checking boxed fields and columns…",pageSegMode:"11",canvas:createReadingVariant(bitmap,"threshold",documentRegion)}];
       if(kind==="social-security-card"){
         const base={x:0,y:0,width:1,height:1};
         const inkNumberTarget=buildCardInkCanvas(bitmap,base,{x:.30,y:.39,width:.42,height:.10}),tightNumberTarget=buildCardTargetCanvas(bitmap,base,{x:.30,y:.39,width:.42,height:.13}),numberTarget=buildCardTargetCanvas(bitmap,base,{x:.25,y:.37,width:.51,height:.14}),nameTarget=buildCardTargetCanvas(bitmap,base,{x:.23,y:.53,width:.56,height:.13});
@@ -1850,11 +2134,11 @@ globalThis.__documentIntakeTestingRules=page10Rules;
       for(let index=0;index<variants.length;index+=1){
         const variant=variants[index];ocrPassIndex=index;ocrPassLabel=variant.label;
         await worker.setParameters({tessedit_pageseg_mode:variant.pageSegMode,preserve_interword_spaces:"1",user_defined_dpi:"300",classify_bln_numeric_mode:variant.numericMode?"1":"0",tessedit_char_whitelist:variant.whitelist||""});
-        const response=await worker.recognize(variant.canvas,{rotateAuto:index===0});
-        const value=String(response&&response.data&&response.data.text||"").trim();if(value)parts.push(value);
+        const response=await worker.recognize(variant.canvas,{rotateAuto:index===0},{blocks:true});
+        const positioned=ocrTextFromBlocks(response&&response.data&&response.data.blocks),value=positioned||String(response&&response.data&&response.data.text||"").trim();if(value)parts.push(value);
       }
       const raw=mergeReadableText(parts);setProgress("Document reading complete.",1);
-      return {raw:raw,warning:raw?"Check each suggestion against the document image.":"Local OCR could not read this image. Retake it flat, sharp, tightly framed, and without glare.",source:"Local image OCR"};
+      return {raw:raw,variantTexts:parts.map(function(value){return String(value||"").trim();}).filter(Boolean),warning:raw?"Check each suggestion against the document image.":"Local OCR could not read this image. Retake it flat, sharp, tightly framed, and without glare.",source:"Local image OCR"};
     }catch(error){
       if(bitmap)bitmap.close();ocrWorkerPromise=null;
       return {raw:"",warning:"Local OCR could not start or read this image. Check the connection once so the browser can download the OCR engine, then try again.",source:"Local image OCR"};
@@ -1889,7 +2173,7 @@ globalThis.__documentIntakeTestingRules=page10Rules;
           await item.page.render({canvasContext:context,viewport:viewport}).promise;
           ocrPassIndex=index;ocrPassLabel="Reading scanned PDF page "+item.pageNumber+" of "+limit+"…";
           await worker.setParameters({tessedit_pageseg_mode:"3",preserve_interword_spaces:"1",tessedit_char_whitelist:""});
-          const response=await worker.recognize(canvas,{rotateAuto:true}),value=String(response&&response.data&&response.data.text||"").trim();
+          const response=await worker.recognize(canvas,{rotateAuto:true},{blocks:true}),value=ocrTextFromBlocks(response&&response.data&&response.data.blocks)||String(response&&response.data&&response.data.text||"").trim();
           if(value)parts.push("--- Scanned page "+item.pageNumber+" ---\n"+value);
         }
       }
@@ -2071,7 +2355,8 @@ globalThis.__documentIntakeTestingRules=page10Rules;
         if(resolution.kind==="driver-license"){
           const merged=mergeDriverEvidence(definition,read.barcode&&read.barcode.raw,combinedText,read.structured);fields=merged.fields;extractionWarnings=merged.warnings;
           if(read.barcode&&read.barcode.method)Object.values(fields).forEach(function(field){if(field.source==="PDF417 barcode")field.source=read.barcode.method+" (license back)";});
-        }else fields=extractDocumentFields(definition,combinedText,read.source||"Local document text");
+        }else if(read.variantTexts&&read.variantTexts.length){const candidateSets=read.variantTexts.map(function(text){return extractDocumentFields(definition,text,read.source||"Local image OCR");});candidateSets.push(extractDocumentFields(definition,combinedText,read.source||"Local image OCR"));fields=fuseFieldCandidates(definition,candidateSets,combinedText);}
+        else fields=extractDocumentFields(definition,combinedText,read.source||"Local document text");
       }
       const validation=definition?validateFields(definition,fields,combinedText,read.barcode&&read.barcode.raw):{passed:false,blocking:["No extraction blueprint was selected."],warnings:[]};
       const foundCount=Object.values(fields).filter(function(field){return field.value!==null;}).length;
@@ -2088,7 +2373,7 @@ globalThis.__documentIntakeTestingRules=page10Rules;
       ];
       const uniqueWarnings=Array.from(new Set(warnings));
       render({
-        pipelineVersion:"page10_local_document_pipeline_v19",runAt:new Date().toISOString(),sourceFile:{name:selectedFile?selectedFile.name:"pasted-document.txt",type:selectedFile?selectedFile.type:"pasted-text",size:selectedFile?selectedFile.size:null},licenseBackFile:selectedLicenseBackFile?{name:selectedLicenseBackFile.name,type:selectedLicenseBackFile.type,size:selectedLicenseBackFile.size}:null,barcodeEvidence:{found:Boolean(read.barcode&&read.barcode.raw),method:read.barcode&&read.barcode.method||null,rawValueStored:false},evidenceTextSha256:await sha256Value(combinedText),classification:classification,selectedDocumentKind:selectedKind||null,documentKind:definition?resolution.kind:null,documentLabel:definition?definition.label:null,
+        pipelineVersion:"page10_local_document_pipeline_v20",runAt:new Date().toISOString(),sourceFile:{name:selectedFile?selectedFile.name:"pasted-document.txt",type:selectedFile?selectedFile.type:"pasted-text",size:selectedFile?selectedFile.size:null},licenseBackFile:selectedLicenseBackFile?{name:selectedLicenseBackFile.name,type:selectedLicenseBackFile.type,size:selectedLicenseBackFile.size}:null,barcodeEvidence:{found:Boolean(read.barcode&&read.barcode.raw),method:read.barcode&&read.barcode.method||null,rawValueStored:false},evidenceTextSha256:await sha256Value(combinedText),classification:classification,selectedDocumentKind:selectedKind||null,documentKind:definition?resolution.kind:null,documentLabel:definition?definition.label:null,
         runtimeArtifact:{artifactId:RUNTIME_ARTIFACT.artifactId,version:RUNTIME_ARTIFACT.version,rollbackVersion:RUNTIME_ARTIFACT.rollbackVersion,approvalState:RUNTIME_ARTIFACT.approvalState,expectedChecksum:RUNTIME_ARTIFACT.checksum,actualChecksum:artifactCheck.actual,verified:artifactCheck.verified,liveSheetRead:false},
         selectedBlueprint:definition?{ruleset:definition.ruleset,fieldIds:definition.fields.map(function(field){return field.id;}),reviewOnly:true}:null,fields:fields,foundCount:foundCount,fieldCount:definition?definition.fields.length:0,validation:validation,baseWarnings:uniqueWarnings,warnings:uniqueWarnings.slice(),status:foundCount?"ready_for_human_review":"needs_clearer_document",route:attorneyReviewRequired?"attorney_review":"document_review",review:{documentReviewRequired:true,attorneyReviewRequired:attorneyReviewRequired,correctionCount:0,corrections:{},correctionsRequireStaffVerification:false,approvalDecision:null,approvedBy:null,approvedAt:null},pipeline:pipelineStages,canonicalWriteAllowed:false,appliedToIntake:false,documentStored:false,documentTransmitted:false
       });

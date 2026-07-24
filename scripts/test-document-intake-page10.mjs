@@ -35,11 +35,14 @@ const {
   applyReviewCorrection,
   artifactChecksumPayload,
   classifyDocument,
+  detectPaperRegionPixels,
   extractDocumentFields,
   extractLabeledFields,
+  fuseFieldCandidates,
   maskSensitiveEvidence,
   mergeDriverEvidence,
   normalizeFieldValue,
+  ocrTextFromBlocks,
   parseAamva,
   pdfTextFromItems,
   resetReviewCorrection,
@@ -48,6 +51,7 @@ const {
   stableStringify,
   validateFields,
   verifyRuntimeArtifact,
+  vinCheckDigitValid,
 } = rules;
 
 const PROFILE_CASES = {
@@ -370,9 +374,92 @@ assert.equal(
     { str: 'Gross pay', transform: [1, 0, 0, 1, 20, 680], width: 60 },
     { str: '$2,450.00', transform: [1, 0, 0, 1, 240, 680], width: 65 },
   ]),
-  'Employee name        Morgan Reed\nGross pay        $2,450.00',
+  'Employee name | Morgan Reed\nGross pay | $2,450.00',
   'PDF items must be reconstructed into visual rows before extraction',
 );
+
+const positionedOcrText = ocrTextFromBlocks([
+  {
+    paragraphs: [
+      {
+        lines: [
+          {
+            words: [
+              { text: 'FINANCIAL', bbox: { x0: 20, y0: 20, x1: 100, y1: 35 } },
+              { text: 'INSTITUTION', bbox: { x0: 106, y0: 20, x1: 200, y1: 35 } },
+              { text: 'ACCOUNT', bbox: { x0: 420, y0: 20, x1: 490, y1: 35 } },
+              { text: 'OWNER', bbox: { x0: 496, y0: 20, x1: 550, y1: 35 } },
+            ],
+          },
+          {
+            words: [
+              { text: 'Pioneer', bbox: { x0: 20, y0: 50, x1: 80, y1: 65 } },
+              { text: 'Community', bbox: { x0: 86, y0: 50, x1: 170, y1: 65 } },
+              { text: 'Bank', bbox: { x0: 176, y0: 50, x1: 215, y1: 65 } },
+              { text: 'Amara', bbox: { x0: 420, y0: 50, x1: 470, y1: 65 } },
+              { text: 'Nwosu', bbox: { x0: 476, y0: 50, x1: 525, y1: 65 } },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+]);
+assert.equal(
+  positionedOcrText,
+  'FINANCIAL INSTITUTION | ACCOUNT OWNER\nPioneer Community Bank | Amara Nwosu',
+  'OCR geometry must preserve parallel columns',
+);
+
+const pixelWidth = 100;
+const pixelHeight = 150;
+const pixels = new Uint8Array(pixelWidth * pixelHeight * 4);
+for (let y = 0; y < pixelHeight; y += 1) {
+  for (let x = 0; x < pixelWidth; x += 1) {
+    const offset = (y * pixelWidth + x) * 4;
+    const paper = x >= 20 && x < 80 && y >= 30 && y < 130;
+    pixels[offset] = paper ? 245 : 55;
+    pixels[offset + 1] = paper ? 245 : 45;
+    pixels[offset + 2] = paper ? 245 : 35;
+    pixels[offset + 3] = 255;
+  }
+}
+const detectedPaper = detectPaperRegionPixels(pixels, pixelWidth, pixelHeight);
+assert.equal(detectedPaper.detected, true);
+assert.ok(detectedPaper.width < 0.75 && detectedPaper.height > 0.6);
+
+assert.equal(vinCheckDigitValid('1FA6P8TH14G420004'), true);
+assert.equal(vinCheckDigitValid('1FABP8TH14G420004'), false);
+const titleDefinition = RUNTIME_ARTIFACT.definitions['vehicle-title'];
+const vinReadings = [
+  'VIN 1FABP8TH14G420004',
+  'VIN 1FA6P8TH14G420004',
+  'VIN 1FABP8TH14G420004',
+];
+const fusedVin = fuseFieldCandidates(
+  titleDefinition,
+  vinReadings.map((text) => extractDocumentFields(titleDefinition, text, 'Local image OCR')),
+  vinReadings.join('\n'),
+);
+assert.equal(fusedVin.vin.value, '1FA6P8TH14G420004');
+assert.equal(fusedVin.vin.evidence.sourceLines[0], 'VIN 1FA6P8TH14G420004');
+
+const phoneW2Fields = extractDocumentFields(
+  RUNTIME_ARTIFACT.definitions.w2,
+  `2025 FORM W-2
+C EMPLOYER'S NAME ADDRESS AND ZIP CODE | EF EMPLOYEE'S NAME ADDRESS AND ZIP CODE | 1 WAGES TIPS OTHER COMPENSATION
+Front Range Medical Partners | Amara Nwosu | $43,800.00
+2 FEDERAL INCOME TAX WITHMELD | 3 SOCIAL SECURITY WAGES | 4 SOCIAL SECURITY TAX WITHMELD
+$3,985.80 | $43,800.00 | $2,715.60
+5 MEDICARE WAGES AND TIPS | 6 MEDICARE TAX WITHHELD
+$43,800.00 | $635.10`,
+  'Positioned phone OCR',
+);
+assert.equal(phoneW2Fields.employeeName.value, 'Amara Nwosu');
+assert.equal(phoneW2Fields.employerName.value, 'Front Range Medical Partners');
+assert.equal(phoneW2Fields.wages.value, 43800);
+assert.equal(phoneW2Fields.federalTaxWithheld.value, 3985.8);
+assert.equal(phoneW2Fields.socialSecurityTaxWithheld.value, 2715.6);
 
 const mismatch = resolveDocumentKind(
   classifyDocument(PROFILE_CASES.w2.fileName, PROFILE_CASES.w2.text),
