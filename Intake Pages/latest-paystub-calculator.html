@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Schedule I Latest Paystub Calculator | Jimmy's Branch</title>
+<style>
+:root{
+  --bg:#f4f6f7;--panel:#fff;--line:#d9dfe3;--ink:#1d2933;--muted:#66737d;
+  --nav:#143d52;--nav-text:#fff;--brand:#2f7d8c;--brand-dark:#245e69;
+  --green:#2f6f57;--green-soft:#edf7f1;--blue-soft:#eef6f8;--gold:#9a6815;
+  --gold-soft:#fff8e8;--danger:#a23c3c;--shadow:0 12px 36px rgba(15,35,45,.16);
+  --radius:10px;--font:Arial,Helvetica,sans-serif
+}
+*{box-sizing:border-box}
+html{color-scheme:light}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.45}
+button,input,select{font:inherit}
+button{cursor:pointer}
+button:disabled{cursor:not-allowed}
+.branchbar{background:#25363d;color:#fff;border-bottom:3px solid #d7a23f;padding:9px 18px;display:flex;align-items:center;justify-content:space-between;gap:14px}
+.branch-id{display:flex;align-items:center;gap:9px;font-weight:800}
+.branch-badge{background:#d7a23f;color:#25313a;border-radius:5px;padding:4px 8px;font-size:11px;text-transform:uppercase;letter-spacing:.04em}
+.branch-note{color:#d9e3e0;font-size:12px}
+.app{max-width:1500px;margin:18px auto;background:var(--panel);border:1px solid var(--line);box-shadow:0 3px 14px rgba(15,35,45,.08)}
+.hdr{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:15px 20px;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.logo{width:44px;height:44px;border-radius:50%;background:#11364a;color:#fff;display:grid;place-items:center;font-weight:900}
+.brand h1{font-size:19px;line-height:1.2;margin:0}.brand small{display:block;color:var(--muted);margin-top:2px}
+.demo-badge{display:inline-flex;align-items:center;gap:8px;border:1px solid #b8dce2;background:#e9f8fa;color:#155565;border-radius:999px;padding:7px 10px;font-size:12px;font-weight:800;white-space:nowrap}
+.demo-dot{width:8px;height:8px;border-radius:50%;background:var(--brand)}
+.topnav{display:flex;overflow-x:auto;background:var(--nav);padding:0 12px}
+.topnav a{display:flex;align-items:center;gap:7px;color:var(--nav-text);text-decoration:none;padding:12px 10px;border-bottom:4px solid transparent;white-space:nowrap;font-size:13px;opacity:.84}
+.topnav a.active{opacity:1;border-bottom-color:#8bd4df;background:rgba(255,255,255,.08)}
+.topnav a.done .n{background:#d9eef2;color:#143d52}
+.topnav .n{display:grid;place-items:center;width:23px;height:23px;border-radius:50%;background:rgba(255,255,255,.16);font-size:11px;font-weight:800}
+.organizer-head{padding:22px 22px 0}
+.title-row{display:flex;align-items:flex-start;justify-content:space-between;gap:18px}
+.eyebrow{margin:0 0 5px;color:var(--brand-dark);font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+h2{font-size:28px;line-height:1.15;margin:0}.subtitle{margin:7px 0 0;color:var(--muted)}
+.case-chip{border:1px solid var(--line);border-radius:7px;background:#f8fafb;padding:10px 12px;min-width:240px;color:var(--muted);font-size:12px}
+.case-chip strong{display:block;color:var(--ink);font-size:13px;margin-bottom:2px}
+.toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:18px;padding:12px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.toolbtn{border:1px solid var(--line);border-radius:6px;background:#fff;color:#42515a;padding:8px 11px;font-size:12px;font-weight:700}
+.toolbtn.active{background:var(--blue-soft);border-color:#b8dce2;color:var(--brand-dark)}
+.toolbtn.primary{background:#4d83dd;border-color:#4d83dd;color:#fff}.toolbtn:disabled{opacity:.58}
+.metadata{display:flex;gap:8px;flex-wrap:wrap;margin-top:11px}.meta{background:#f3f5f6;border:1px solid #e0e4e7;border-radius:4px;padding:5px 8px;color:#58656e;font-size:11px}.meta b{color:#26343d}
+.notice{margin:14px 22px 0;border:1px solid #d8bf82;border-radius:8px;background:var(--gold-soft);color:#684a16;padding:11px 13px;font-size:12px}.notice strong{color:#50370f}
+.organizer-layout{display:grid;grid-template-columns:minmax(0,1fr) 340px;min-height:660px;margin-top:15px;border-top:1px solid var(--line)}
+.table-wrap{min-width:0;overflow:auto}
+.income-table{width:100%;min-width:1060px;border-collapse:collapse;font-size:12px}
+.income-table th{position:sticky;top:0;z-index:2;background:#f6f8f8;color:#5f6b73;text-align:right;font-weight:700;padding:10px 9px;border-bottom:1px solid var(--line);vertical-align:bottom}
+.income-table th:first-child,.income-table th:nth-child(2){text-align:center;width:82px}.income-table th:nth-child(3){text-align:left;min-width:300px}.income-table td{padding:10px 9px;border-bottom:1px solid #ebeff1;text-align:right;white-space:nowrap}
+.income-table td:nth-child(1),.income-table td:nth-child(2){text-align:center}.income-table td:nth-child(3){text-align:left;white-space:normal}
+.group-row td{background:#f1f5f3;font-weight:800;border-top:1px solid #cbd8d2}
+.source-name{display:flex;align-items:center;gap:8px;justify-content:space-between}.source-label{min-width:0}.source-label small{display:block;color:var(--muted);font-weight:500;margin-top:2px}
+.method-button{display:inline-flex;align-items:center;gap:6px;border:1px solid #b8c7c1;background:#fff;border-radius:999px;color:#345a4e;padding:5px 8px;font-size:11px;font-weight:800;white-space:nowrap}
+.method-button:hover{border-color:var(--green);background:var(--green-soft)}
+.stub-name{padding-left:24px}.stub-name strong{display:block}.stub-name span{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+.check{width:16px;height:16px;accent-color:#4e86da}
+.money-strong{font-weight:800;color:#17232b}
+.schedule-panel{border-left:1px solid var(--line);background:#fff;min-width:0}
+.schedule-head{position:sticky;top:0;background:#fff;border-bottom:1px solid var(--line);padding:15px 14px;z-index:2}.schedule-head h3{font-size:18px;margin:0}.schedule-head p{margin:4px 0 0;color:var(--muted);font-size:11px}
+.schedule-status{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:9px}.status-pill{border:1px solid #b8d5c5;border-radius:999px;background:var(--green-soft);color:var(--green);padding:4px 8px;font-size:10px;font-weight:800}
+.schedule-table{width:100%;border-collapse:collapse;font-size:11px}.schedule-table td{border-bottom:1px solid #e7ece9;padding:10px 12px;vertical-align:top}.schedule-table td:last-child{text-align:right;white-space:nowrap;font-weight:700}.schedule-table tr.total{background:#f8f8e9}.schedule-table tr.total td{font-weight:900}.schedule-table .section td{background:#f5f7f6;color:#637069;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.05em;padding-top:9px;padding-bottom:6px}
+.means-note{margin:12px;border:1px solid #b8dce2;border-left:4px solid var(--brand);background:var(--blue-soft);color:#315765;border-radius:7px;padding:10px 11px;font-size:11px}.means-note strong{display:block;color:#244f5b;margin-bottom:3px}
+.toast{position:fixed;right:20px;bottom:20px;z-index:1300;max-width:360px;border:1px solid #7fb495;border-radius:8px;background:#edf8f2;color:#255d45;padding:11px 13px;box-shadow:var(--shadow);font-size:13px;font-weight:700;opacity:0;transform:translateY(12px);pointer-events:none;transition:.2s}.toast.visible{opacity:1;transform:translateY(0)}
+.dialog-backdrop{position:fixed;inset:0;z-index:1200;background:rgba(18,29,34,.54);display:none;align-items:center;justify-content:center;padding:24px}.dialog-backdrop.open{display:flex}
+.dialog{width:min(1030px,100%);max-height:calc(100vh - 48px);display:flex;flex-direction:column;border-radius:12px;background:#fff;box-shadow:var(--shadow);overflow:hidden}
+.dialog-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line)}.dialog-head h3{font-size:17px;margin:0}.iconbtn{width:34px;height:34px;border:0;border-radius:50%;background:#eef1f2;color:#28363d;font-size:20px;line-height:1}
+.dialog-body{padding:16px 18px;overflow:auto}.method-card{border:1px solid var(--line);border-radius:9px;background:#fff;margin-bottom:12px;overflow:hidden}.method-card.selected{border:2px solid #4e5c62}.method-title{display:flex;align-items:flex-start;gap:9px;padding:14px 15px}.method-title input{margin-top:3px;accent-color:#1f2d34}.method-title strong{display:block;font-size:14px}.method-title span{display:block;color:var(--muted);font-size:12px;margin-top:2px}.method-content{padding:0 15px 15px}.method-card:not(.selected) .method-content{display:none}
+.control{border:1px solid #e0e5e7;border-radius:8px;background:#fafbfb;padding:12px;margin-top:10px}.control label{display:block;font-size:12px;font-weight:800;margin-bottom:6px}.select{width:100%;border:1px solid #cbd3d7;border-radius:7px;background:#fff;color:var(--ink);padding:10px 11px;min-height:42px}.select:focus{outline:0;border-color:var(--brand);box-shadow:0 0 0 3px rgba(47,125,140,.14)}
+.calculation{display:flex;align-items:center;justify-content:space-between;gap:14px}.calculation strong{font-size:13px}.formula{color:#4f5e66;font-size:12px}.monthly-total{font-size:14px;font-weight:900;white-space:nowrap}
+.preview{border:1px solid #e0e5e7;border-radius:8px;background:#fafbfb;padding:12px;margin-top:10px}.preview h4{margin:0 0 9px;font-size:13px}.preview-section{font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.05em;margin-top:9px;margin-bottom:4px}.preview-row{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:3px 0;font-size:12px}.preview-row span:last-child{font-weight:700;white-space:nowrap}.preview-row.total{font-weight:900;border-top:1px solid #e0e5e7;margin-top:5px;padding-top:7px}.preview-placeholder{border:1px dashed #c9d2d6;border-radius:8px;background:#fff;color:var(--muted);padding:18px;text-align:center;font-size:12px;margin-top:10px}
+.inline-alert{border:1px solid #d8bf82;border-radius:7px;background:var(--gold-soft);color:#684a16;padding:9px 10px;font-size:11px;margin-top:9px}.disabled-method{opacity:.64}.dialog-foot{display:flex;align-items:center;justify-content:flex-end;gap:9px;padding:13px 18px;border-top:1px solid var(--line);background:#fff}.btn{border:1px solid var(--line);border-radius:7px;background:#fff;color:#35434b;padding:9px 13px;font-weight:800}.btn.primary{background:#1f2529;border-color:#1f2529;color:#fff}.btn.primary:disabled{opacity:.42}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media(max-width:1100px){.organizer-layout{grid-template-columns:1fr}.schedule-panel{border-left:0;border-top:1px solid var(--line)}.schedule-head{position:static}.app{margin:0;border-left:0;border-right:0}}
+@media(max-width:760px){.branchbar,.hdr,.title-row{align-items:flex-start;flex-direction:column}.branch-note{display:none}.organizer-head{padding:18px 14px 0}.notice{margin-left:14px;margin-right:14px}.case-chip{min-width:0;width:100%}.dialog-backdrop{padding:0}.dialog{max-height:100vh;height:100vh;border-radius:0}.dialog-body{padding:12px}.dialog-foot{position:sticky;bottom:0}.calculation{align-items:flex-start;flex-direction:column}.demo-badge{white-space:normal}.toast{left:12px;right:12px;bottom:12px}.topnav a{padding-left:9px;padding-right:9px}}
+</style>
+</head>
+<body>
+<div class="branchbar">
+  <div class="branch-id"><span class="branch-badge">Jimmy's Branch</span><span>Page 11 - Schedule I calculator prototype</span></div>
+  <div class="branch-note">Standalone review page - fake payroll records only</div>
+</div>
+<div class="app">
+  <header class="hdr">
+    <div class="brand"><div class="logo" aria-hidden="true">ML</div><div><h1>McCune Legal Intake</h1><small>BK FastLane review surface</small></div></div>
+    <div class="demo-badge"><span class="demo-dot" aria-hidden="true"></span><span>Fake data - local browser calculation</span></div>
+  </header>
+  <nav class="topnav" aria-label="Intake pages">
+    <a class="done" href="personal.html"><span class="n">1</span><span>Personal Info</span></a>
+    <a class="done" href="income.html"><span class="n">2</span><span>Income</span></a>
+    <a class="done" href="assets.html"><span class="n">3</span><span>Assets</span></a>
+    <a class="done" href="debts.html"><span class="n">4</span><span>Debts</span></a>
+    <a class="done" href="expenses.html"><span class="n">5</span><span>Expenses</span></a>
+    <a class="done" href="financial-affairs.html"><span class="n">6</span><span>Financial affairs</span></a>
+    <a class="done" href="counseling.html"><span class="n">7</span><span>Counseling</span></a>
+    <a class="done" href="documents.html"><span class="n">8</span><span>Documents</span></a>
+    <a class="done" href="jimmy-changes.html"><span class="n">9</span><span>Colab</span></a>
+    <a class="done" href="document-intake-testing.html"><span class="n">10</span><span>Document testing</span></a>
+    <a class="active" href="latest-paystub-calculator.html" aria-current="page"><span class="n">11</span><span>Income calculator</span></a>
+  </nav>
+
+  <section class="organizer-head" aria-labelledby="pageTitle">
+    <div class="title-row">
+      <div><p class="eyebrow">Income organizer</p><h2 id="pageTitle">Schedule I Income Calculator</h2><p class="subtitle">Use one representative paystub to estimate current monthly income, or keep the existing all-paystubs average.</p></div>
+      <aside class="case-chip"><strong>Review matter</strong>Jordan Sample - Chapter 7 (individual)<br/>Last activity: today - fake data</aside>
+    </div>
+    <div class="toolbar" aria-label="Income organizer tools">
+      <button class="toolbtn" type="button">+ Add Income Source</button>
+      <button class="toolbtn" type="button">Download PDF</button>
+      <button class="toolbtn active" type="button">Table view</button>
+      <button class="toolbtn" id="openCalculatorTop" type="button">Calculators</button>
+      <button class="toolbtn primary" type="button" disabled>Submit for review</button>
+    </div>
+    <div class="metadata"><span class="meta">Contact: <b>JORDAN SAMPLE</b></span><span class="meta">Type: <b>Chapter 7 (individual)</b></span><span class="meta">Employer: <b>City of Nashville</b></span></div>
+  </section>
+
+  <div class="notice" role="note"><strong>Schedule I and the Means Test answer different questions.</strong> This calculator changes only the Schedule I monthly preview. The Means Test continues to use the paystubs selected in its own column.</div>
+
+  <div class="organizer-layout">
+    <div class="table-wrap">
+      <table class="income-table">
+        <thead><tr><th>Include in monthly totals in Schedule I</th><th>Include in Means Test</th><th>Income source</th><th>Pay date</th><th>Amount per pay period</th><th>Overtime per pay period</th><th>Gross pay</th><th>Payroll deductions</th><th>Net pay</th></tr></thead>
+        <tbody id="incomeRows"></tbody>
+      </table>
+    </div>
+    <aside class="schedule-panel" aria-labelledby="scheduleTitle">
+      <div class="schedule-head"><h3 id="scheduleTitle">Schedule I preview</h3><p>Current monthly income from this employment source.</p><div class="schedule-status"><span id="scheduleMethod">All selected paystubs average</span><span class="status-pill">Review only</span></div></div>
+      <table class="schedule-table"><tbody id="scheduleRows"></tbody></table>
+      <div class="means-note"><strong>Means Test selections are unchanged</strong><span id="meansCount">5 of 5 paystubs selected</span>. Apply affects Schedule I only.</div>
+    </aside>
+  </div>
+</div>
+
+<div class="dialog-backdrop" id="dialogBackdrop" aria-hidden="true">
+  <section class="dialog" role="dialog" aria-modal="true" aria-labelledby="dialogTitle" aria-describedby="dialogDescription">
+    <header class="dialog-head"><h3 id="dialogTitle">Income Calculation Settings</h3><button class="iconbtn" id="closeDialog" type="button" aria-label="Close calculator">x</button></header>
+    <div class="dialog-body">
+      <p class="sr-only" id="dialogDescription">Choose how Schedule I monthly income should be calculated.</p>
+      <section class="method-card selected" data-method-card="latest">
+        <label class="method-title"><input type="radio" name="calculationMethod" value="latest" checked/><span><strong>Calculate from latest paystub</strong><span>Annualizes one paystub using its pay frequency to estimate current monthly income.</span></span></label>
+        <div class="method-content">
+          <div class="control"><label for="sourcePaystub">Source Paystub</label><select class="select" id="sourcePaystub"></select></div>
+          <div class="control"><label for="payFrequency">Pay Frequency</label><select class="select" id="payFrequency"><option value="">Select pay frequency</option><option value="weekly">Weekly (52/year)</option><option value="biweekly">Bi-weekly (26/year)</option><option value="semimonthly">Semi-monthly (24/year)</option><option value="monthly">Monthly (12/year)</option></select></div>
+          <div id="latestPreview"><div class="preview-placeholder">Choose a pay frequency to calculate the monthly Schedule I preview.</div></div>
+        </div>
+      </section>
+
+      <section class="method-card" data-method-card="average">
+        <label class="method-title"><input type="radio" name="calculationMethod" value="average"/><span><strong>Calculate from all selected paystubs</strong><span>Averages the paystubs checked in the Schedule I column.</span></span></label>
+        <div class="method-content"><div id="averagePreview"></div></div>
+      </section>
+
+      <section class="method-card disabled-method" data-method-card="ytd">
+        <label class="method-title"><input type="radio" name="calculationMethod" value="ytd" disabled/><span><strong>Calculate from single paystub YTD</strong><span>Uses year-to-date values from one paystub divided by months elapsed.</span></span></label>
+        <div class="method-content"><div class="inline-alert">No paystubs with YTD data are available in this fake review matter.</div></div>
+      </section>
+    </div>
+    <footer class="dialog-foot"><button class="btn" id="cancelDialog" type="button">Cancel</button><button class="btn primary" id="applyChanges" type="button" disabled>Apply Changes</button></footer>
+  </section>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script id="page11-rules">
+(function(root){
+  'use strict';
+  var FREQUENCIES={
+    weekly:{label:'Weekly',periods:52},
+    biweekly:{label:'Bi-weekly',periods:26},
+    semimonthly:{label:'Semi-monthly',periods:24},
+    monthly:{label:'Monthly',periods:12}
+  };
+  var VALUE_KEYS=['grossPay','overtime','taxes','insurance','mandatoryRetirement','voluntaryRetirement','retirementLoan','unionDues','businessExpenses','otherDeductions','domesticSupport','netPay'];
+  var DEDUCTION_KEYS=['taxes','insurance','mandatoryRetirement','voluntaryRetirement','retirementLoan','unionDues','businessExpenses','otherDeductions','domesticSupport'];
+  var PAYSTUBS=[
+    {id:'jul-2026',date:'2026-07-31',label:'Jul 31, 2026',fileName:'City_of_Nashville_July_Paystub.pdf',grossPay:4580,overtime:0,taxes:897.46,insurance:160,mandatoryRetirement:0,voluntaryRetirement:200,retirementLoan:0,unionDues:0,businessExpenses:0,otherDeductions:0,domesticSupport:0,netPay:3322.54},
+    {id:'jun-2026',date:'2026-06-30',label:'Jun 30, 2026',fileName:'City_of_Nashville_June_Paystub.pdf',grossPay:4460,overtime:0,taxes:870.39,insurance:160,mandatoryRetirement:0,voluntaryRetirement:190,retirementLoan:0,unionDues:0,businessExpenses:0,otherDeductions:0,domesticSupport:0,netPay:3239.61},
+    {id:'may-2026',date:'2026-05-31',label:'May 31, 2026',fileName:'City_of_Nashville_May_Paystub.pdf',grossPay:4390,overtime:0,taxes:858.64,insurance:160,mandatoryRetirement:0,voluntaryRetirement:183,retirementLoan:0,unionDues:0,businessExpenses:0,otherDeductions:0,domesticSupport:0,netPay:3188.36},
+    {id:'apr-2026',date:'2026-04-30',label:'Apr 30, 2026',fileName:'City_of_Nashville_April_Paystub.pdf',grossPay:4250,overtime:0,taxes:821.13,insurance:160,mandatoryRetirement:0,voluntaryRetirement:175,retirementLoan:0,unionDues:35,businessExpenses:0,otherDeductions:0,domesticSupport:0,netPay:3058.87},
+    {id:'mar-2026',date:'2026-03-31',label:'Mar 31, 2026',fileName:'City_of_Nashville_March_Paystub.pdf',grossPay:4180,overtime:0,taxes:804.27,insurance:160,mandatoryRetirement:0,voluntaryRetirement:168,retirementLoan:0,unionDues:0,businessExpenses:0,otherDeductions:0,domesticSupport:0,netPay:3047.73}
+  ];
+  function roundCurrency(value){return Math.round((Number(value)+Number.EPSILON)*100)/100;}
+  function totalForKeys(values,keys){return roundCurrency(keys.reduce(function(sum,key){return sum+Number(values[key]||0);},0));}
+  function enrich(values){
+    var result={};
+    VALUE_KEYS.forEach(function(key){result[key]=roundCurrency(values[key]||0);});
+    result.grossIncome=roundCurrency(result.grossPay+result.overtime);
+    result.totalDeductions=totalForKeys(result,DEDUCTION_KEYS);
+    return result;
+  }
+  function calculateLatestPaystub(stub,frequencyKey){
+    var frequency=FREQUENCIES[frequencyKey];
+    if(!frequency)throw new Error('Unknown pay frequency');
+    if(!stub)throw new Error('A source paystub is required');
+    var factor=frequency.periods/12;
+    var values={};
+    VALUE_KEYS.forEach(function(key){values[key]=roundCurrency(Number(stub[key]||0)*factor);});
+    return {method:'latest',sourcePaystubId:stub.id,frequencyKey:frequencyKey,periods:frequency.periods,factor:factor,values:enrich(values)};
+  }
+  function averagePaystubs(stubs){
+    if(!Array.isArray(stubs)||!stubs.length)throw new Error('At least one Schedule I paystub is required');
+    var values={};
+    VALUE_KEYS.forEach(function(key){values[key]=roundCurrency(stubs.reduce(function(sum,stub){return sum+Number(stub[key]||0);},0)/stubs.length);});
+    return {method:'average',paystubCount:stubs.length,values:enrich(values)};
+  }
+  function applyScheduleICalculation(state,calculation){
+    return Object.assign({},state||{},{scheduleI:calculation,meansTestSelections:Object.assign({},state&&state.meansTestSelections||{})});
+  }
+  root.BKFL_PAGE11_RULES={FREQUENCIES:FREQUENCIES,VALUE_KEYS:VALUE_KEYS,DEDUCTION_KEYS:DEDUCTION_KEYS,PAYSTUBS:PAYSTUBS,roundCurrency:roundCurrency,calculateLatestPaystub:calculateLatestPaystub,averagePaystubs:averagePaystubs,applyScheduleICalculation:applyScheduleICalculation};
+})(typeof globalThis!=='undefined'?globalThis:this);
+</script>
+<script>
+(function(){
+  'use strict';
+  var rules=window.BKFL_PAGE11_RULES;
+  var state={scheduleISelections:{},meansTestSelections:{},applied:null};
+  rules.PAYSTUBS.forEach(function(stub){state.scheduleISelections[stub.id]=true;state.meansTestSelections[stub.id]=true;});
+  var incomeRows=document.getElementById('incomeRows');
+  var scheduleRows=document.getElementById('scheduleRows');
+  var scheduleMethod=document.getElementById('scheduleMethod');
+  var meansCount=document.getElementById('meansCount');
+  var dialogBackdrop=document.getElementById('dialogBackdrop');
+  var sourcePaystub=document.getElementById('sourcePaystub');
+  var payFrequency=document.getElementById('payFrequency');
+  var latestPreview=document.getElementById('latestPreview');
+  var averagePreview=document.getElementById('averagePreview');
+  var applyChanges=document.getElementById('applyChanges');
+  var toast=document.getElementById('toast');
+  var activeMethod='latest';
+  var lastFocused=null;
+  var currentCalculation=rules.averagePaystubs(rules.PAYSTUBS);
+
+  function money(value){return new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',minimumFractionDigits:2}).format(value);}
+  function escapeHtml(value){return String(value).replace(/[&<>"']/g,function(char){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char];});}
+  function stubDeductions(stub){return rules.DEDUCTION_KEYS.reduce(function(sum,key){return sum+Number(stub[key]||0);},0);}
+  function selectedScheduleIStubs(){return rules.PAYSTUBS.filter(function(stub){return state.scheduleISelections[stub.id];});}
+  function selectedMeansCount(){return rules.PAYSTUBS.filter(function(stub){return state.meansTestSelections[stub.id];}).length;}
+  function rowCheckbox(kind,stub){var checked=state[kind+'Selections'][stub.id]?' checked':'';return '<input class="check" type="checkbox" data-selection="'+kind+'" data-stub-id="'+stub.id+'" aria-label="Include '+stub.label+' in '+(kind==='scheduleI'?'Schedule I':'Means Test')+'"'+checked+'/>';}
+  function renderIncomeRows(){
+    var values=currentCalculation.values;
+    incomeRows.innerHTML='<tr class="group-row"><td><input class="check" id="toggleScheduleAll" type="checkbox" aria-label="Toggle all Schedule I paystubs"'+(selectedScheduleIStubs().length===rules.PAYSTUBS.length?' checked':'')+'/></td><td><input class="check" id="toggleMeansAll" type="checkbox" aria-label="Toggle all Means Test paystubs"'+(selectedMeansCount()===rules.PAYSTUBS.length?' checked':'')+'/></td><td><div class="source-name"><span class="source-label">City of Nashville (5 paystubs)<small>Employment income</small></span><button class="method-button" id="openCalculatorRow" type="button">Calculation: '+(currentCalculation.method==='latest'?'Latest Paystub':'All paystubs')+' <span aria-hidden="true">v</span></button></div></td><td>-</td><td>'+money(values.grossPay)+'</td><td>'+money(values.overtime)+'</td><td class="money-strong">'+money(values.grossIncome)+'</td><td>'+money(values.totalDeductions)+'</td><td class="money-strong">'+money(values.netPay)+'</td></tr>'+
+      rules.PAYSTUBS.map(function(stub){return '<tr><td>'+rowCheckbox('scheduleI',stub)+'</td><td>'+rowCheckbox('meansTest',stub)+'</td><td><div class="stub-name"><strong>'+escapeHtml(stub.label)+'</strong><span>'+escapeHtml(stub.fileName)+'</span></div></td><td>'+escapeHtml(stub.date)+'</td><td>'+money(stub.grossPay)+'</td><td>'+money(stub.overtime)+'</td><td class="money-strong">'+money(stub.grossPay+stub.overtime)+'</td><td>'+money(stubDeductions(stub))+'</td><td>'+money(stub.netPay)+'</td></tr>';}).join('');
+    document.getElementById('openCalculatorRow').addEventListener('click',openDialog);
+    incomeRows.querySelectorAll('[data-selection]').forEach(function(input){input.addEventListener('change',function(){var kind=input.getAttribute('data-selection');state[kind+'Selections'][input.getAttribute('data-stub-id')]=input.checked;if(kind==='meansTest'){renderMeansCount();}else if(currentCalculation.method==='average'){var selected=selectedScheduleIStubs();if(selected.length){currentCalculation=rules.averagePaystubs(selected);renderSchedule();}}renderIncomeRows();});});
+    document.getElementById('toggleScheduleAll').addEventListener('change',function(event){rules.PAYSTUBS.forEach(function(stub){state.scheduleISelections[stub.id]=event.target.checked;});if(selectedScheduleIStubs().length){currentCalculation=rules.averagePaystubs(selectedScheduleIStubs());renderSchedule();}renderIncomeRows();});
+    document.getElementById('toggleMeansAll').addEventListener('change',function(event){rules.PAYSTUBS.forEach(function(stub){state.meansTestSelections[stub.id]=event.target.checked;});renderMeansCount();renderIncomeRows();});
+  }
+  function scheduleLine(label,value,rowClass){return '<tr'+(rowClass?' class="'+rowClass+'"':'')+'><td>'+label+'</td><td>'+money(value)+'</td></tr>';}
+  function renderSchedule(){
+    var v=currentCalculation.values;
+    scheduleMethod.textContent=currentCalculation.method==='latest'?'Latest paystub - '+rules.FREQUENCIES[currentCalculation.frequencyKey].label:'All selected paystubs average';
+    scheduleRows.innerHTML='<tr class="section"><td colspan="2">Income</td></tr>'+scheduleLine('2. Monthly gross wages, salary, and commissions',v.grossPay)+scheduleLine('3. Overtime pay',v.overtime)+scheduleLine('4. Gross Income',v.grossIncome,'total')+'<tr class="section"><td colspan="2">Deductions</td></tr>'+scheduleLine('5a. Tax, Medicare, and Social Security deductions',v.taxes)+scheduleLine('5b. Mandatory retirement contributions',v.mandatoryRetirement)+scheduleLine('5c. Voluntary retirement contributions',v.voluntaryRetirement)+scheduleLine('5d. Required retirement loan repayments',v.retirementLoan)+scheduleLine('5e. Insurance',v.insurance)+scheduleLine('5f. Domestic support obligations',v.domesticSupport)+scheduleLine('5g. Union dues',v.unionDues)+scheduleLine('5h. Other deductions',v.otherDeductions+v.businessExpenses)+scheduleLine('6. Total payroll deductions',v.totalDeductions,'total')+scheduleLine('7. Total monthly take-home pay',v.netPay,'total');
+  }
+  function renderMeansCount(){var count=selectedMeansCount();meansCount.textContent=count+' of '+rules.PAYSTUBS.length+' paystubs selected';}
+  function previewMarkup(calculation,formula){var v=calculation.values;return '<div class="control calculation"><div><strong>Calculation</strong><div class="formula">'+formula+'</div></div><div class="monthly-total">'+money(v.grossIncome)+'/month</div></div><div class="preview"><h4>Schedule I Contributions</h4><div class="preview-section">Income</div><div class="preview-row"><span>Gross Pay</span><span>'+money(v.grossPay)+'/month</span></div><div class="preview-row"><span>Overtime</span><span>'+money(v.overtime)+'/month</span></div><div class="preview-row total"><span>Gross Income</span><span>'+money(v.grossIncome)+'/month</span></div><div class="preview-section">Deductions</div><div class="preview-row"><span>Taxes (Medicare &amp; Social Security)</span><span>'+money(v.taxes)+'/month</span></div><div class="preview-row"><span>Insurance</span><span>'+money(v.insurance)+'/month</span></div><div class="preview-row"><span>Mandatory Retirement</span><span>'+money(v.mandatoryRetirement)+'/month</span></div><div class="preview-row"><span>Voluntary Retirement</span><span>'+money(v.voluntaryRetirement)+'/month</span></div><div class="preview-row"><span>Retirement Loan Repayments</span><span>'+money(v.retirementLoan)+'/month</span></div><div class="preview-row"><span>Union Dues</span><span>'+money(v.unionDues)+'/month</span></div><div class="preview-row"><span>Business Expenses</span><span>'+money(v.businessExpenses)+'/month</span></div><div class="preview-row"><span>Other Deductions</span><span>'+money(v.otherDeductions)+'/month</span></div><div class="preview-row"><span>Domestic Support Obligations</span><span>'+money(v.domesticSupport)+'/month</span></div><div class="preview-row total"><span>Net Pay</span><span>'+money(v.netPay)+'/month</span></div></div>';}
+  function chosenStub(){return rules.PAYSTUBS.find(function(stub){return stub.id===sourcePaystub.value;})||rules.PAYSTUBS[0];}
+  function renderDialogPreview(){
+    document.querySelectorAll('[data-method-card]').forEach(function(card){card.classList.toggle('selected',card.getAttribute('data-method-card')===activeMethod);});
+    if(activeMethod==='latest'){
+      if(!payFrequency.value){latestPreview.innerHTML='<div class="preview-placeholder">Choose a pay frequency to calculate the monthly Schedule I preview.</div>';applyChanges.disabled=true;return;}
+      var calculation=rules.calculateLatestPaystub(chosenStub(),payFrequency.value);var frequency=rules.FREQUENCIES[payFrequency.value];latestPreview.innerHTML=previewMarkup(calculation,'Paystub amounts x '+frequency.periods+'/12');applyChanges.disabled=false;return;
+    }
+    if(activeMethod==='average'){
+      var selected=selectedScheduleIStubs();if(!selected.length){averagePreview.innerHTML='<div class="inline-alert">Select at least one paystub in the Schedule I column before applying this method.</div>';applyChanges.disabled=true;return;}
+      averagePreview.innerHTML=previewMarkup(rules.averagePaystubs(selected),'Selected paystub totals / '+selected.length+' pay periods');applyChanges.disabled=false;
+    }
+  }
+  function openDialog(){lastFocused=document.activeElement;dialogBackdrop.classList.add('open');dialogBackdrop.setAttribute('aria-hidden','false');activeMethod='latest';document.querySelector('input[name="calculationMethod"][value="latest"]').checked=true;if(currentCalculation.method==='latest'){sourcePaystub.value=currentCalculation.sourcePaystubId;payFrequency.value=currentCalculation.frequencyKey;}else{sourcePaystub.value=rules.PAYSTUBS[0].id;payFrequency.value='';}renderDialogPreview();document.getElementById('closeDialog').focus();}
+  function closeDialog(){dialogBackdrop.classList.remove('open');dialogBackdrop.setAttribute('aria-hidden','true');if(lastFocused&&lastFocused.focus)lastFocused.focus();}
+  function showToast(message){toast.textContent=message;toast.classList.add('visible');window.setTimeout(function(){toast.classList.remove('visible');},2800);}
+  sourcePaystub.innerHTML=rules.PAYSTUBS.map(function(stub){return '<option value="'+stub.id+'">'+stub.label+' - Gross: '+money(stub.grossPay)+' - Deductions: '+money(stubDeductions(stub))+' - Net: '+money(stub.netPay)+'</option>';}).join('');
+  sourcePaystub.value=rules.PAYSTUBS[0].id;
+  sourcePaystub.addEventListener('change',renderDialogPreview);payFrequency.addEventListener('change',renderDialogPreview);
+  document.querySelectorAll('input[name="calculationMethod"]').forEach(function(input){input.addEventListener('change',function(){activeMethod=input.value;renderDialogPreview();});});
+  document.getElementById('openCalculatorTop').addEventListener('click',openDialog);document.getElementById('closeDialog').addEventListener('click',closeDialog);document.getElementById('cancelDialog').addEventListener('click',closeDialog);
+  dialogBackdrop.addEventListener('click',function(event){if(event.target===dialogBackdrop)closeDialog();});
+  document.addEventListener('keydown',function(event){if(event.key==='Escape'&&dialogBackdrop.classList.contains('open'))closeDialog();});
+  applyChanges.addEventListener('click',function(){var beforeMeans=JSON.stringify(state.meansTestSelections);if(activeMethod==='latest'){currentCalculation=rules.calculateLatestPaystub(chosenStub(),payFrequency.value);}else{currentCalculation=rules.averagePaystubs(selectedScheduleIStubs());}state=rules.applyScheduleICalculation(state,currentCalculation);if(JSON.stringify(state.meansTestSelections)!==beforeMeans)throw new Error('Means Test selections changed unexpectedly');state.applied=currentCalculation;renderIncomeRows();renderSchedule();renderMeansCount();closeDialog();showToast('Schedule I monthly income updated. Means Test selections were not changed.');});
+  renderIncomeRows();renderSchedule();renderMeansCount();
+})();
+</script>
+</body>
+</html>
