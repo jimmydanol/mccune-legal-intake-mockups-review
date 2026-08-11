@@ -47,6 +47,31 @@ assert.equal(rules.calculateLatestPaystub(rules.PAYSTUBS[0], 'monthly').values.g
 assert.throws(() => rules.calculateLatestPaystub(rules.PAYSTUBS[0], ''), /Unknown pay frequency/);
 assert.throws(() => rules.averagePaystubs([]), /At least one Schedule I paystub/);
 
+const w2 = rules.calculateW2Annual({
+  wages: 60000,
+  federalTax: 5000,
+  socialSecurityTax: 3700,
+  medicareTax: 870,
+  stateTax: 2000,
+  localTax: 500,
+  insurance: 2400,
+  mandatoryRetirement: 600,
+  voluntaryRetirement: 3000,
+  otherDeductions: 1200,
+});
+assert.equal(w2.method, 'w2');
+assert.equal(w2.values.grossPay, 5000);
+assert.equal(w2.values.taxes, 1005.83);
+assert.equal(w2.values.insurance, 200);
+assert.equal(w2.values.mandatoryRetirement, 50);
+assert.equal(w2.values.voluntaryRetirement, 250);
+assert.equal(w2.values.otherDeductions, 100);
+assert.equal(w2.values.totalDeductions, 1605.83);
+assert.equal(w2.values.netPay, 3394.17);
+assert.throws(() => rules.calculateW2Annual({ wages: 0 }), /Box 1 wages are required/);
+assert.throws(() => rules.calculateW2Annual({ wages: 100, federalTax: -1 }), /non-negative numbers/);
+assert.throws(() => rules.calculateW2Annual({ wages: 100, federalTax: 101 }), /cannot exceed Box 1 wages/);
+
 const average = rules.averagePaystubs(rules.PAYSTUBS);
 assert.equal(average.method, 'average');
 assert.equal(average.paystubCount, 5);
@@ -68,8 +93,15 @@ assert.match(html, /Calculate from latest paystub/);
 assert.match(html, /Select pay frequency/);
 assert.match(html, /id="applyChanges"[^>]*disabled/);
 assert.match(html, /Means Test selections are unchanged/);
-assert.match(html, /Fake data - local browser calculation/);
+assert.match(html, /Demo data \+ private local entry - nothing is uploaded/);
+assert.match(html, /id="openW2Entry"/);
+assert.match(html, /id="resetDemo"/);
+assert.match(html, /Test your own W-2 annual totals/);
+assert.match(html, /data-w2-field="wages"/);
+assert.match(html, /numeric totals only/);
+assert.match(html, /not submitted, uploaded, or saved/);
 assert.doesNotMatch(html, /\bfetch\s*\(/);
 assert.doesNotMatch(html, /XMLHttpRequest|sendBeacon|<form\b/i);
+assert.doesNotMatch(html, /localStorage|sessionStorage|indexedDB/);
 
 console.log('Page 11 latest-paystub calculator checks passed.');

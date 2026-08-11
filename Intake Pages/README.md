@@ -19,7 +19,7 @@ pages so each renders on its own with no build step and no external dependencies
 | `documents.html` | Stage 8 — document summary & submit |
 | `jimmy-changes.html` | Stage 9 — Colab changelog, approvals, and conversation |
 | `document-intake-testing.html` | Page 10 - local document evidence review |
-| `latest-paystub-calculator.html` | Page 11 - Schedule I latest-paystub calculator prototype |
+| `latest-paystub-calculator.html` | Page 11 - Schedule I latest-paystub calculator with local W-2 testing and demo reset |
 | `confirmation.html` | Post-submit thank-you |
 
 Open `login.html` and click through. Navigation, toggles, document upload/N/A,

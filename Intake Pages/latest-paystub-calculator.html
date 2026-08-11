@@ -43,7 +43,7 @@ h2{font-size:28px;line-height:1.15;margin:0}.subtitle{margin:7px 0 0;color:var(-
 .toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:18px;padding:12px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
 .toolbtn{border:1px solid var(--line);border-radius:6px;background:#fff;color:#42515a;padding:8px 11px;font-size:12px;font-weight:700}
 .toolbtn.active{background:var(--blue-soft);border-color:#b8dce2;color:var(--brand-dark)}
-.toolbtn.primary{background:#4d83dd;border-color:#4d83dd;color:#fff}.toolbtn:disabled{opacity:.58}
+.toolbtn.primary{background:#4d83dd;border-color:#4d83dd;color:#fff}.toolbtn.danger{border-color:#d8b8b8;color:#8b3535}.toolbtn:disabled{opacity:.58}
 .metadata{display:flex;gap:8px;flex-wrap:wrap;margin-top:11px}.meta{background:#f3f5f6;border:1px solid #e0e4e7;border-radius:4px;padding:5px 8px;color:#58656e;font-size:11px}.meta b{color:#26343d}
 .notice{margin:14px 22px 0;border:1px solid #d8bf82;border-radius:8px;background:var(--gold-soft);color:#684a16;padding:11px 13px;font-size:12px}.notice strong{color:#50370f}
 .organizer-layout{display:grid;grid-template-columns:minmax(0,1fr) 340px;min-height:660px;margin-top:15px;border-top:1px solid var(--line)}
@@ -69,24 +69,25 @@ h2{font-size:28px;line-height:1.15;margin:0}.subtitle{margin:7px 0 0;color:var(-
 .dialog{width:min(1030px,100%);max-height:calc(100vh - 48px);display:flex;flex-direction:column;border-radius:12px;background:#fff;box-shadow:var(--shadow);overflow:hidden}
 .dialog-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line)}.dialog-head h3{font-size:17px;margin:0}.iconbtn{width:34px;height:34px;border:0;border-radius:50%;background:#eef1f2;color:#28363d;font-size:20px;line-height:1}
 .dialog-body{padding:16px 18px;overflow:auto}.method-card{border:1px solid var(--line);border-radius:9px;background:#fff;margin-bottom:12px;overflow:hidden}.method-card.selected{border:2px solid #4e5c62}.method-title{display:flex;align-items:flex-start;gap:9px;padding:14px 15px}.method-title input{margin-top:3px;accent-color:#1f2d34}.method-title strong{display:block;font-size:14px}.method-title span{display:block;color:var(--muted);font-size:12px;margin-top:2px}.method-content{padding:0 15px 15px}.method-card:not(.selected) .method-content{display:none}
-.control{border:1px solid #e0e5e7;border-radius:8px;background:#fafbfb;padding:12px;margin-top:10px}.control label{display:block;font-size:12px;font-weight:800;margin-bottom:6px}.select{width:100%;border:1px solid #cbd3d7;border-radius:7px;background:#fff;color:var(--ink);padding:10px 11px;min-height:42px}.select:focus{outline:0;border-color:var(--brand);box-shadow:0 0 0 3px rgba(47,125,140,.14)}
+.control{border:1px solid #e0e5e7;border-radius:8px;background:#fafbfb;padding:12px;margin-top:10px}.control label{display:block;font-size:12px;font-weight:800;margin-bottom:6px}.select,.amount-input{width:100%;border:1px solid #cbd3d7;border-radius:7px;background:#fff;color:var(--ink);padding:10px 11px;min-height:42px}.select:focus,.amount-input:focus{outline:0;border-color:var(--brand);box-shadow:0 0 0 3px rgba(47,125,140,.14)}
+.input-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:10px}.input-field{min-width:0}.input-field label{display:block;color:#35434b;font-size:11px;font-weight:800;margin-bottom:5px}.input-field small{display:block;color:var(--muted);font-size:10px;margin-top:4px}.w2-actions{display:flex;justify-content:flex-end;margin-top:9px}.textbtn{border:0;background:transparent;color:var(--brand-dark);padding:5px 0;font-size:11px;font-weight:800;text-decoration:underline}.privacy-note{border:1px solid #b8dce2;border-radius:7px;background:var(--blue-soft);color:#315765;padding:9px 10px;font-size:11px;margin-top:9px}.privacy-note strong{color:#244f5b}
 .calculation{display:flex;align-items:center;justify-content:space-between;gap:14px}.calculation strong{font-size:13px}.formula{color:#4f5e66;font-size:12px}.monthly-total{font-size:14px;font-weight:900;white-space:nowrap}
 .preview{border:1px solid #e0e5e7;border-radius:8px;background:#fafbfb;padding:12px;margin-top:10px}.preview h4{margin:0 0 9px;font-size:13px}.preview-section{font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.05em;margin-top:9px;margin-bottom:4px}.preview-row{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:3px 0;font-size:12px}.preview-row span:last-child{font-weight:700;white-space:nowrap}.preview-row.total{font-weight:900;border-top:1px solid #e0e5e7;margin-top:5px;padding-top:7px}.preview-placeholder{border:1px dashed #c9d2d6;border-radius:8px;background:#fff;color:var(--muted);padding:18px;text-align:center;font-size:12px;margin-top:10px}
 .inline-alert{border:1px solid #d8bf82;border-radius:7px;background:var(--gold-soft);color:#684a16;padding:9px 10px;font-size:11px;margin-top:9px}.disabled-method{opacity:.64}.dialog-foot{display:flex;align-items:center;justify-content:flex-end;gap:9px;padding:13px 18px;border-top:1px solid var(--line);background:#fff}.btn{border:1px solid var(--line);border-radius:7px;background:#fff;color:#35434b;padding:9px 13px;font-weight:800}.btn.primary{background:#1f2529;border-color:#1f2529;color:#fff}.btn.primary:disabled{opacity:.42}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 @media(max-width:1100px){.organizer-layout{grid-template-columns:1fr}.schedule-panel{border-left:0;border-top:1px solid var(--line)}.schedule-head{position:static}.app{margin:0;border-left:0;border-right:0}}
-@media(max-width:760px){.branchbar,.hdr,.title-row{align-items:flex-start;flex-direction:column}.branch-note{display:none}.organizer-head{padding:18px 14px 0}.notice{margin-left:14px;margin-right:14px}.case-chip{min-width:0;width:100%}.dialog-backdrop{padding:0}.dialog{max-height:100vh;height:100vh;border-radius:0}.dialog-body{padding:12px}.dialog-foot{position:sticky;bottom:0}.calculation{align-items:flex-start;flex-direction:column}.demo-badge{white-space:normal}.toast{left:12px;right:12px;bottom:12px}.topnav a{padding-left:9px;padding-right:9px}}
+@media(max-width:760px){.branchbar,.hdr,.title-row{align-items:flex-start;flex-direction:column}.branch-note{display:none}.organizer-head{padding:18px 14px 0}.notice{margin-left:14px;margin-right:14px}.case-chip{min-width:0;width:100%}.dialog-backdrop{padding:0}.dialog{max-height:100vh;height:100vh;border-radius:0}.dialog-body{padding:12px}.dialog-foot{position:sticky;bottom:0}.calculation{align-items:flex-start;flex-direction:column}.input-grid{grid-template-columns:1fr}.demo-badge{white-space:normal}.toast{left:12px;right:12px;bottom:12px}.topnav a{padding-left:9px;padding-right:9px}}
 </style>
 </head>
 <body>
 <div class="branchbar">
   <div class="branch-id"><span class="branch-badge">Jimmy's Branch</span><span>Page 11 - Schedule I calculator prototype</span></div>
-  <div class="branch-note">Standalone review page - fake payroll records only</div>
+  <div class="branch-note">Standalone review page - local calculations only</div>
 </div>
 <div class="app">
   <header class="hdr">
     <div class="brand"><div class="logo" aria-hidden="true">ML</div><div><h1>McCune Legal Intake</h1><small>BK FastLane review surface</small></div></div>
-    <div class="demo-badge"><span class="demo-dot" aria-hidden="true"></span><span>Fake data - local browser calculation</span></div>
+    <div class="demo-badge"><span class="demo-dot" aria-hidden="true"></span><span>Demo data + private local entry - nothing is uploaded</span></div>
   </header>
   <nav class="topnav" aria-label="Intake pages">
     <a class="done" href="personal.html"><span class="n">1</span><span>Personal Info</span></a>
@@ -104,7 +105,7 @@ h2{font-size:28px;line-height:1.15;margin:0}.subtitle{margin:7px 0 0;color:var(-
 
   <section class="organizer-head" aria-labelledby="pageTitle">
     <div class="title-row">
-      <div><p class="eyebrow">Income organizer</p><h2 id="pageTitle">Schedule I Income Calculator</h2><p class="subtitle">Use one representative paystub to estimate current monthly income, or keep the existing all-paystubs average.</p></div>
+      <div><p class="eyebrow">Income organizer</p><h2 id="pageTitle">Schedule I Income Calculator</h2><p class="subtitle">Use a representative paystub, average the demo paystubs, or test annual totals from your own W-2.</p></div>
       <aside class="case-chip"><strong>Review matter</strong>Jordan Sample - Chapter 7 (individual)<br/>Last activity: today - fake data</aside>
     </div>
     <div class="toolbar" aria-label="Income organizer tools">
@@ -112,12 +113,14 @@ h2{font-size:28px;line-height:1.15;margin:0}.subtitle{margin:7px 0 0;color:var(-
       <button class="toolbtn" type="button">Download PDF</button>
       <button class="toolbtn active" type="button">Table view</button>
       <button class="toolbtn" id="openCalculatorTop" type="button">Calculators</button>
+      <button class="toolbtn primary" id="openW2Entry" type="button">Test your W-2</button>
+      <button class="toolbtn danger" id="resetDemo" type="button">Reset demo</button>
       <button class="toolbtn primary" type="button" disabled>Submit for review</button>
     </div>
     <div class="metadata"><span class="meta">Contact: <b>JORDAN SAMPLE</b></span><span class="meta">Type: <b>Chapter 7 (individual)</b></span><span class="meta">Employer: <b>City of Nashville</b></span></div>
   </section>
 
-  <div class="notice" role="note"><strong>Schedule I and the Means Test answer different questions.</strong> This calculator changes only the Schedule I monthly preview. The Means Test continues to use the paystubs selected in its own column.</div>
+  <div class="notice" role="note"><strong>Schedule I and the Means Test answer different questions.</strong> This calculator changes only the Schedule I monthly preview. The Means Test continues to use the paystubs selected in its own column. For W-2 testing, enter numeric totals only - never a name, Social Security number, address, or employer ID.</div>
 
   <div class="organizer-layout">
     <div class="table-wrap">
@@ -151,6 +154,27 @@ h2{font-size:28px;line-height:1.15;margin:0}.subtitle{margin:7px 0 0;color:var(-
       <section class="method-card" data-method-card="average">
         <label class="method-title"><input type="radio" name="calculationMethod" value="average"/><span><strong>Calculate from all selected paystubs</strong><span>Averages the paystubs checked in the Schedule I column.</span></span></label>
         <div class="method-content"><div id="averagePreview"></div></div>
+      </section>
+
+      <section class="method-card" data-method-card="w2">
+        <label class="method-title"><input type="radio" name="calculationMethod" value="w2"/><span><strong>Test your own W-2 annual totals</strong><span>Divides annual W-2 figures by 12 for a local monthly estimate.</span></span></label>
+        <div class="method-content">
+          <div class="privacy-note"><strong>Stays in this browser tab.</strong> Enter dollar totals only. These fields are not submitted, uploaded, or saved. A W-2 is historical, so this is an estimate for testing and not a filing-ready current-income calculation.</div>
+          <div class="input-grid" id="w2Fields">
+            <div class="input-field"><label for="w2Wages">Wages, tips, other compensation (Box 1)</label><input class="amount-input" id="w2Wages" data-w2-field="wages" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00"/><small>Required annual amount</small></div>
+            <div class="input-field"><label for="w2FederalTax">Federal income tax withheld (Box 2)</label><input class="amount-input" id="w2FederalTax" data-w2-field="federalTax" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00"/></div>
+            <div class="input-field"><label for="w2SocialSecurityTax">Social Security tax withheld (Box 4)</label><input class="amount-input" id="w2SocialSecurityTax" data-w2-field="socialSecurityTax" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00"/></div>
+            <div class="input-field"><label for="w2MedicareTax">Medicare tax withheld (Box 6)</label><input class="amount-input" id="w2MedicareTax" data-w2-field="medicareTax" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00"/></div>
+            <div class="input-field"><label for="w2StateTax">State income tax (Box 17)</label><input class="amount-input" id="w2StateTax" data-w2-field="stateTax" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00"/></div>
+            <div class="input-field"><label for="w2LocalTax">Local income tax (Box 19)</label><input class="amount-input" id="w2LocalTax" data-w2-field="localTax" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00"/></div>
+            <div class="input-field"><label for="w2Insurance">Annual insurance deductions</label><input class="amount-input" id="w2Insurance" data-w2-field="insurance" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00"/><small>Optional if known from payroll records</small></div>
+            <div class="input-field"><label for="w2MandatoryRetirement">Annual mandatory retirement</label><input class="amount-input" id="w2MandatoryRetirement" data-w2-field="mandatoryRetirement" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00"/></div>
+            <div class="input-field"><label for="w2VoluntaryRetirement">Annual voluntary retirement</label><input class="amount-input" id="w2VoluntaryRetirement" data-w2-field="voluntaryRetirement" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00"/><small>Often reflected by a Box 12 code</small></div>
+            <div class="input-field"><label for="w2OtherDeductions">Other annual payroll deductions</label><input class="amount-input" id="w2OtherDeductions" data-w2-field="otherDeductions" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00"/></div>
+          </div>
+          <div class="w2-actions"><button class="textbtn" id="clearW2Fields" type="button">Clear W-2 fields</button></div>
+          <div id="w2Preview"><div class="preview-placeholder">Enter Box 1 wages to calculate a monthly estimate.</div></div>
+        </div>
       </section>
 
       <section class="method-card disabled-method" data-method-card="ytd">
@@ -205,10 +229,31 @@ h2{font-size:28px;line-height:1.15;margin:0}.subtitle{margin:7px 0 0;color:var(-
     VALUE_KEYS.forEach(function(key){values[key]=roundCurrency(stubs.reduce(function(sum,stub){return sum+Number(stub[key]||0);},0)/stubs.length);});
     return {method:'average',paystubCount:stubs.length,values:enrich(values)};
   }
+  function calculateW2Annual(input){
+    var source=input||{};
+    var numeric={};
+    Object.keys(source).forEach(function(key){
+      var value=source[key]===''||source[key]==null?0:Number(source[key]);
+      if(!Number.isFinite(value)||value<0)throw new Error('W-2 amounts must be non-negative numbers');
+      numeric[key]=value;
+    });
+    if(!(numeric.wages>0))throw new Error('Box 1 wages are required');
+    var annual={
+      grossPay:numeric.wages,overtime:0,
+      taxes:Number(numeric.federalTax||0)+Number(numeric.socialSecurityTax||0)+Number(numeric.medicareTax||0)+Number(numeric.stateTax||0)+Number(numeric.localTax||0),
+      insurance:numeric.insurance||0,mandatoryRetirement:numeric.mandatoryRetirement||0,voluntaryRetirement:numeric.voluntaryRetirement||0,
+      retirementLoan:0,unionDues:0,businessExpenses:0,otherDeductions:numeric.otherDeductions||0,domesticSupport:0,netPay:0
+    };
+    annual.netPay=annual.grossPay+annual.overtime-totalForKeys(annual,DEDUCTION_KEYS);
+    if(annual.netPay<0)throw new Error('Annual deductions cannot exceed Box 1 wages');
+    var monthly={};
+    VALUE_KEYS.forEach(function(key){monthly[key]=roundCurrency(Number(annual[key]||0)/12);});
+    return {method:'w2',factor:1/12,values:enrich(monthly),annualValues:enrich(annual)};
+  }
   function applyScheduleICalculation(state,calculation){
     return Object.assign({},state||{},{scheduleI:calculation,meansTestSelections:Object.assign({},state&&state.meansTestSelections||{})});
   }
-  root.BKFL_PAGE11_RULES={FREQUENCIES:FREQUENCIES,VALUE_KEYS:VALUE_KEYS,DEDUCTION_KEYS:DEDUCTION_KEYS,PAYSTUBS:PAYSTUBS,roundCurrency:roundCurrency,calculateLatestPaystub:calculateLatestPaystub,averagePaystubs:averagePaystubs,applyScheduleICalculation:applyScheduleICalculation};
+  root.BKFL_PAGE11_RULES={FREQUENCIES:FREQUENCIES,VALUE_KEYS:VALUE_KEYS,DEDUCTION_KEYS:DEDUCTION_KEYS,PAYSTUBS:PAYSTUBS,roundCurrency:roundCurrency,calculateLatestPaystub:calculateLatestPaystub,averagePaystubs:averagePaystubs,calculateW2Annual:calculateW2Annual,applyScheduleICalculation:applyScheduleICalculation};
 })(typeof globalThis!=='undefined'?globalThis:this);
 </script>
 <script>
@@ -226,6 +271,8 @@ h2{font-size:28px;line-height:1.15;margin:0}.subtitle{margin:7px 0 0;color:var(-
   var payFrequency=document.getElementById('payFrequency');
   var latestPreview=document.getElementById('latestPreview');
   var averagePreview=document.getElementById('averagePreview');
+  var w2Preview=document.getElementById('w2Preview');
+  var w2Inputs=Array.prototype.slice.call(document.querySelectorAll('[data-w2-field]'));
   var applyChanges=document.getElementById('applyChanges');
   var toast=document.getElementById('toast');
   var activeMethod='latest';
@@ -237,10 +284,11 @@ h2{font-size:28px;line-height:1.15;margin:0}.subtitle{margin:7px 0 0;color:var(-
   function stubDeductions(stub){return rules.DEDUCTION_KEYS.reduce(function(sum,key){return sum+Number(stub[key]||0);},0);}
   function selectedScheduleIStubs(){return rules.PAYSTUBS.filter(function(stub){return state.scheduleISelections[stub.id];});}
   function selectedMeansCount(){return rules.PAYSTUBS.filter(function(stub){return state.meansTestSelections[stub.id];}).length;}
+  function calculationLabel(){if(currentCalculation.method==='latest')return 'Latest Paystub';if(currentCalculation.method==='w2')return 'Custom W-2';return 'All paystubs';}
   function rowCheckbox(kind,stub){var checked=state[kind+'Selections'][stub.id]?' checked':'';return '<input class="check" type="checkbox" data-selection="'+kind+'" data-stub-id="'+stub.id+'" aria-label="Include '+stub.label+' in '+(kind==='scheduleI'?'Schedule I':'Means Test')+'"'+checked+'/>';}
   function renderIncomeRows(){
     var values=currentCalculation.values;
-    incomeRows.innerHTML='<tr class="group-row"><td><input class="check" id="toggleScheduleAll" type="checkbox" aria-label="Toggle all Schedule I paystubs"'+(selectedScheduleIStubs().length===rules.PAYSTUBS.length?' checked':'')+'/></td><td><input class="check" id="toggleMeansAll" type="checkbox" aria-label="Toggle all Means Test paystubs"'+(selectedMeansCount()===rules.PAYSTUBS.length?' checked':'')+'/></td><td><div class="source-name"><span class="source-label">City of Nashville (5 paystubs)<small>Employment income</small></span><button class="method-button" id="openCalculatorRow" type="button">Calculation: '+(currentCalculation.method==='latest'?'Latest Paystub':'All paystubs')+' <span aria-hidden="true">v</span></button></div></td><td>-</td><td>'+money(values.grossPay)+'</td><td>'+money(values.overtime)+'</td><td class="money-strong">'+money(values.grossIncome)+'</td><td>'+money(values.totalDeductions)+'</td><td class="money-strong">'+money(values.netPay)+'</td></tr>'+
+    incomeRows.innerHTML='<tr class="group-row"><td><input class="check" id="toggleScheduleAll" type="checkbox" aria-label="Toggle all Schedule I paystubs"'+(selectedScheduleIStubs().length===rules.PAYSTUBS.length?' checked':'')+'/></td><td><input class="check" id="toggleMeansAll" type="checkbox" aria-label="Toggle all Means Test paystubs"'+(selectedMeansCount()===rules.PAYSTUBS.length?' checked':'')+'/></td><td><div class="source-name"><span class="source-label">'+(currentCalculation.method==='w2'?'Your local W-2 estimate':'City of Nashville (5 paystubs)')+'<small>'+(currentCalculation.method==='w2'?'Annual totals divided by 12':'Employment income')+'</small></span><button class="method-button" id="openCalculatorRow" type="button">Calculation: '+calculationLabel()+' <span aria-hidden="true">v</span></button></div></td><td>-</td><td>'+money(values.grossPay)+'</td><td>'+money(values.overtime)+'</td><td class="money-strong">'+money(values.grossIncome)+'</td><td>'+money(values.totalDeductions)+'</td><td class="money-strong">'+money(values.netPay)+'</td></tr>'+
       rules.PAYSTUBS.map(function(stub){return '<tr><td>'+rowCheckbox('scheduleI',stub)+'</td><td>'+rowCheckbox('meansTest',stub)+'</td><td><div class="stub-name"><strong>'+escapeHtml(stub.label)+'</strong><span>'+escapeHtml(stub.fileName)+'</span></div></td><td>'+escapeHtml(stub.date)+'</td><td>'+money(stub.grossPay)+'</td><td>'+money(stub.overtime)+'</td><td class="money-strong">'+money(stub.grossPay+stub.overtime)+'</td><td>'+money(stubDeductions(stub))+'</td><td>'+money(stub.netPay)+'</td></tr>';}).join('');
     document.getElementById('openCalculatorRow').addEventListener('click',openDialog);
     incomeRows.querySelectorAll('[data-selection]').forEach(function(input){input.addEventListener('change',function(){var kind=input.getAttribute('data-selection');state[kind+'Selections'][input.getAttribute('data-stub-id')]=input.checked;if(kind==='meansTest'){renderMeansCount();}else if(currentCalculation.method==='average'){var selected=selectedScheduleIStubs();if(selected.length){currentCalculation=rules.averagePaystubs(selected);renderSchedule();}}renderIncomeRows();});});
@@ -250,12 +298,14 @@ h2{font-size:28px;line-height:1.15;margin:0}.subtitle{margin:7px 0 0;color:var(-
   function scheduleLine(label,value,rowClass){return '<tr'+(rowClass?' class="'+rowClass+'"':'')+'><td>'+label+'</td><td>'+money(value)+'</td></tr>';}
   function renderSchedule(){
     var v=currentCalculation.values;
-    scheduleMethod.textContent=currentCalculation.method==='latest'?'Latest paystub - '+rules.FREQUENCIES[currentCalculation.frequencyKey].label:'All selected paystubs average';
+    scheduleMethod.textContent=currentCalculation.method==='latest'?'Latest paystub - '+rules.FREQUENCIES[currentCalculation.frequencyKey].label:(currentCalculation.method==='w2'?'Custom W-2 annual estimate':'All selected paystubs average');
     scheduleRows.innerHTML='<tr class="section"><td colspan="2">Income</td></tr>'+scheduleLine('2. Monthly gross wages, salary, and commissions',v.grossPay)+scheduleLine('3. Overtime pay',v.overtime)+scheduleLine('4. Gross Income',v.grossIncome,'total')+'<tr class="section"><td colspan="2">Deductions</td></tr>'+scheduleLine('5a. Tax, Medicare, and Social Security deductions',v.taxes)+scheduleLine('5b. Mandatory retirement contributions',v.mandatoryRetirement)+scheduleLine('5c. Voluntary retirement contributions',v.voluntaryRetirement)+scheduleLine('5d. Required retirement loan repayments',v.retirementLoan)+scheduleLine('5e. Insurance',v.insurance)+scheduleLine('5f. Domestic support obligations',v.domesticSupport)+scheduleLine('5g. Union dues',v.unionDues)+scheduleLine('5h. Other deductions',v.otherDeductions+v.businessExpenses)+scheduleLine('6. Total payroll deductions',v.totalDeductions,'total')+scheduleLine('7. Total monthly take-home pay',v.netPay,'total');
   }
   function renderMeansCount(){var count=selectedMeansCount();meansCount.textContent=count+' of '+rules.PAYSTUBS.length+' paystubs selected';}
-  function previewMarkup(calculation,formula){var v=calculation.values;return '<div class="control calculation"><div><strong>Calculation</strong><div class="formula">'+formula+'</div></div><div class="monthly-total">'+money(v.grossIncome)+'/month</div></div><div class="preview"><h4>Schedule I Contributions</h4><div class="preview-section">Income</div><div class="preview-row"><span>Gross Pay</span><span>'+money(v.grossPay)+'/month</span></div><div class="preview-row"><span>Overtime</span><span>'+money(v.overtime)+'/month</span></div><div class="preview-row total"><span>Gross Income</span><span>'+money(v.grossIncome)+'/month</span></div><div class="preview-section">Deductions</div><div class="preview-row"><span>Taxes (Medicare &amp; Social Security)</span><span>'+money(v.taxes)+'/month</span></div><div class="preview-row"><span>Insurance</span><span>'+money(v.insurance)+'/month</span></div><div class="preview-row"><span>Mandatory Retirement</span><span>'+money(v.mandatoryRetirement)+'/month</span></div><div class="preview-row"><span>Voluntary Retirement</span><span>'+money(v.voluntaryRetirement)+'/month</span></div><div class="preview-row"><span>Retirement Loan Repayments</span><span>'+money(v.retirementLoan)+'/month</span></div><div class="preview-row"><span>Union Dues</span><span>'+money(v.unionDues)+'/month</span></div><div class="preview-row"><span>Business Expenses</span><span>'+money(v.businessExpenses)+'/month</span></div><div class="preview-row"><span>Other Deductions</span><span>'+money(v.otherDeductions)+'/month</span></div><div class="preview-row"><span>Domestic Support Obligations</span><span>'+money(v.domesticSupport)+'/month</span></div><div class="preview-row total"><span>Net Pay</span><span>'+money(v.netPay)+'/month</span></div></div>';}
+  function previewMarkup(calculation,formula){var v=calculation.values;return '<div class="control calculation"><div><strong>Calculation</strong><div class="formula">'+formula+'</div></div><div class="monthly-total">'+money(v.grossIncome)+'/month</div></div><div class="preview"><h4>Schedule I Contributions</h4><div class="preview-section">Income</div><div class="preview-row"><span>Gross Pay</span><span>'+money(v.grossPay)+'/month</span></div><div class="preview-row"><span>Overtime</span><span>'+money(v.overtime)+'/month</span></div><div class="preview-row total"><span>Gross Income</span><span>'+money(v.grossIncome)+'/month</span></div><div class="preview-section">Deductions</div><div class="preview-row"><span>Taxes (income, Medicare &amp; Social Security)</span><span>'+money(v.taxes)+'/month</span></div><div class="preview-row"><span>Insurance</span><span>'+money(v.insurance)+'/month</span></div><div class="preview-row"><span>Mandatory Retirement</span><span>'+money(v.mandatoryRetirement)+'/month</span></div><div class="preview-row"><span>Voluntary Retirement</span><span>'+money(v.voluntaryRetirement)+'/month</span></div><div class="preview-row"><span>Retirement Loan Repayments</span><span>'+money(v.retirementLoan)+'/month</span></div><div class="preview-row"><span>Union Dues</span><span>'+money(v.unionDues)+'/month</span></div><div class="preview-row"><span>Business Expenses</span><span>'+money(v.businessExpenses)+'/month</span></div><div class="preview-row"><span>Other Deductions</span><span>'+money(v.otherDeductions)+'/month</span></div><div class="preview-row"><span>Domestic Support Obligations</span><span>'+money(v.domesticSupport)+'/month</span></div><div class="preview-row total"><span>Net Pay</span><span>'+money(v.netPay)+'/month</span></div></div>';}
   function chosenStub(){return rules.PAYSTUBS.find(function(stub){return stub.id===sourcePaystub.value;})||rules.PAYSTUBS[0];}
+  function w2Values(){var values={};w2Inputs.forEach(function(input){values[input.getAttribute('data-w2-field')]=input.value;});return values;}
+  function clearW2Fields(){w2Inputs.forEach(function(input){input.value='';});if(activeMethod==='w2')renderDialogPreview();}
   function renderDialogPreview(){
     document.querySelectorAll('[data-method-card]').forEach(function(card){card.classList.toggle('selected',card.getAttribute('data-method-card')===activeMethod);});
     if(activeMethod==='latest'){
@@ -265,19 +315,26 @@ h2{font-size:28px;line-height:1.15;margin:0}.subtitle{margin:7px 0 0;color:var(-
     if(activeMethod==='average'){
       var selected=selectedScheduleIStubs();if(!selected.length){averagePreview.innerHTML='<div class="inline-alert">Select at least one paystub in the Schedule I column before applying this method.</div>';applyChanges.disabled=true;return;}
       averagePreview.innerHTML=previewMarkup(rules.averagePaystubs(selected),'Selected paystub totals / '+selected.length+' pay periods');applyChanges.disabled=false;
+      return;
+    }
+    if(activeMethod==='w2'){
+      try{var w2Calculation=rules.calculateW2Annual(w2Values());w2Preview.innerHTML=previewMarkup(w2Calculation,'Annual W-2 totals / 12 months');applyChanges.disabled=false;}
+      catch(error){w2Preview.innerHTML='<div class="preview-placeholder">'+escapeHtml(error.message)+'</div>';applyChanges.disabled=true;}
     }
   }
-  function openDialog(){lastFocused=document.activeElement;dialogBackdrop.classList.add('open');dialogBackdrop.setAttribute('aria-hidden','false');activeMethod='latest';document.querySelector('input[name="calculationMethod"][value="latest"]').checked=true;if(currentCalculation.method==='latest'){sourcePaystub.value=currentCalculation.sourcePaystubId;payFrequency.value=currentCalculation.frequencyKey;}else{sourcePaystub.value=rules.PAYSTUBS[0].id;payFrequency.value='';}renderDialogPreview();document.getElementById('closeDialog').focus();}
+  function openDialog(requestedMethod){lastFocused=document.activeElement;dialogBackdrop.classList.add('open');dialogBackdrop.setAttribute('aria-hidden','false');activeMethod=requestedMethod==='w2'?'w2':'latest';document.querySelector('input[name="calculationMethod"][value="'+activeMethod+'"]').checked=true;if(currentCalculation.method==='latest'){sourcePaystub.value=currentCalculation.sourcePaystubId;payFrequency.value=currentCalculation.frequencyKey;}else{sourcePaystub.value=rules.PAYSTUBS[0].id;payFrequency.value='';}renderDialogPreview();(activeMethod==='w2'?document.getElementById('w2Wages'):document.getElementById('closeDialog')).focus();}
   function closeDialog(){dialogBackdrop.classList.remove('open');dialogBackdrop.setAttribute('aria-hidden','true');if(lastFocused&&lastFocused.focus)lastFocused.focus();}
   function showToast(message){toast.textContent=message;toast.classList.add('visible');window.setTimeout(function(){toast.classList.remove('visible');},2800);}
   sourcePaystub.innerHTML=rules.PAYSTUBS.map(function(stub){return '<option value="'+stub.id+'">'+stub.label+' - Gross: '+money(stub.grossPay)+' - Deductions: '+money(stubDeductions(stub))+' - Net: '+money(stub.netPay)+'</option>';}).join('');
   sourcePaystub.value=rules.PAYSTUBS[0].id;
   sourcePaystub.addEventListener('change',renderDialogPreview);payFrequency.addEventListener('change',renderDialogPreview);
+  w2Inputs.forEach(function(input){input.addEventListener('input',renderDialogPreview);});
   document.querySelectorAll('input[name="calculationMethod"]').forEach(function(input){input.addEventListener('change',function(){activeMethod=input.value;renderDialogPreview();});});
-  document.getElementById('openCalculatorTop').addEventListener('click',openDialog);document.getElementById('closeDialog').addEventListener('click',closeDialog);document.getElementById('cancelDialog').addEventListener('click',closeDialog);
+  document.getElementById('openCalculatorTop').addEventListener('click',function(){openDialog('latest');});document.getElementById('openW2Entry').addEventListener('click',function(){openDialog('w2');});document.getElementById('closeDialog').addEventListener('click',closeDialog);document.getElementById('cancelDialog').addEventListener('click',closeDialog);document.getElementById('clearW2Fields').addEventListener('click',clearW2Fields);
+  document.getElementById('resetDemo').addEventListener('click',function(){state={scheduleISelections:{},meansTestSelections:{},applied:null};rules.PAYSTUBS.forEach(function(stub){state.scheduleISelections[stub.id]=true;state.meansTestSelections[stub.id]=true;});currentCalculation=rules.averagePaystubs(rules.PAYSTUBS);payFrequency.value='';clearW2Fields();renderIncomeRows();renderSchedule();renderMeansCount();if(dialogBackdrop.classList.contains('open'))closeDialog();showToast('Demo restored. Your local W-2 figures were cleared.');});
   dialogBackdrop.addEventListener('click',function(event){if(event.target===dialogBackdrop)closeDialog();});
   document.addEventListener('keydown',function(event){if(event.key==='Escape'&&dialogBackdrop.classList.contains('open'))closeDialog();});
-  applyChanges.addEventListener('click',function(){var beforeMeans=JSON.stringify(state.meansTestSelections);if(activeMethod==='latest'){currentCalculation=rules.calculateLatestPaystub(chosenStub(),payFrequency.value);}else{currentCalculation=rules.averagePaystubs(selectedScheduleIStubs());}state=rules.applyScheduleICalculation(state,currentCalculation);if(JSON.stringify(state.meansTestSelections)!==beforeMeans)throw new Error('Means Test selections changed unexpectedly');state.applied=currentCalculation;renderIncomeRows();renderSchedule();renderMeansCount();closeDialog();showToast('Schedule I monthly income updated. Means Test selections were not changed.');});
+  applyChanges.addEventListener('click',function(){var beforeMeans=JSON.stringify(state.meansTestSelections);if(activeMethod==='latest'){currentCalculation=rules.calculateLatestPaystub(chosenStub(),payFrequency.value);}else if(activeMethod==='w2'){currentCalculation=rules.calculateW2Annual(w2Values());}else{currentCalculation=rules.averagePaystubs(selectedScheduleIStubs());}state=rules.applyScheduleICalculation(state,currentCalculation);if(JSON.stringify(state.meansTestSelections)!==beforeMeans)throw new Error('Means Test selections changed unexpectedly');state.applied=currentCalculation;renderIncomeRows();renderSchedule();renderMeansCount();closeDialog();showToast('Schedule I monthly income updated. Means Test selections were not changed.');});
   renderIncomeRows();renderSchedule();renderMeansCount();
 })();
 </script>
