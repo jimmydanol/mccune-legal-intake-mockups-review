@@ -9,6 +9,13 @@
   const state={
     view:"crm",
     crmPage:"dashboard",
+    selectedLead:null,
+    detailTab:"Dashboard",
+    leadSearch:"",
+    leadStage:"All",
+    leadPage:0,
+    contactSearch:"",
+    contactPage:0,
     modal:false,
     contactTab:"new",
     joint:false,
@@ -16,6 +23,23 @@
     answers:{},
     uploads:new Set()
   };
+
+  const crmPageSize=3;
+  const demoLeads=[
+    {name:"Jordan Sample",email:"jordan@example.test",phone:"(303) 555-0101",stage:"New Lead",created:"Aug 26, 2026"},
+    {name:"Taylor Sample",email:"taylor@example.test",phone:"(720) 555-0102",stage:"Intake Sent",created:"Aug 25, 2026"},
+    {name:"Morgan Example",email:"morgan@example.test",phone:"(970) 555-0103",stage:"Intake Sent",created:"Aug 24, 2026"},
+    {name:"Casey Demo",email:"casey@example.test",phone:"(303) 555-0104",stage:"Intake Submitted",created:"Aug 23, 2026"},
+    {name:"Riley Example",email:"riley@example.test",phone:"(719) 555-0105",stage:"Ready for Petition Prep",created:"Aug 22, 2026"},
+    {name:"Avery Sample",email:"avery@example.test",phone:"(720) 555-0106",stage:"New Lead",created:"Aug 21, 2026"}
+  ];
+  const demoContacts=[
+    {name:"Jordan Sample",legal:"Jordan A. Sample",email:"jordan@example.test",phone:"(303) 555-0101",association:"Primary contact",stage:"New Lead"},
+    {name:"Taylor Sample",legal:"Taylor B. Sample",email:"taylor@example.test",phone:"(720) 555-0102",association:"Primary contact",stage:"Intake Sent"},
+    {name:"Morgan Example",legal:"Morgan C. Example",email:"morgan@example.test",phone:"(970) 555-0103",association:"Joint contact",stage:"Intake Sent"},
+    {name:"Casey Demo",legal:"Casey D. Demo",email:"casey@example.test",phone:"(303) 555-0104",association:"Primary contact",stage:"Intake Submitted"},
+    {name:"Riley Example",legal:"Riley E. Example",email:"riley@example.test",phone:"(719) 555-0105",association:"Primary contact",stage:"Ready for Petition Prep"}
+  ];
 
   const stepDocs=[
     [
@@ -132,7 +156,6 @@
 
   function renderCrm(){
     const page=state.crmPage;
-    const title=page.charAt(0).toUpperCase()+page.slice(1);
     return `
       <div class="crm-shell">
         <aside class="crm-sidebar">
@@ -147,18 +170,64 @@
         </aside>
         <section class="crm-main">
           <header class="crm-topbar">
-            <input class="search-box" aria-label="Search by name or email" placeholder="⌕  Search by name or email...">
+            <div class="workspace-label">CRM workspace</div>
             <button type="button" class="primary-btn" id="create-lead">Create New Lead&nbsp; +</button>
           </header>
-          <div class="crm-coming">
-            <div>
-              <h1>${esc(title)}</h1>
-              <p>Coming soon</p>
-              <div class="source-truth-note">This is faithful to Apptomate’s current <strong>dev_v2</strong> route. The CRM shell and Create Lead modal are implemented; this route’s main content still says “Coming soon.”</div>
-            </div>
-          </div>
+          ${page==="dashboard"?renderDashboard():page==="lead-detail"?renderLeadDetail():page==="leads"?renderLeads():page==="contacts"?renderContacts():renderCrmPlaceholder(page)}
         </section>
       </div>`;
+  }
+
+
+  const canonicalStages=["New Lead","Intake Sent","Intake Submitted","Ready for Petition Prep"];
+  function renderDashboard(){
+    return `<main class="crm-list-page"><div class="crm-page-head"><div><h1>Dashboard</h1><p>Four stages from new lead to petition preparation.</p></div></div><div class="source-truth-note">September 29 navigation slice · Synthetic data only. Stage navigation and Lead Details overview are recreated; task widgets, incremental loading and remaining detail content are pending replica coverage.</div><div class="stage-grid">${canonicalStages.map((stage,i)=>{const rows=demoLeads.filter(lead=>lead.stage===stage);return `<section class="stage-card"><button class="stage-heading" data-stage-link="${stage}"><strong>${i+1}. ${stage==="Intake Submitted"?"Intake Inbox":stage}</strong><span>${rows.length} →</span></button><div class="stage-rows">${rows.map(lead=>`<button class="stage-lead" data-open-lead="${esc(lead.name)}"><strong>${esc(lead.name)}</strong><small>${esc(lead.created)}</small></button>`).join("")||"<p>No synthetic leads in this stage.</p>"}</div></section>`;}).join("")}</div></main>`;
+  }
+  function renderLeadDetail(){
+    const lead=demoLeads.find(item=>item.name===state.selectedLead);
+    if(!lead)return renderLeads();
+    const tabs=["Dashboard","Intake Package","Documents","Communications","Notes","Tasks","AI"];
+    const rows=[["Matter ID","DEMO-001"],["First name",lead.name.split(" ")[0]],["Middle name","—"],["Last name",lead.name.split(" ").slice(1).join(" ")],["Email",lead.email],["Phone",lead.phone],["Filing","Individual"],["Stage",lead.stage],["Intake sent","Synthetic example"],["Intake submitted","Synthetic example"],["Created",lead.created],["Notes","Fictional record for review only."]];
+    return `<main class="crm-list-page"><button class="mini-btn" data-crm-nav="leads">← Back to Leads</button><div class="crm-page-head"><div><h1>${esc(lead.name)}</h1><p>DEMO-001 · Fictional Lead</p></div>${stageBadge(lead.stage)}</div><nav class="detail-tabs" aria-label="Lead detail tabs">${tabs.map(tab=>`<button class="mini-btn ${state.detailTab===tab?"selected":""}" data-detail-tab="${tab}">${tab}</button>`).join("")}</nav>${state.detailTab==="Dashboard"?`<div class="detail-grid"><section class="stage-card"><h2>Lead Details</h2><dl>${rows.map(([label,value])=>`<div><dt>${label}</dt><dd>${esc(value)}</dd></div>`).join("")}</dl></section><section class="stage-card"><h2>Contacts</h2><strong>${esc(lead.name)}</strong><p>${esc(lead.email)}</p><p>${esc(lead.phone)}</p></section></div>`:`<section class="stage-card"><h2>${esc(state.detailTab)}</h2><p>Implemented in the source; replica content coverage pending.</p><p>This navigation preview does not simulate saved documents, messages, tasks or AI results.</p></section>`}<div class="source-truth-note">Lead header, tab order and overview labels checked September 29. Safe local navigation only; no external requests or messages.</div></main>`;
+  }
+
+  function renderCrmPlaceholder(page){
+    const title=page.charAt(0).toUpperCase()+page.slice(1);
+    return `<div class="crm-coming"><div><h1>${esc(title)}</h1><p>Coming soon</p><div class="source-truth-note">Replica coverage pending for this route. The implementation has advanced beyond this dated view; this is not a claim that the source is unfinished.</div></div></div>`;
+  }
+
+  function stageBadge(stage){
+    const tone={"New Lead":"blue","Intake Sent":"purple","Intake Submitted":"teal","Ready for Petition Prep":"green"}[stage]||"gray";
+    return `<span class="stage-badge ${tone}">${esc(stage)}</span>`;
+  }
+
+  function pageSlice(rows,page){
+    const pages=Math.max(1,Math.ceil(rows.length/crmPageSize));
+    const safe=Math.min(page,pages-1);
+    return {rows:rows.slice(safe*crmPageSize,(safe+1)*crmPageSize),page:safe,pages};
+  }
+
+  function crmPager(kind,page,pages,total){
+    return `<div class="crm-pager"><span>Page ${page+1} of ${pages} · ${total} synthetic result${total===1?"":"s"}</span><div><button type="button" class="mini-btn" data-crm-page="${kind}:-1" ${page===0?"disabled":""}>Previous</button><button type="button" class="mini-btn" data-crm-page="${kind}:1" ${page>=pages-1?"disabled":""}>Next</button></div></div>`;
+  }
+
+  function renderLeads(){
+    const query=state.leadSearch.trim().toLowerCase();
+    const filtered=demoLeads.filter(lead=>(state.leadStage==="All"||lead.stage===state.leadStage)&&(!query||`${lead.name} ${lead.email} ${lead.phone}`.toLowerCase().includes(query)));
+    const slice=pageSlice(filtered,state.leadPage); state.leadPage=slice.page;
+    const stages=[...new Set(demoLeads.map(lead=>lead.stage))];
+    return `<main class="crm-list-page"><div class="crm-page-head"><div><h1>Leads</h1><p>Search and filter the current lead list.</p></div><span>${filtered.length} results</span></div><div class="crm-list-tools"><input id="lead-search" class="list-search" value="${esc(state.leadSearch)}" placeholder="Search leads..." aria-label="Search leads"><select id="lead-stage" class="list-filter" aria-label="Filter by stage"><option value="All">All Stages</option>${stages.map(stage=>`<option ${state.leadStage===stage?"selected":""}>${esc(stage)}</option>`).join("")}</select></div>${renderCrmTable(["Full Name","Email","Phone","Stage","Created"],slice.rows.map(lead=>[lead.name,lead.email,lead.phone,stageBadge(lead.stage),lead.created]),"lead")}${crmPager("lead",slice.page,slice.pages,filtered.length)}<div class="source-truth-note">Synthetic navigation and Lead Details overview checked September 29. Additional detail content remains outside this replica slice.</div></main>`;
+  }
+
+  function renderContacts(){
+    const query=state.contactSearch.trim().toLowerCase();
+    const filtered=demoContacts.filter(contact=>!query||`${contact.name} ${contact.legal} ${contact.email} ${contact.phone}`.toLowerCase().includes(query));
+    const slice=pageSlice(filtered,state.contactPage); state.contactPage=slice.page;
+    return `<main class="crm-list-page"><div class="crm-page-head"><div><h1>Contacts</h1><p>Search the paginated contact list.</p></div><span>${filtered.length} total contacts</span></div><div class="crm-list-tools single"><input id="contact-search" class="list-search" value="${esc(state.contactSearch)}" placeholder="Search contacts..." aria-label="Search contacts"></div>${renderCrmTable(["Full Name","Legal Name","Email","Phone","Association","Stage"],slice.rows.map(contact=>[contact.name,contact.legal,contact.email,contact.phone,contact.association,stageBadge(contact.stage)]),"contact")}${crmPager("contact",slice.page,slice.pages,filtered.length)}<div class="source-truth-note">Contact detail is implemented in the source; its replica coverage is pending.</div></main>`;
+  }
+
+  function renderCrmTable(headers,rows,kind){
+    return `<div class="crm-table-wrap"><table class="crm-table"><thead><tr>${headers.map(header=>`<th>${esc(header)}</th>`).join("")}</tr></thead><tbody>${rows.length?rows.map((row,index)=>`<tr tabindex="0" ${kind==="lead"?`data-open-lead="${esc(row[0])}"`:`data-unavailable-detail="${kind}"`} aria-label="${esc(kind)} row ${index+1}">${row.map(cell=>`<td>${typeof cell==="string"&&cell.startsWith("<span")?cell:esc(cell)}</td>`).join("")}</tr>`).join(""):`<tr><td colspan="${headers.length}" class="empty-row">No ${kind}s found.</td></tr>`}</tbody></table></div>`;
   }
 
   function crmNavButton(key,icon,label){
@@ -298,7 +367,7 @@
         ${labeledInput("State","Select state","col-2",true)}
         ${labeledInput("ZIP code","","col-2",true)}
         ${labeledInput("County","","col-2",true)}
-        ${labeledInput("Date of birth","MM / DD / YYYY","col-2",true)}
+        ${labeledInput("Date of birth","MM / DD / YYYY","col-2",true,"date")}
         ${labeledInput("Social Security number","123-45-6789","col-2",true,"password")}
       </div>
       ${yesNoQuestion("filed","Have you filed for bankruptcy before?")}
@@ -315,25 +384,65 @@
 
   function renderAssets(){
     const financial=[
-      ["cash","Cash on hand",""],
-      ["accounts","Bank or financial accounts","checking, savings, brokerage, Venmo, PayPal — even $0 balances"],
-      ["stocks","Bonds, mutual funds, or publicly traded stocks",""],
-      ["business","Ownership in a business","LLC, partnership, sole proprietorship, non-public stock"],
-      ["retirement","Retirement or pension accounts","401(k), IRA, pension"],
-      ["refund","Tax refunds owed to you",""],
-      ["claims","Legal claims or lawsuits","personal injury, workers comp, money owed, any claim you could win"],
-      ["other-assets","Other financial assets not already listed",""]
+      ["cash","Cash on hand","",assetMoney("Cash total","0.00")],
+      ["accounts","Bank or financial accounts","checking, savings, brokerage, Venmo, PayPal — even $0 balances",assetInstitution("Bank or credit union","Account type","Current balance")],
+      ["stocks","Bonds, mutual funds, or publicly traded stocks","",assetInstitution("Institution / brokerage","Type","Current value")],
+      ["business","Ownership in a business","LLC, partnership, sole proprietorship, non-public stock",assetDescribe("Describe the business","Estimated value")],
+      ["bonds","Government or corporate bonds, or other negotiable instruments","",assetDescribe("Describe","Estimated value")],
+      ["retirement","Retirement or pension accounts","401(k), IRA, pension",assetInstitution("Institution / plan","Type","Current value")],
+      ["deposits","Security deposits or prepayments","with a landlord or utility",assetDescribe("Describe","Amount")],
+      ["tax-refunds","Tax refunds owed to you","",assetMoney("Expected amount","0.00")],
+      ["support","Family support owed to you","child support, alimony, maintenance",assetMoney("Amount owed","0.00")],
+      ["claims","Legal claims or lawsuits","personal injury, workers comp, money owed, any claim you could win",assetDescribe("Describe the claim","Estimated value")],
+      ["other-assets","Other financial assets not already listed","",assetDescribe("Describe","Estimated value")]
     ];
     return `${pageHeading("Assets","You must list everything you own or have any sort of interest in. Most assets are protected, but your attorney needs a detailed list and realistic values.")}
       ${guide("Assets","List everything you own or have an interest in. If you are filing jointly, list assets owned by you, your spouse, and jointly.")}
-      <div class="section-title">Real Estate</div>${yesNoQuestion("real-estate","Do you own or have any interest in any real estate?","residence, condo, land, timeshare, or mobile home")}
-      <div class="section-title">Vehicles</div>${yesNoQuestion("vehicles","Do you own or have any interest in any vehicles?","cars, trucks, motorcycles, RVs, trailers, boats, or ATVs")}
+      <div class="section-title">Real Estate</div>
+      ${yesNoQuestion("real-estate","Do you own or have any interest in any real estate?","residence, condo, land, timeshare, or mobile home")}
+      ${state.answers["real-estate"]==="yes"?assetCard("Real estate detail card","Add property details",[
+        ["Address","Number and street"],["City","City"],["State","Select state"],["ZIP code","ZIP"],["Purchase date","MM / YYYY"],["Estimated value","0.00"]
+      ],"Please upload deeds, mortgage statements, or tax assessment documents in the secure upload bar when available."):""}
+      <div class="section-title">Vehicles</div>
+      ${yesNoQuestion("vehicles","Do you own or have any interest in any vehicles?","cars, trucks, motorcycles, RVs, trailers, boats, or ATVs")}
+      ${state.answers.vehicles==="yes"?assetCard("Vehicle detail card","Add vehicle details",[
+        ["Year","2021"],["Make","Toyota"],["Model","Camry"],["Mileage","48,000"],["Purchase date","MM / YYYY"],["Estimated value","0.00"]
+      ],"Vehicle titles, loan statements, and insurance documents belong in the upload bar when available."):""}
       <div class="section-title">Personal and Household Items</div><p style="font-size:11px;color:#778079">Estimate what you would actually get selling these items used — think garage-sale value.</p>
       <table class="money-table"><tbody>${householdRows.map(row=>`<tr><td><strong>${esc(row[0])}</strong><small>${esc(row[1])}</small></td><td><div class="money-input">$<input inputmode="decimal" placeholder="0.00"></div></td></tr>`).join("")}</tbody></table>
-      <div class="section-title">Financial Assets</div>${financial.map(item=>yesNoQuestion(item[0],item[1],item[2])).join("")}
-      <div class="info-callout"><strong>Legal claims must be listed.</strong> A personal injury case, workers compensation claim, or money owed to you can count as an asset. When in doubt, list it.</div>
-      <div class="section-title">Business Related Property</div>${yesNoQuestion("business-property","Do you own or have any interest in any business related property?")}
+      <div class="asset-card"><div class="asset-card-head"><span>Other household item</span><span>Asset detail card</span></div><div class="asset-detail-grid">${labeledInput("Describe","Item description","col-6")}${labeledInput("Estimated value","0.00","col-6")}</div></div>
+      <div class="section-title">Financial Assets</div>
+      ${financial.map(item=>`${yesNoQuestion(item[0],item[1],item[2])}${state.answers[item[0]]==="yes"?item[3]:""}${item[0]==="claims"?'<div class="warn-callout"><strong>!</strong><span><strong>Legal claims must be listed.</strong> A personal injury case, workers compensation claim, or money owed to you can count as an asset. Leaving one off could mean losing your right to it.</span></div>':""}`).join("")}
+      <div class="section-title">Business Related Property</div>
+      ${yesNoQuestion("business-property","Do you own or have any interest in any business related property?")}
+      ${state.answers["business-property"]==="yes"?`<div class="asset-detail-card"><label class="field-label">Describe</label><textarea class="text-area" placeholder="Unpaid commissions, accounts receivable, equipment, inventory, tools, fixtures, or business interests."></textarea><span class="field-warning">Synthetic replica: AI/server warnings would appear here as orange review notes.</span></div>`:""}
+      <div class="section-title">Farm &amp; Commercial Fishing Property</div>
+      ${yesNoQuestion("farm-property","Do you own or have any interest in farm or commercial fishing related property?")}
+      ${state.answers["farm-property"]==="yes"?`<div class="asset-detail-card"><label class="field-label">Describe</label><textarea class="text-area" placeholder="Livestock, crops, farm equipment, machinery, implements, or fishing property."></textarea></div>`:""}
+      <div class="job-tip"><span>💡</span><span>The current Apptomate source wires this step to validation and save endpoints. This public version only toggles fields locally and never sends data.</span></div>
       ${formActions()}`;
+  }
+
+  function assetCard(kicker,title,fields,tip){
+    return `<div class="asset-card"><div class="asset-card-head"><span>${esc(kicker)}</span><span>${esc(title)}</span></div><div class="asset-detail-grid">${fields.map(field=>assetField(field[0],field[1])).join("")}</div><button type="button" class="add-row" data-noop>＋ Add another</button><div class="job-tip"><span>💡</span><span>${esc(tip)}</span></div></div>`;
+  }
+
+  function assetField(label,placeholder){
+    const money=/value|amount|balance/i.test(label);
+    const date=/date/i.test(label);
+    return `<div><label class="field-label">${esc(label)} <span class="required">*</span></label><div class="${money?"money-input":""}">${money?"$":""}<input class="text-input" type="${date?"month":"text"}" ${money?'inputmode="decimal"':""} placeholder="${esc(placeholder)}"></div></div>`;
+  }
+
+  function assetMoney(label,placeholder){
+    return `<div class="asset-detail-card">${assetField(label,placeholder)}<span class="field-warning">Unusual values would be flagged for attorney review.</span></div>`;
+  }
+
+  function assetDescribe(label,valueLabel){
+    return `<div class="asset-detail-card"><div class="asset-detail-grid">${assetField(label,"Describe")}${assetField(valueLabel,"0.00")}</div></div>`;
+  }
+
+  function assetInstitution(institutionLabel,typeLabel,valueLabel){
+    return `<div class="asset-detail-card"><div class="asset-detail-grid">${assetField(institutionLabel,"Name")}${assetField(typeLabel,"Type")}${assetField(valueLabel,"0.00")}</div><button type="button" class="add-row" data-noop>＋ Add another account</button></div>`;
   }
 
   function renderGenericStep(index){
@@ -372,8 +481,25 @@
     const viewButton=event.target.closest("[data-view]");
     if(viewButton){state.view=viewButton.dataset.view;state.modal=false;render();return;}
 
+    const stageLink=event.target.closest("[data-stage-link]");
+    if(stageLink){state.leadStage=stageLink.dataset.stageLink;state.leadSearch="";state.leadPage=0;state.crmPage="leads";render();return;}
+    const openLead=event.target.closest("[data-open-lead]");
+    if(openLead){state.selectedLead=openLead.dataset.openLead;state.detailTab="Dashboard";state.crmPage="lead-detail";render();return;}
+    const detailTab=event.target.closest("[data-detail-tab]");
+    if(detailTab){state.detailTab=detailTab.dataset.detailTab;render();return;}
     const crmNav=event.target.closest("[data-crm-nav]");
     if(crmNav){state.crmPage=crmNav.dataset.crmNav;render();return;}
+
+    const crmPage=event.target.closest("[data-crm-page]");
+    if(crmPage&&!crmPage.disabled){
+      const [kind,delta]=crmPage.dataset.crmPage.split(":");
+      if(kind==="lead")state.leadPage=Math.max(0,state.leadPage+Number(delta));
+      if(kind==="contact")state.contactPage=Math.max(0,state.contactPage+Number(delta));
+      render();return;
+    }
+
+    const unavailableDetail=event.target.closest("[data-unavailable-detail]");
+    if(unavailableDetail){showToast(`${unavailableDetail.dataset.unavailableDetail==="lead"?"Lead":"Contact"} detail replica coverage is pending.`);return;}
 
     if(event.target.closest("#create-lead")){state.modal=true;render();return;}
 
@@ -391,6 +517,7 @@
       const last=document.getElementById("lead-last")?.value.trim();
       const email=document.getElementById("lead-email")?.value.trim();
       if(state.contactTab==="new"&&(!first||!last||!email)){showToast("Add first name, last name, and email to save the demo lead.");return;}
+      if(state.contactTab==="new")demoLeads.unshift({name:`${first} ${last}`,email,phone:"(303) 555-0199",stage:"New Lead",created:"Today"});
       state.modal=false;render();showToast("Demo lead saved locally. No email or API request was sent.");return;
     }
 
@@ -418,10 +545,19 @@
     if(event.target.closest("[data-noop]")){event.preventDefault();showToast("This control is visual only in the public replica.");}
   });
 
+  document.addEventListener("keydown",event=>{if((event.key==="Enter"||event.key===" ")&&event.target.matches("tr[data-open-lead]")){event.preventDefault();event.target.click();}});
+
   document.addEventListener("change",event=>{
-    if(event.target.id!=="joint-case")return;
-    state.joint=event.target.checked;
-    render();
+    if(event.target.id==="joint-case"){state.joint=event.target.checked;render();return;}
+    if(event.target.id==="lead-stage"){state.leadStage=event.target.value;state.leadPage=0;render();}
+  });
+
+  document.addEventListener("input",event=>{
+    if(event.target.id!=="lead-search"&&event.target.id!=="contact-search")return;
+    if(event.target.id==="lead-search"){state.leadSearch=event.target.value;state.leadPage=0;}
+    if(event.target.id==="contact-search"){state.contactSearch=event.target.value;state.contactPage=0;}
+    clearTimeout(renderCrm.searchTimer);
+    renderCrm.searchTimer=setTimeout(render,250);
   });
 
   render();

@@ -3839,10 +3839,7 @@ function SiteReplicatorPage(){
           <div style={{fontSize:10,fontWeight:800,letterSpacing:"1.5px",color:"#b8d1bf",marginBottom:12}}>JIMMY BRANCH · VERIFIED SOURCE SNAPSHOT</div>
           <h1 style={{fontSize:30,lineHeight:1.15,margin:"0 0 12px",fontWeight:700}}>Apptomate Site Replicator</h1>
           <p style={{fontSize:14,lineHeight:1.65,color:"#dfebe1",maxWidth:620,margin:"0 0 22px"}}>A daily evidence view of the BK FastLane development update. Reported progress is kept separate from repository verification and working-product acceptance.</p>
-          <div style={{display:"flex",flexWrap:"wrap",gap:10}}>
-            <a href={data.source.repositoryUrl} target="_blank" rel="noopener noreferrer" style={{padding:"10px 14px",borderRadius:8,background:"#fff",color:"#243d2d",fontSize:12,fontWeight:700}}>Open source repository ↗</a>
-            <a href={data.source.commitUrl} target="_blank" rel="noopener noreferrer" style={{padding:"10px 14px",borderRadius:8,border:"1px solid #8faa96",color:"#fff",fontSize:12,fontWeight:700}}>View verified commit ↗</a>
-          </div>
+          <div style={{display:"inline-flex",padding:"10px 14px",borderRadius:8,background:"#fff",color:"#243d2d",fontSize:12,fontWeight:700}}>Source evidence retained privately</div>
         </div>
         <div style={{background:"#fff",border:"1px solid #dfe5df",borderRadius:16,padding:"26px 28px",display:"grid",alignContent:"center",gap:14}}>
           <div><div style={{fontSize:10,fontWeight:800,letterSpacing:"1.2px",color:"#75907b"}}>SNAPSHOT DATE</div><div style={{fontSize:20,fontWeight:700,color:"#303a32",marginTop:4}}>{data.snapshotDate}</div><div style={{fontSize:12,color:"#727972",marginTop:3}}>Development update received {data.updateReceivedAt}</div></div>
@@ -3870,7 +3867,7 @@ function SiteReplicatorPage(){
 
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(300px,1fr))",gap:18,marginTop:18}}>
         <ReplicatorCard eyebrow="MERGED TO DEV_V2" title="Development receipts" accent="#745f8e">
-          <div style={{display:"grid",gap:10}}>{data.pullRequests.map(pr=><a key={pr.number} href={pr.url} target="_blank" rel="noopener noreferrer" style={{display:"flex",justifyContent:"space-between",gap:12,padding:"12px 13px",border:"1px solid #e1dce8",borderRadius:8,background:"#faf8fc",color:"#4b4059",fontSize:12,lineHeight:1.4}}><span><strong>PR #{pr.number}</strong><br/>{pr.title}</span><span aria-hidden="true">↗</span></a>)}</div>
+          <div style={{display:"grid",gap:10}}>{data.pullRequests.map((receipt,index)=><div key={index} style={{padding:"12px 13px",border:"1px solid #e1dce8",borderRadius:8,background:"#faf8fc",color:"#4b4059",fontSize:12,lineHeight:1.4}}>{receipt.title}</div>)}</div>
         </ReplicatorCard>
         <ReplicatorCard eyebrow="CURRENT SPRINT" title="In progress" accent="#b17842"><ReplicatorList items={data.reported.inProgress} color="#b17842"/></ReplicatorCard>
         <ReplicatorCard eyebrow="DESIGN UPDATE" title="Figma work reported" accent="#9a5e6d"><ReplicatorList items={data.reported.design} color="#9a5e6d"/></ReplicatorCard>
@@ -3884,7 +3881,7 @@ function SiteReplicatorPage(){
 function ApptomateWorkingReplicaPage(){
   return <main style={{flex:1,minWidth:0,background:"#f5f7f4",display:"flex",flexDirection:"column",height:"100vh",overflow:"hidden"}}>
     <header style={{minHeight:58,padding:"10px 18px",background:"#fff",borderBottom:"1px solid #dfe5df",display:"flex",alignItems:"center",justifyContent:"space-between",gap:16,flexWrap:"wrap"}}>
-      <div><div style={{fontSize:10,fontWeight:800,letterSpacing:"1.15px",color:"#68816e",marginBottom:3}}>APPTOMATE DEV_V2 · WORKING SYNTHETIC REPLICA</div><div style={{fontSize:12,color:"#6f7771"}}>Actual implemented UI patterns, recreated without private source, credentials, tenant settings, or client data.</div></div>
+      <div><div style={{fontSize:10,fontWeight:800,letterSpacing:"1.15px",color:"#68816e",marginBottom:3}}>APPTOMATE DEV_V2 · WORKING SYNTHETIC REPLICA</div><div style={{fontSize:12,color:"#6f7771"}}>September 29 Dashboard and Lead navigation slice. Other views retain dated coverage; synthetic examples only.</div></div>
       <a href="./apptomate-replica/" target="_blank" rel="noopener noreferrer" style={{padding:"9px 13px",borderRadius:7,background:"#55785f",color:"#fff",fontSize:11,fontWeight:700,whiteSpace:"nowrap"}}>Open full-page replica ↗</a>
     </header>
     <iframe title="Apptomate dev_v2 working replica" src="./apptomate-replica/" style={{display:"block",width:"100%",flex:1,border:0,background:"#fff"}}></iframe>
