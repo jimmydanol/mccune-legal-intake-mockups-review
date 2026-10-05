@@ -49,8 +49,8 @@
       {key:"tax2",name:"Tax return — two years ago",status:"Needed"}
     ],
     [
-      {key:"paystubs",name:"Pay stubs — last 60 days",status:"Needed"},
-      {key:"incomeproof",name:"Other income proof",status:"If applicable"}
+      {key:"paystubs",name:"Pay stubs — last 6 months",status:"Needed"},
+      {key:"incomeproof",name:"Other income proof — last 6 months",status:"If applicable"}
     ],
     [],
     [{key:"debts",name:"Debt statements and collection letters",status:"Needed"}],
@@ -323,8 +323,17 @@
     </section></main>`;
   }
 
+  function assetDocuments(){
+    const docs=[];
+    if(state.answers["real-estate"]==="yes")docs.push({key:"zillow",name:"Zillow valuation statement",status:"Needed"});
+    if(state.answers.vehicles==="yes")docs.push({key:"kbb",name:"KBB valuation statement",status:"Needed"});
+    if(state.answers.accounts==="yes")docs.push({key:"bank",name:"Bank statements — last 6 months",status:"Needed"});
+    if(["stocks","retirement"].some(key=>state.answers[key]==="yes"))docs.push({key:"investments",name:"Investments, retirement, pensions, etc.",status:"Needed"});
+    return docs;
+  }
+
   function renderDocSidebar(){
-    const docs=stepDocs[state.step];
+    const docs=state.step===2?assetDocuments():stepDocs[state.step];
     const completed=docs.filter(doc=>state.uploads.has(doc.key)).length;
     const percent=docs.length?Math.round(completed/docs.length*100):0;
     return `<aside class="doc-sidebar">

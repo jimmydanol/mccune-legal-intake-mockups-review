@@ -14,7 +14,7 @@ assert.match(index, /function ApptomateWorkingReplicaPage\(\)/);
 assert.match(index, /page==="site-replicator"/);
 assert.match(index, /src="\.\/apptomate-replica\/"/);
 assert.match(data, /branch:"dev_v2"/);
-assert.match(data, /commit:"3064336"/);
+assert.match(data, /commit:"a6fb67d"/);
 assert.match(data, /state:"verified"/);
 assert.match(data, /state:"review"/);
 assert.doesNotMatch(data, /BKFastPassLLC|github\.com|@apptomate\.co|@bkfastpass\.com|mail\.google\.com|gmail/i);
@@ -32,7 +32,7 @@ assert.match(replicaJs, /data-stage-link/);
 assert.match(replicaJs, /data-open-lead/);
 assert.match(replicaJs, /state.leadPage=0;state.crmPage="leads"/);
 assert.doesNotMatch(replicaJs, /Intake Started|route is not implemented in the verified source/);
-assert.match(replicaIndex, /September 29, 2026/);
+assert.match(replicaIndex, /October 5, 2026/);
 assert.match(replicaJs, /type="\$\{date\?"month":"text"\}"/);
 assert.match(replicaJs, /Personal Information/);
 assert.match(replicaJs, /function renderAssets\(\)/);
@@ -40,5 +40,12 @@ assert.match(replicaJs, /Asset detail card/);
 assert.match(replicaJs, /Legal claims must be listed/);
 assert.match(replicaJs, /function renderDocuments\(\)/);
 assert.doesNotMatch(replicaJs, /BKFastPassLLC|github\.com\/BKFastPassLLC|@apptomate\.co|mail\.google\.com/i);
+
+
+
+assert.match(replicaJs, /function assetDocuments\(\)/);
+assert.match(replicaJs, /Pay stubs — last 6 months/);
+assert.match(replicaJs, /Zillow valuation statement/);
+assert.match(replicaJs, /KBB valuation statement/);
 
 console.log("Working Site Replicator verification passed.");
