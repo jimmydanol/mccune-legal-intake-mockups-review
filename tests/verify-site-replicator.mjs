@@ -12,7 +12,7 @@ assert.match(index, /label:"SITE REPLICATOR"/);
 assert.match(index, /function SiteReplicatorPage\(\)/);
 assert.match(index, /function ApptomateWorkingReplicaPage\(\)/);
 assert.match(index, /page==="site-replicator"/);
-assert.match(index, /src="\.\/apptomate-replica\/"/);
+assert.match(index, /src="\.\/apptomate-replica\/\?v=20261007-state"/);
 assert.match(data, /branch:"dev_v2"/);
 assert.match(data, /commit:"8d21e37"/);
 assert.match(data, /state:"verified"/);
