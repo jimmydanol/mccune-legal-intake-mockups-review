@@ -358,8 +358,34 @@
   }
 
   function labeledInput(label,placeholder,column="col-2",required=false,type="text"){
+    if(label==="State")return stateSelector(column,required);
     return `<div class="${column}"><label class="field-label">${esc(label)}${required?'<span class="required"> *</span>':""}</label><input class="text-input" type="${type}" placeholder="${esc(placeholder)}"></div>`;
   }
+
+  const stateOptions="AL:Alabama|AK:Alaska|AZ:Arizona|AR:Arkansas|CA:California|CO:Colorado|CT:Connecticut|DE:Delaware|DC:District of Columbia|FL:Florida|GA:Georgia|HI:Hawaii|ID:Idaho|IL:Illinois|IN:Indiana|IA:Iowa|KS:Kansas|KY:Kentucky|LA:Louisiana|ME:Maine|MD:Maryland|MA:Massachusetts|MI:Michigan|MN:Minnesota|MS:Mississippi|MO:Missouri|MT:Montana|NE:Nebraska|NV:Nevada|NH:New Hampshire|NJ:New Jersey|NM:New Mexico|NY:New York|NC:North Carolina|ND:North Dakota|OH:Ohio|OK:Oklahoma|OR:Oregon|PA:Pennsylvania|RI:Rhode Island|SC:South Carolina|SD:South Dakota|TN:Tennessee|TX:Texas|UT:Utah|VT:Vermont|VA:Virginia|WA:Washington|WV:West Virginia|WI:Wisconsin|WY:Wyoming".split("|").map(item=>item.split(":"));
+  function stateSelector(column,required){
+    return `<div class="${column}"><label class="field-label">State${required?'<span class="required"> *</span>':""}</label><select class="select-input" aria-label="State" data-state-selector><option value="">Select state</option>${stateOptions.map(([code,name])=>`<option value="${code}">${name}</option>`).join("")}</select></div>`;
+  }
+  const stateTyping=new WeakMap();
+  document.addEventListener("keydown",event=>{
+    const select=event.target.closest?.("[data-state-selector]");
+    if(!select||event.ctrlKey||event.metaKey||event.altKey)return;
+    const typing=stateTyping.get(select)||{text:"",timer:null};
+    if(event.key==="Escape"||event.key==="Tab"){clearTimeout(typing.timer);stateTyping.delete(select);return;}
+    if(event.key==="Backspace"){typing.text=typing.text.slice(0,-1);stateTyping.set(select,typing);return;}
+    if(!/^[a-z]$/i.test(event.key))return;
+    event.preventDefault();
+    typing.text+=event.key.toLowerCase();
+    clearTimeout(typing.timer);
+    typing.timer=setTimeout(()=>{
+      const query=typing.text.trim();
+      const exact=stateOptions.find(([code,name])=>code.toLowerCase()===query||name.toLowerCase()===query);
+      const candidates=stateOptions.filter(([,name])=>name.toLowerCase().startsWith(query));
+      const match=exact||(query==="new"?stateOptions.find(([code])=>code==="NY"):candidates.length===1?candidates[0]:null);
+      if(match){select.value=match[0];select.dispatchEvent(new Event("change",{bubbles:true}));stateTyping.delete(select);}
+    },650);
+    stateTyping.set(select,typing);
+  });
 
   function renderPersonal(){
     return `${pageHeading("Personal Information","Please provide your legal details below for our records. Your data is encrypted and secure.")}

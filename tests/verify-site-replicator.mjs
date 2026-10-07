@@ -14,7 +14,7 @@ assert.match(index, /function ApptomateWorkingReplicaPage\(\)/);
 assert.match(index, /page==="site-replicator"/);
 assert.match(index, /src="\.\/apptomate-replica\/"/);
 assert.match(data, /branch:"dev_v2"/);
-assert.match(data, /commit:"a6fb67d"/);
+assert.match(data, /commit:"8d21e37"/);
 assert.match(data, /state:"verified"/);
 assert.match(data, /state:"review"/);
 assert.doesNotMatch(data, /BKFastPassLLC|github\.com|@apptomate\.co|@bkfastpass\.com|mail\.google\.com|gmail/i);
