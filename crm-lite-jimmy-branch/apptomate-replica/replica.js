@@ -4,6 +4,8 @@
   const app=document.getElementById("app");
   const modalRoot=document.getElementById("modal-root");
   const toast=document.getElementById("toast");
+  const replicaBar=document.querySelector(".replica-bar");
+  new ResizeObserver(()=>document.documentElement.style.setProperty("--replica-bar-height",`${replicaBar.getBoundingClientRect().height}px`)).observe(replicaBar);
 
   const steps=["Personal Info","Income","Assets","Debts","Expenses","Financial affairs","Counseling class","Documents"];
   const state={
@@ -325,8 +327,8 @@
 
   function assetDocuments(){
     const docs=[];
-    if(state.answers["real-estate"]==="yes")docs.push({key:"zillow",name:"Zillow valuation statement",status:"Needed"});
-    if(state.answers.vehicles==="yes")docs.push({key:"kbb",name:"KBB valuation statement",status:"Needed"});
+    if(state.answers["real-estate"]==="yes")docs.push({key:"zillow",name:"Zillow value report — your home",status:"Needed"});
+    if(state.answers.vehicles==="yes")docs.push({key:"kbb",name:"KBB value report — your vehicle",status:"Needed"});
     if(state.answers.accounts==="yes")docs.push({key:"bank",name:"Bank statements — last 6 months",status:"Needed"});
     if(["stocks","retirement"].some(key=>state.answers[key]==="yes"))docs.push({key:"investments",name:"Investments, retirement, pensions, etc.",status:"Needed"});
     return docs;
@@ -379,11 +381,12 @@
     clearTimeout(typing.timer);
     typing.timer=setTimeout(()=>{
       const query=typing.text.trim();
+      stateTyping.delete(select);
       const exact=stateOptions.find(([code,name])=>code.toLowerCase()===query||name.toLowerCase()===query);
       const candidates=stateOptions.filter(([,name])=>name.toLowerCase().startsWith(query));
       const match=exact||(query==="new"?stateOptions.find(([code])=>code==="NY"):candidates.length===1?candidates[0]:null);
       if(match){select.value=match[0];select.dispatchEvent(new Event("change",{bubbles:true}));stateTyping.delete(select);}
-    },650);
+    },1000);
     stateTyping.set(select,typing);
   });
 
@@ -557,7 +560,7 @@
     }
 
     const stepButton=event.target.closest("[data-step]");
-    if(stepButton){state.step=Number(stepButton.dataset.step);render();return;}
+    if(stepButton){state.step=Number(stepButton.dataset.step);render();window.scrollTo({top:0,left:0,behavior:"auto"});return;}
 
     const yn=event.target.closest("[data-yn]");
     if(yn){const [key,value]=yn.dataset.yn.split(":");state.answers[key]=value;render();return;}
@@ -572,7 +575,7 @@
     const missing=event.target.closest("[data-missing-doc]");
     if(missing){state.uploads.add(missing.dataset.missingDoc);render();showToast("Marked unavailable for attorney follow-up.");return;}
 
-    if(event.target.closest("[data-continue]")){state.step=Math.min(state.step+1,steps.length-1);render();showToast("Step saved in the synthetic replica.");return;}
+    if(event.target.closest("[data-continue]")){state.step=Math.min(state.step+1,steps.length-1);render();window.scrollTo({top:0,left:0,behavior:"auto"});showToast("Step saved in the synthetic replica.");return;}
     if(event.target.closest("[data-save-exit]")){showToast("Synthetic progress saved for this open page.");return;}
     if(event.target.closest("[data-submit-intake]")){showToast("Synthetic intake submitted for review. Nothing was transmitted.");return;}
     if(event.target.closest("[data-preview-crm]")){state.view="crm";render();showToast("Opened the synthetic CRM workspace.");return;}

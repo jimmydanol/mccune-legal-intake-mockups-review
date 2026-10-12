@@ -12,9 +12,9 @@ assert.match(index, /label:"SITE REPLICATOR"/);
 assert.match(index, /function SiteReplicatorPage\(\)/);
 assert.match(index, /function ApptomateWorkingReplicaPage\(\)/);
 assert.match(index, /page==="site-replicator"/);
-assert.match(index, /src="\.\/apptomate-replica\/\?v=20261007-state"/);
-assert.match(data, /branch:"dev_v2"/);
-assert.match(data, /commit:"8d21e37"/);
+assert.match(index, /src="\.\/apptomate-replica\/\?v=20261012-navigation"/);
+assert.match(data, /reviewDate:"October 12, 2026"/);
+assert.doesNotMatch(data, /branch:|commit:|dev_v2/);
 assert.match(data, /state:"verified"/);
 assert.match(data, /state:"review"/);
 assert.doesNotMatch(data, /BKFastPassLLC|github\.com|@apptomate\.co|@bkfastpass\.com|mail\.google\.com|gmail/i);
@@ -45,7 +45,7 @@ assert.doesNotMatch(replicaJs, /BKFastPassLLC|github\.com\/BKFastPassLLC|@apptom
 
 assert.match(replicaJs, /function assetDocuments\(\)/);
 assert.match(replicaJs, /Pay stubs — last 6 months/);
-assert.match(replicaJs, /Zillow valuation statement/);
-assert.match(replicaJs, /KBB valuation statement/);
+assert.match(replicaJs, /Zillow value report — your home/);
+assert.match(replicaJs, /KBB value report — your vehicle/);
 
 console.log("Working Site Replicator verification passed.");
