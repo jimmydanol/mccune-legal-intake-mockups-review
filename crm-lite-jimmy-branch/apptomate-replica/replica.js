@@ -22,6 +22,7 @@
     contactTab:"new",
     joint:false,
     step:0,
+    attorneyNote:"",
     answers:{},
     uploads:new Set()
   };
@@ -320,7 +321,7 @@
         <div class="intake-title">Intake Form</div>
         <div class="debtor"><span>Jordan Sample</span><div class="avatar">JS</div></div>
       </header>
-      <nav class="stepper" aria-label="Intake steps">${steps.map((label,index)=>`<button type="button" class="step-button ${index===state.step?"active":""} ${index<state.step?"done":""}" data-step="${index}"><span class="step-num">${index<state.step?"✓":index+1}</span><span>${label}</span></button>`).join("")}</nav>
+      <nav class="stepper" aria-label="Intake steps"><div class="step-location" aria-live="polite">You are here: <strong>${esc(steps[state.step])} step ${state.step+1} of ${steps.length}</strong></div>${steps.map((label,index)=>`<button type="button" class="step-button ${index===state.step?"active":""} ${index<state.step?"done":""}" data-step="${index}"><span class="step-num">${index<state.step?"✓":index+1}</span><span>${label}</span></button>`).join("")}</nav>
       <div class="intake-body">${renderDocSidebar()}<section class="intake-content">${renderStep()}</section></div>
     </section></main>`;
   }
@@ -411,7 +412,6 @@
       ${yesNoQuestion("filed","Have you filed for bankruptcy before?")}
       ${yesNoQuestion("dependents","Do you have dependents?")}
       <div class="question"><div class="question-label">Marital status <span class="required">*</span></div><select class="select-input" style="max-width:320px"><option>Select marital status</option><option>Single</option><option>Married</option><option>Divorced</option><option>Separated</option></select></div>
-      <div class="section-title">Anything else for your attorney?</div><textarea class="text-area" placeholder="Share anything you think would help your attorney understand your situation."></textarea>
       ${formActions()}`;
   }
 
@@ -490,7 +490,7 @@
       const questions=section.slice(1);
       return `<div class="section-title">${esc(title)}</div>${questions.map((question,questionIndex)=>data.money?`<div class="question"><div class="question-label">${esc(question)}</div><div class="money-input" style="max-width:250px">$<input inputmode="decimal" placeholder="0.00"></div></div>`:yesNoQuestion(`generic-${index}-${sectionIndex}-${questionIndex}`,question)).join("")}`;
     }).join("");
-    return `${pageHeading(data.title,data.description)}${guide(data.title,`Complete each question in this section. The information and documents you provide help your attorney review your ${data.title.toLowerCase()}.`)}${content}${formActions()}`;
+    return `${pageHeading(data.title,data.description)}${guide(data.title,`Complete each question in this section. The information and documents you provide help your attorney review your ${data.title.toLowerCase()}.`)}${content}${index===5?`<div class="section-title">Anything else for your attorney?</div><p>Optional — but helpful. Is there any additional information about your case or situation, big or small, that you’d like your attorney to know?</p><textarea id="attorney-note" class="text-area" maxlength="5000" placeholder="Share anything you think would help your attorney understand your situation.">${esc(state.attorneyNote)}</textarea>`:""}${formActions()}`;
   }
 
   function renderDocuments(){
@@ -591,6 +591,7 @@
   });
 
   document.addEventListener("input",event=>{
+    if(event.target.id==="attorney-note"){state.attorneyNote=event.target.value;return;}
     if(event.target.id!=="lead-search"&&event.target.id!=="contact-search")return;
     if(event.target.id==="lead-search"){state.leadSearch=event.target.value;state.leadPage=0;}
     if(event.target.id==="contact-search"){state.contactSearch=event.target.value;state.contactPage=0;}
