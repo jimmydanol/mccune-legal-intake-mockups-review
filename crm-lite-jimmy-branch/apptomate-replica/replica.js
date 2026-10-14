@@ -23,6 +23,8 @@
     joint:false,
     step:0,
     attorneyNote:"",
+    customExpenses:[],
+    nextExpenseId:0,
     answers:{},
     uploads:new Set()
   };
@@ -490,8 +492,41 @@
       const questions=section.slice(1);
       return `<div class="section-title">${esc(title)}</div>${questions.map((question,questionIndex)=>data.money?`<div class="question"><div class="question-label">${esc(question)}</div><div class="money-input" style="max-width:250px">$<input inputmode="decimal" placeholder="0.00"></div></div>`:yesNoQuestion(`generic-${index}-${sectionIndex}-${questionIndex}`,question)).join("")}`;
     }).join("");
-    return `${pageHeading(data.title,data.description)}${guide(data.title,`Complete each question in this section. The information and documents you provide help your attorney review your ${data.title.toLowerCase()}.`)}${content}${index===5?`<div class="section-title">Anything else for your attorney?</div><p>Optional — but helpful. Is there any additional information about your case or situation, big or small, that you’d like your attorney to know?</p><textarea id="attorney-note" class="text-area" maxlength="5000" placeholder="Share anything you think would help your attorney understand your situation.">${esc(state.attorneyNote)}</textarea>`:""}${formActions()}`;
+    return `${pageHeading(data.title,data.description)}${guide(data.title,`Complete each question in this section. The information and documents you provide help your attorney review your ${data.title.toLowerCase()}.`)}${content}${index===4?renderCustomExpenses():""}${index===5?`<div class="section-title">Anything else for your attorney?</div><p>Optional — but helpful. Is there any additional information about your case or situation, big or small, that you’d like your attorney to know?</p><textarea id="attorney-note" class="text-area" maxlength="5000" placeholder="Share anything you think would help your attorney understand your situation.">${esc(state.attorneyNote)}</textarea>`:""}${formActions()}`;
   }
+
+  function expenseError(row){
+    const label=row.label.trim();
+    if(!label&&row.amount.trim())return "This field is required";
+    return label&&(!/[A-Za-z]/.test(label)||! /^[A-Za-z0-9]/.test(label))?"Enter a valid expense description.":"";
+  }
+
+  function renderCustomExpenses(){
+    return `<section class="custom-expenses"><div class="section-title">Custom expenses</div><p>October 14 custom-row slice. Examples stay in this open page only; saved-data and full expense validation coverage remain pending.</p>${state.customExpenses.map(row=>`<div class="custom-expense-row" data-expense-row="${row.id}">${row.editing?`<input class="text-input" aria-label="Describe expense" placeholder="Describe expense" maxlength="100" data-expense-label="${row.id}" value="${esc(row.label)}">`:`<button class="expense-label" data-edit-expense="${row.id}">${esc(row.label||"Describe expense")}</button>`}<div class="money-input">$<input aria-label="Custom expense amount" inputmode="decimal" data-expense-amount="${row.id}" value="${esc(row.amount)}" placeholder="0.00"></div><button type="button" class="remove-expense" aria-label="Remove this expense" data-remove-expense="${row.id}">×</button><span class="expense-error" role="status">${esc(row.error||"")}</span></div>`).join("")}<button type="button" class="add-row" data-add-expense>＋ Add another expense</button></section>`;
+  }
+
+  let refreshingExpenses=false;
+  function refreshExpenses(){
+    refreshingExpenses=true;
+    const section=document.querySelector(".custom-expenses");
+    if(section)section.outerHTML=renderCustomExpenses();
+    refreshingExpenses=false;
+  }
+
+  document.addEventListener("focusout",event=>{
+    if(refreshingExpenses)return;
+    const wrapper=event.target.closest?.("[data-expense-row]");
+    if(!wrapper||wrapper.contains(event.relatedTarget))return;
+    const row=state.customExpenses.find(item=>item.id===Number(wrapper.dataset.expenseRow));
+    if(!row)return;
+    if(!row.label.trim()&&!row.amount.trim())state.customExpenses=state.customExpenses.filter(item=>item!==row);
+    else{row.error=expenseError(row);row.editing=Boolean(row.error);}
+    setTimeout(refreshExpenses,0);
+  });
+
+  document.addEventListener("keydown",event=>{
+    if(event.target.matches?.("[data-expense-label],[data-expense-amount]")&&["Enter","Escape"].includes(event.key)){event.preventDefault();event.target.blur();}
+  });
 
   function renderDocuments(){
     const completed=requiredDocuments.filter(doc=>state.uploads.has(doc.key)).length;
@@ -516,6 +551,14 @@
   }
 
   document.addEventListener("click",event=>{
+    if(event.target.closest("[data-add-expense]")){
+      const row={id:++state.nextExpenseId,label:"",amount:"",editing:true,error:""};state.customExpenses.push(row);refreshExpenses();document.querySelector(`[data-expense-label="${row.id}"]`)?.focus();return;
+    }
+    const removeExpense=event.target.closest("[data-remove-expense]");
+    if(removeExpense){state.customExpenses=state.customExpenses.filter(row=>row.id!==Number(removeExpense.dataset.removeExpense));refreshExpenses();return;}
+    const editExpense=event.target.closest("[data-edit-expense]");
+    if(editExpense){const row=state.customExpenses.find(item=>item.id===Number(editExpense.dataset.editExpense));row.editing=true;refreshExpenses();document.querySelector(`[data-expense-label="${row.id}"]`)?.focus();return;}
+
     const viewButton=event.target.closest("[data-view]");
     if(viewButton){state.view=viewButton.dataset.view;state.modal=false;render();return;}
 
@@ -591,6 +634,12 @@
   });
 
   document.addEventListener("input",event=>{
+    if(event.target.matches("[data-expense-label],[data-expense-amount]")){
+      const row=state.customExpenses.find(item=>item.id===Number(event.target.dataset.expenseLabel||event.target.dataset.expenseAmount));
+      if(event.target.hasAttribute("data-expense-label"))row.label=event.target.value.slice(0,100);else row.amount=event.target.value;
+      row.error=expenseError(row);event.target.closest("[data-expense-row]").querySelector(".expense-error").textContent=row.error;return;
+    }
+
     if(event.target.id==="attorney-note"){state.attorneyNote=event.target.value;return;}
     if(event.target.id!=="lead-search"&&event.target.id!=="contact-search")return;
     if(event.target.id==="lead-search"){state.leadSearch=event.target.value;state.leadPage=0;}
