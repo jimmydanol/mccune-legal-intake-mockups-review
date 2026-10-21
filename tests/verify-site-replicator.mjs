@@ -12,8 +12,8 @@ assert.match(index, /label:"SITE REPLICATOR"/);
 assert.match(index, /function SiteReplicatorPage\(\)/);
 assert.match(index, /function ApptomateWorkingReplicaPage\(\)/);
 assert.match(index, /page==="site-replicator"/);
-assert.match(index, /src="\.\/apptomate-replica\/\?v=20261014-custom-expenses"/);
-assert.match(data, /reviewDate:"October 14, 2026"/);
+assert.match(index, /src="\.\/apptomate-replica\/\?v=20261021-guide-fallback"/);
+assert.match(data, /reviewDate:"October 21, 2026"/);
 assert.doesNotMatch(data, /branch:|commit:|dev_v2/);
 assert.match(data, /state:"verified"/);
 assert.match(data, /state:"review"/);
@@ -48,4 +48,7 @@ assert.match(replicaJs, /Pay stubs — last 6 months/);
 assert.match(replicaJs, /Zillow value report — your home/);
 assert.match(replicaJs, /KBB value report — your vehicle/);
 
+assert.match(data, /window\.BKFLSiteReplicatorData=/);
+assert.match(replicaJs, /Sample firm logo — no guide video supplied/);
+assert.doesNotMatch(replicaJs, /class="play-button"/);
 console.log("Working Site Replicator verification passed.");
