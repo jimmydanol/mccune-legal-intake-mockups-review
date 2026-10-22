@@ -355,7 +355,7 @@
   }
 
   function guide(title,text){
-    return `<div class="guide-row"><div class="guide-copy"><h2>${esc(title)}</h2><p>${esc(text)}</p></div><div class="guide-video guide-logo-fallback" role="img" aria-label="Sample firm logo — no guide video supplied"><div class="firm-brand"><strong>SAMPLE LEGAL</strong><span>FICTIONAL REVIEW FIRM</span></div></div></div>`;
+    return `<div class="guide-row"><div class="guide-copy"><h2>${esc(title)}</h2><p>${esc(text)}</p></div><div class="guide-video guide-logo-fallback" role="img" aria-label="Sample firm logo — no guide video supplied"><svg class="firm-guide-logo" viewBox="0 0 480 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="480" height="240" fill="#fff"/><text x="240" y="115" text-anchor="middle" fill="#245167" font-family="system-ui,sans-serif" font-size="32" font-weight="700">SAMPLE LEGAL</text><text x="240" y="145" text-anchor="middle" fill="#69716c" font-family="system-ui,sans-serif" font-size="13" letter-spacing="2">FICTIONAL REVIEW FIRM</text></svg></div></div>`;
   }
 
   function pageHeading(title,description){
